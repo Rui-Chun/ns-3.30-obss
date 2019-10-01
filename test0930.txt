@@ -1,0 +1,39 @@
+Waf: Entering directory `/Users/ruichun/ns-3.30-obss/build'
+[1358/1870] Compiling src/wifi/model/obss-wifi-manager.cc
+[1818/1870] Linking build/lib/libns3.30-wifi-debug.dylib
+[1819/1870] Linking build/lib/libns3.30-dsr-debug.dylib
+[1820/1870] Linking build/lib/libns3.30-mesh-debug.dylib
+[1821/1870] Linking build/lib/libns3.30-wave-debug.dylib
+[1822/1870] Linking build/lib/libns3.30-aodv-debug.dylib
+[1823/1870] Linking build/lib/libns3.30-netanim-debug.dylib
+[1824/1870] Linking build/lib/libns3.30-test-debug.dylib
+[1825/1870] Linking build/scratch/scratch-simulator
+[1826/1870] Linking build/scratch/subdir/subdir
+[1827/1870] Linking build/scratch/obss-pd-test
+[1828/1870] Linking build/scratch/obss-pd-0917
+[1829/1870] Linking build/scratch/mesh-loc-jw
+[1830/1870] Linking build/utils/ns3.30-test-runner-debug
+[1831/1870] Linking build/utils/ns3.30-print-introspected-doxygen-debug
+Waf: Leaving directory `/Users/ruichun/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (3.703s)
+CreateVariables () DONE !!!
+Creating 4 APs 40.00 and 70.00 m apart.
+CreateApNodes () DONE !!!
+Creating CL 10.00 m away from each AP.
+CreateClNodes () DONE !!!
+CreateNodes () DONE !!!
+CreateMeshDevices () DONE !!!
+CreateWifiDevices () DONE !!!
+CreateCsmaDevices () DONE !!!
+CreateDevices () DONE !!!
+InstallInternetStack () DONE !!!
+InstallApplications () DONE !!!
+Starting simulation for 100.00 s ...
+-------------------------------------------------
+Time[s]	cl-0	cl-1	cl-2	cl-3
+11.00	-1.00	27.32	-1.00	27.17
+12.00	-1.00	30.01	-1.00	30.01
+13.00	-1.00	30.01	-1.00	30.01
+14.00	-1.00	29.99	-1.00	29.99
+[01;31mInterrupted[0m 

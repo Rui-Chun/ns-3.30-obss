@@ -221,7 +221,7 @@ bool
 AodvExample::Configure (int argc, char **argv)
 {
   Packet::EnablePrinting ();
-  // LogComponentEnable("MeshObssPdAlgorithm", LOG_LEVEL_ALL);
+  // LogComponentEnable("WifiPhy", LOG_LEVEL_ALL);
   // Enable AODV logs by default. Comment this if too noisy
   // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
   // LogComponentEnable("ObssWifiManager", LOG_LEVEL_ALL);
@@ -527,11 +527,14 @@ AodvExample::CreateMeshDevices ()
       wifi.SetStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
       if (rateControl == std::string ("ideal"))
         wifi.SetRemoteStationManager ("ns3::IdealWifiManager",
-                                      "RtsCtsThreshold", UintegerValue (99999));
+                                      "RtsCtsThreshold", UintegerValue (99999),
+                                      "DefaultTxPowerLevel", UintegerValue(9));
       else if (rateControl == std::string ("obss"))
         wifi.SetRemoteStationManager ("ns3::ObssWifiManager",
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(9));
+                                      "DefaultTxPowerLevel", UintegerValue(9),
+                                      "ConstantMode", StringValue(constantRate),
+                                      "BerThreshold",DoubleValue(1e-1));
       else if (rateControl == std::string ("minstrel"))
         wifi.SetRemoteStationManager ("ns3::MinstrelHtWifiManager",
                                       "RtsCtsThreshold", UintegerValue (99999));
@@ -545,7 +548,8 @@ AodvExample::CreateMeshDevices ()
         wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                       "ControlMode", StringValue ("HeMcs0"),
                                       "DataMode", StringValue (constantRate),
-                                      "RtsCtsThreshold", UintegerValue (99999));
+                                      "RtsCtsThreshold", UintegerValue (99999),
+                                      "DefaultTxPowerLevel", UintegerValue(9));
 
       if(isObss)
       {

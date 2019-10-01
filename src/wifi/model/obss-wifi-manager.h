@@ -113,7 +113,7 @@ private:
 
   void UpdateObssTransStatus(HePreambleParameters params);
 
-  void CheckObssStatus(HePreambleParameters params);
+  void CheckObssStatus();
 
   double GetSINR(uint8_t dst, double myTxpower);
 
@@ -121,7 +121,9 @@ private:
 
   double GetPathLoss(uint8_t dst, uint8_t src);
 
-  bool CheckRouting(HePreambleParameters params);
+  bool CheckRouting();
+
+  void ResetPhy();
 
   /**
    * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the
@@ -161,6 +163,7 @@ private:
   uint8_t m_obssMcsLimit;
   uint8_t m_obssHeMcsLimit;
 
+  WifiMode m_constMode;
 };
 
 } //namespace ns3

@@ -21,6 +21,11 @@
 #include "ns3/log.h"
 #include "obss-wifi-manager.h"
 #include "wifi-phy.h"
+#include "ns3/string.h"
+
+#define HEMCS0 42 // only consider HE Mcs
+#define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
+#define SNRMARGIN 8
 
 namespace ns3 {
 /**
@@ -42,6 +47,8 @@ static const double CACHE_INITIAL_VALUE = -100;
 
 static ObssWifiManager::PathLossPairs globalLossPairs; // (dst+src, loss)
 
+static uint32_t TransNum =0;
+
 NS_OBJECT_ENSURE_REGISTERED (ObssWifiManager);
 
 NS_LOG_COMPONENT_DEFINE ("ObssWifiManager");
@@ -58,6 +65,10 @@ ObssWifiManager::GetTypeId (void)
                    DoubleValue (1e-5),
                    MakeDoubleAccessor (&ObssWifiManager::m_ber),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("ConstantMode", "The constant rate Mode when not restricted by obss",
+                   StringValue ("HeMcs6"),
+                   MakeWifiModeAccessor (&ObssWifiManager::m_constMode),
+                   MakeWifiModeChecker ())
     .AddTraceSource ("Rate",
                      "Traced value for rate changes (b/s)",
                      MakeTraceSourceAccessor (&ObssWifiManager::m_currentRate),
@@ -105,78 +116,6 @@ void
 ObssWifiManager::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  WifiMode mode;
-  WifiTxVector txVector;
-  uint8_t nss = 1;
-  uint8_t nModes = GetPhy ()->GetNModes ();
-  for (uint8_t i = 0; i < nModes; i++)
-    {
-      mode = GetPhy ()->GetMode (i);
-      txVector.SetChannelWidth (GetChannelWidthForMode (mode));
-      txVector.SetNss (nss);
-      txVector.SetMode (mode);
-      NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName ());
-      AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
-    }
-  // Add all HT, VHT and HE MCSes
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
-    {
-      nModes = GetPhy ()->GetNMcs ();
-      for (uint8_t i = 0; i < nModes; i++)
-        {
-          for (uint16_t j = 20; j <= GetPhy ()->GetChannelWidth (); j *= 2)
-            {
-              txVector.SetChannelWidth (j);
-              mode = GetPhy ()->GetMcs (i);
-              if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-                {
-                  uint16_t guardInterval = GetShortGuardIntervalSupported () ? 400 : 800;
-                  txVector.SetGuardInterval (guardInterval);
-                  //derive NSS from the MCS index
-                  nss = (mode.GetMcsValue () / 8) + 1;
-                  NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
-                                " channel width " << j <<
-                                " nss " << +nss <<
-                                " GI " << guardInterval);
-                  NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
-                  txVector.SetNss (nss);
-                  txVector.SetMode (mode);
-                  AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
-                }
-              else //VHT or HE
-                {
-                  uint16_t guardInterval;
-                  if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-                    {
-                      guardInterval = GetShortGuardIntervalSupported () ? 400 : 800;
-                    }
-                  else
-                    {
-                      guardInterval = GetGuardInterval ();
-                    }
-                  txVector.SetGuardInterval (guardInterval);
-                  for (uint8_t k = 1; k <= GetPhy ()->GetMaxSupportedTxSpatialStreams (); k++)
-                    {
-                      NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
-                                    " channel width " << j <<
-                                    " nss " << +k <<
-                                    " GI " << guardInterval);
-                      if (mode.IsAllowed (j, k))
-                        {
-                          NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
-                          txVector.SetNss (k);
-                          txVector.SetMode (mode);
-                          AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
-                        }
-                      else
-                        {
-                          NS_LOG_DEBUG ("In SetupPhy, mode = " << mode.GetUniqueName () << " disallowed");
-                        }
-                    }
-                }
-            }
-        }
-    }
   
   //######
   // connect end of preamble trace source
@@ -266,8 +205,11 @@ ObssWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                   double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode.GetUniqueName () << dataSnr);
-  std::cout<<"myMac: "<< +m_myMac <<" nexthop: "<< +m_nexthopMac<< " dataSnr:  "<< WToDbm(dataSnr) << std::endl;
+  uint8_t addrs[6];
+  st->m_state->m_address.CopyTo(addrs);
 
+  // std::cout<<"myMac: "<< +m_myMac <<" staMac: "<< +addrs[5]<< " dataSnr:  "<< WToDbm(dataSnr) << std::endl;
+  NS_LOG_DEBUG( "myMac: "<< +m_myMac <<" staMac: "<< +addrs[5]<< " dataSnr:  "<< WToDbm(dataSnr) );
   ObssWifiRemoteStation *station = (ObssWifiRemoteStation *)st;
   if (dataSnr == 0)
     {
@@ -307,7 +249,16 @@ WifiTxVector
 ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
+
+  // std::cout<<"Obss GetDataVector !"<<std::endl;
+  NS_LOG_DEBUG("Obss GetDataVector !");
+  CheckObssStatus();
+
   ObssWifiRemoteStation *station = (ObssWifiRemoteStation *)st;
+  // we need have station mac address
+  uint8_t staAddrs[6];
+  station->m_state->m_address.CopyTo(staAddrs);
+
   //We search within the Supported rate set the mode with the
   //highest data rate for which the snr threshold is smaller than m_lastSnr
   //to ensure correct packet delivery.
@@ -319,188 +270,116 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   uint16_t guardInterval;
   uint16_t channelWidth = std::min (GetChannelWidth (station), GetPhy ()->GetChannelWidth ());
   txVector.SetChannelWidth (channelWidth);
-  if (station->m_lastSnrCached != CACHE_INITIAL_VALUE && station->m_lastSnrObserved == station->m_lastSnrCached)
+
+  if ((GetHeSupported ())
+      && (GetHeSupported (st)))
     {
-      // SNR has not changed, so skip the search and use the last
-      // mode selected
-      maxMode = station->m_lastMode;
-      selectedNss = station->m_nss;
-      NS_LOG_DEBUG ("Using cached mode = " << maxMode.GetUniqueName () <<
-                    " last snr observed " << station->m_lastSnrObserved <<
-                    " cached " << station->m_lastSnrCached <<
-                    " nss " << +selectedNss);
+      // only consider HE mcs ########
+      if(m_obssRestricted && TransNum > TRANLIMIT && staAddrs[5]==m_nexthopMac)
+      {
+        // std::cout<<"Using Obss rate!"<<std::endl;
+        NS_LOG_DEBUG("Using Obss rate!");
+
+        mode = GetMcsSupported (station, m_obssMcsLimit+HEMCS0);
+        txVector.SetMode (mode);
+        guardInterval = std::max (GetGuardInterval (station), GetGuardInterval ());
+        txVector.SetGuardInterval (guardInterval);
+        // If the node and peer are not both HE capable, only search (V)HT modes
+        for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
+          {
+            txVector.SetNss (nss);
+            if (!txVector.IsValid ())
+              {
+                NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
+                              " nss " << +nss <<
+                              " width " << +txVector.GetChannelWidth ());
+                continue;
+              }
+            uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
+            if (dataRate > bestRate)
+              {
+                bestRate = dataRate;
+                maxMode = mode;
+                selectedNss = nss;
+              }
+          }
+          // std::cout<< "Obss! Testing mode = " << maxMode.GetUniqueName () <<
+          //       " data rate " << bestRate << std::endl;
+          NS_LOG_DEBUG("Obss! Using mode = " << maxMode.GetUniqueName () << " data rate " << bestRate );
+
+      }
+      else
+      {
+        double f_SNRestimated;
+        double f_threshold;
+          mode = m_constMode;
+          txVector.SetMode (mode);
+          guardInterval = std::max (GetGuardInterval (station), GetGuardInterval ());
+          txVector.SetGuardInterval (guardInterval);
+          // If the node and peer are not both HE capable, only search (V)HT modes
+          for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
+            {
+              txVector.SetNss (nss);
+              if (!txVector.IsValid ())
+                {
+                  NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
+                                " nss " << +nss <<
+                                " width " << +txVector.GetChannelWidth ());
+                  continue;
+                }
+              // double threshold = GetSnrThreshold (txVector);
+              double threshold = WToDbm(GetPhy()->CalculateSnr(txVector, m_ber)) - SNRMARGIN; // change to dbm and compare
+              double temp_power = GetPhy()->GetPowerDbm(GetDefaultTxPowerLevel());
+              double temp_signal = DbmToW(temp_power + GetPathLoss(staAddrs[5], m_myMac));
+              double SNRestimated = WToDbm(CalculateSnr(temp_signal, 0, channelWidth));
+              double dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
+
+              // std::cout<< "Testing mode = " << mode.GetUniqueName () <<
+              //               " data rate " << dataRate <<
+              //               " threshold " << threshold  << " SNR estimated " <<
+              //               SNRestimated<< std::endl;
+              if (dataRate > bestRate )
+                {
+                  bestRate = dataRate;
+                  maxMode = mode;
+                  selectedNss = nss;
+                  f_SNRestimated = SNRestimated;
+                  f_threshold = threshold;
+                }
+            }
+          // std::cout<<"Tx mode = " << maxMode.GetUniqueName () <<
+          // " data rate " << bestRate 
+          // << " threshold " << f_threshold  << " SNR estimated " <<
+          // f_SNRestimated<<std::endl;
+          NS_LOG_DEBUG("Tx mode = " << maxMode.GetUniqueName () <<
+          " data rate " << bestRate 
+          << " threshold " << f_threshold  << " SNR estimated " << f_SNRestimated);
+      }
+
     }
   else
     {
-      if ((GetHtSupported () || GetVhtSupported () || GetHeSupported ())
-          && (GetHtSupported (st) || GetVhtSupported (st) || GetHeSupported (st)))
+      // Non-HT selection
+      selectedNss = 1;
+      for (uint8_t i = 0; i < 1; i++)
         {
-          for (uint8_t i = 0; i < GetNMcsSupported (station); i++)
+          mode = GetSupported (station, i);
+          txVector.SetMode (mode);
+          txVector.SetNss (selectedNss);
+          txVector.SetChannelWidth (GetChannelWidthForMode (mode));;
+          uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
+          NS_LOG_DEBUG ("mode = " << mode.GetUniqueName () );
+
+          if (dataRate > bestRate)
             {
-              mode = GetMcsSupported (station, i);
-              txVector.SetMode (mode);
-              if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-                {
-                  guardInterval = static_cast<uint16_t> (std::max (GetShortGuardIntervalSupported (station) ? 400 : 800, GetShortGuardIntervalSupported () ? 400 : 800));
-                  txVector.SetGuardInterval (guardInterval);
-                  // If the node and peer are both VHT capable, only search VHT modes
-                  if (GetVhtSupported () && GetVhtSupported (station))
-                    {
-                      continue;
-                    }
-                  // If the node and peer are both HE capable, only search HE modes
-                  if (GetHeSupported () && GetHeSupported (station))
-                    {
-                      continue;
-                    }
-                  // Derive NSS from the MCS index. There is a different mode for each possible NSS value.
-                  uint8_t nss = (mode.GetMcsValue () / 8) + 1;
-                  txVector.SetNss (nss);
-                  if (!txVector.IsValid ()
-                      || nss > std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)))
-                    {
-                      NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
-                                    " nss " << +nss <<
-                                    " width " << txVector.GetChannelWidth ());
-                      continue;
-                    }
-                  double threshold = GetSnrThreshold (txVector);
-                  uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
-                  NS_LOG_DEBUG ("Testing mode " << mode.GetUniqueName () <<
-                                " data rate " << dataRate <<
-                                " threshold " << threshold  << " last snr observed " <<
-                                station->m_lastSnrObserved << " cached " <<
-                                station->m_lastSnrCached);
-                  if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
-                    {
-                      NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
-                                    " data rate " << dataRate <<
-                                    " threshold " << threshold  <<
-                                    " last snr observed " <<
-                                    station->m_lastSnrObserved);
-                      bestRate = dataRate;
-                      maxMode = mode;
-                      selectedNss = nss;
-                    }
-                }
-              else if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-                {
-                  guardInterval = static_cast<uint16_t> (std::max (GetShortGuardIntervalSupported (station) ? 400 : 800, GetShortGuardIntervalSupported () ? 400 : 800));
-                  txVector.SetGuardInterval (guardInterval);
-                  // If the node and peer are both HE capable, only search HE modes
-                  if (GetHeSupported () && GetHeSupported (station))
-                    {
-                      continue;
-                    }
-                  // If the node and peer are not both VHT capable, only search HT modes
-                  if (!GetVhtSupported () || !GetVhtSupported (station))
-                    {
-                      continue;
-                    }
-                  for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
-                    {
-                      txVector.SetNss (nss);
-                      if (!txVector.IsValid ())
-                        {
-                          NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
-                                        " nss " << +nss <<
-                                        " width " << txVector.GetChannelWidth ());
-                          continue;
-                        }
-                      double threshold = GetSnrThreshold (txVector);
-                      uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
-                      NS_LOG_DEBUG ("Testing mode = " << mode.GetUniqueName () <<
-                                    " data rate " << dataRate <<
-                                    " threshold " << threshold << " last snr observed " <<
-                                    station->m_lastSnrObserved << " cached " <<
-                                    station->m_lastSnrCached);
-                      if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
-                        {
-                          NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
-                                        " data rate " << dataRate <<
-                                        " threshold " << threshold  <<
-                                        " last snr observed " <<
-                                        station->m_lastSnrObserved);
-                          bestRate = dataRate;
-                          maxMode = mode;
-                          selectedNss = nss;
-                        }
-                    }
-                }
-              else //HE
-                {
-                  guardInterval = std::max (GetGuardInterval (station), GetGuardInterval ());
-                  txVector.SetGuardInterval (guardInterval);
-                  // If the node and peer are not both HE capable, only search (V)HT modes
-                  if (!GetHeSupported () || !GetHeSupported (station))
-                    {
-                      continue;
-                    }
-                  for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
-                    {
-                      txVector.SetNss (nss);
-                      if (!txVector.IsValid ())
-                        {
-                          NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
-                                        " nss " << +nss <<
-                                        " width " << +txVector.GetChannelWidth ());
-                          continue;
-                        }
-                      double threshold = GetSnrThreshold (txVector);
-                      uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
-                      NS_LOG_DEBUG ("Testing mode = " << mode.GetUniqueName () <<
-                                    " data rate " << dataRate <<
-                                    " threshold " << threshold  << " last snr observed " <<
-                                    station->m_lastSnrObserved << " cached " <<
-                                    station->m_lastSnrCached);
-                      if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
-                        {
-                          NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
-                                        " data rate " << dataRate <<
-                                        " threshold " << threshold  <<
-                                        " last snr observed " <<
-                                        station->m_lastSnrObserved);
-                          bestRate = dataRate;
-                          maxMode = mode;
-                          selectedNss = nss;
-                        }
-                    }
-                }
+              NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
+                            " data rate " << dataRate);
+              bestRate = dataRate;
+              maxMode = mode;
             }
         }
-      else
-        {
-          // Non-HT selection
-          selectedNss = 1;
-          for (uint8_t i = 0; i < GetNSupported (station); i++)
-            {
-              mode = GetSupported (station, i);
-              txVector.SetMode (mode);
-              txVector.SetNss (selectedNss);
-              txVector.SetChannelWidth (GetChannelWidthForMode (mode));
-              double threshold = GetSnrThreshold (txVector);
-              uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
-              NS_LOG_DEBUG ("mode = " << mode.GetUniqueName () <<
-                            " threshold " << threshold  <<
-                            " last snr observed " <<
-                            station->m_lastSnrObserved);
-              if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
-                {
-                  NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
-                                " data rate " << dataRate <<
-                                " threshold " << threshold  <<
-                                " last snr observed " <<
-                                station->m_lastSnrObserved);
-                  bestRate = dataRate;
-                  maxMode = mode;
-                }
-            }
-        }
-      NS_LOG_DEBUG ("Updating cached values for station to " <<  maxMode.GetUniqueName () << " snr " << station->m_lastSnrObserved);
-      station->m_lastSnrCached = station->m_lastSnrObserved;
-      station->m_lastMode = maxMode;
-      station->m_nss = selectedNss;
     }
+
   NS_LOG_DEBUG ("Found maxMode: " << maxMode << " channelWidth: " << channelWidth);
   if (maxMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
@@ -520,8 +399,241 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       m_currentRate = maxMode.GetDataRate (channelWidth, guardInterval, selectedNss);
     }
 
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station), false);
+  uint8_t MyTxpower;
+  if(m_obssRestricted)
+  {
+    MyTxpower = m_obssPowerLimit;
+  }
+  else
+  {
+    MyTxpower = GetDefaultTxPowerLevel ();
+  }
+  TransNum++;
+  // std::cout<<"TransNum= "<<+TransNum<<std::endl;
+  NS_LOG_DEBUG("TransNum= "<<+TransNum);
+
+  return WifiTxVector (maxMode, MyTxpower, GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station), false);
 }
+
+// WifiTxVector
+// ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
+// {
+//   NS_LOG_FUNCTION (this << st);
+//   ObssWifiRemoteStation *station = (ObssWifiRemoteStation *)st;
+//   //We search within the Supported rate set the mode with the
+//   //highest data rate for which the snr threshold is smaller than m_lastSnr
+//   //to ensure correct packet delivery.
+//   WifiMode maxMode = GetDefaultMode ();
+//   WifiTxVector txVector;
+//   WifiMode mode;
+//   uint64_t bestRate = 0;
+//   uint8_t selectedNss = 1;
+//   uint16_t guardInterval;
+//   uint16_t channelWidth = std::min (GetChannelWidth (station), GetPhy ()->GetChannelWidth ());
+//   txVector.SetChannelWidth (channelWidth);
+//   if (station->m_lastSnrCached != CACHE_INITIAL_VALUE && station->m_lastSnrObserved == station->m_lastSnrCached)
+//     {
+//       // SNR has not changed, so skip the search and use the last
+//       // mode selected
+//       maxMode = station->m_lastMode;
+//       selectedNss = station->m_nss;
+//       NS_LOG_DEBUG ("Using cached mode = " << maxMode.GetUniqueName () <<
+//                     " last snr observed " << station->m_lastSnrObserved <<
+//                     " cached " << station->m_lastSnrCached <<
+//                     " nss " << +selectedNss);
+//     }
+//   else
+//     {
+//       if ((GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+//           && (GetHtSupported (st) || GetVhtSupported (st) || GetHeSupported (st)))
+//         {
+//           for (uint8_t i = 0; i < GetNMcsSupported (station); i++)
+//             {
+//               mode = GetMcsSupported (station, i);
+//               txVector.SetMode (mode);
+//               if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+//                 {
+//                   guardInterval = static_cast<uint16_t> (std::max (GetShortGuardIntervalSupported (station) ? 400 : 800, GetShortGuardIntervalSupported () ? 400 : 800));
+//                   txVector.SetGuardInterval (guardInterval);
+//                   // If the node and peer are both VHT capable, only search VHT modes
+//                   if (GetVhtSupported () && GetVhtSupported (station))
+//                     {
+//                       continue;
+//                     }
+//                   // If the node and peer are both HE capable, only search HE modes
+//                   if (GetHeSupported () && GetHeSupported (station))
+//                     {
+//                       continue;
+//                     }
+//                   // Derive NSS from the MCS index. There is a different mode for each possible NSS value.
+//                   uint8_t nss = (mode.GetMcsValue () / 8) + 1;
+//                   txVector.SetNss (nss);
+//                   if (!txVector.IsValid ()
+//                       || nss > std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)))
+//                     {
+//                       NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
+//                                     " nss " << +nss <<
+//                                     " width " << txVector.GetChannelWidth ());
+//                       continue;
+//                     }
+//                   double threshold = GetSnrThreshold (txVector);
+//                   uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
+//                   NS_LOG_DEBUG ("Testing mode " << mode.GetUniqueName () <<
+//                                 " data rate " << dataRate <<
+//                                 " threshold " << threshold  << " last snr observed " <<
+//                                 station->m_lastSnrObserved << " cached " <<
+//                                 station->m_lastSnrCached);
+//                   if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
+//                     {
+//                       NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
+//                                     " data rate " << dataRate <<
+//                                     " threshold " << threshold  <<
+//                                     " last snr observed " <<
+//                                     station->m_lastSnrObserved);
+//                       bestRate = dataRate;
+//                       maxMode = mode;
+//                       selectedNss = nss;
+//                     }
+//                 }
+//               else if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+//                 {
+//                   guardInterval = static_cast<uint16_t> (std::max (GetShortGuardIntervalSupported (station) ? 400 : 800, GetShortGuardIntervalSupported () ? 400 : 800));
+//                   txVector.SetGuardInterval (guardInterval);
+//                   // If the node and peer are both HE capable, only search HE modes
+//                   if (GetHeSupported () && GetHeSupported (station))
+//                     {
+//                       continue;
+//                     }
+//                   // If the node and peer are not both VHT capable, only search HT modes
+//                   if (!GetVhtSupported () || !GetVhtSupported (station))
+//                     {
+//                       continue;
+//                     }
+//                   for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
+//                     {
+//                       txVector.SetNss (nss);
+//                       if (!txVector.IsValid ())
+//                         {
+//                           NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
+//                                         " nss " << +nss <<
+//                                         " width " << txVector.GetChannelWidth ());
+//                           continue;
+//                         }
+//                       double threshold = GetSnrThreshold (txVector);
+//                       uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
+//                       NS_LOG_DEBUG ("Testing mode = " << mode.GetUniqueName () <<
+//                                     " data rate " << dataRate <<
+//                                     " threshold " << threshold << " last snr observed " <<
+//                                     station->m_lastSnrObserved << " cached " <<
+//                                     station->m_lastSnrCached);
+//                       if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
+//                         {
+//                           NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
+//                                         " data rate " << dataRate <<
+//                                         " threshold " << threshold  <<
+//                                         " last snr observed " <<
+//                                         station->m_lastSnrObserved);
+//                           bestRate = dataRate;
+//                           maxMode = mode;
+//                           selectedNss = nss;
+//                         }
+//                     }
+//                 }
+//               else //HE
+//                 {
+//                   guardInterval = std::max (GetGuardInterval (station), GetGuardInterval ());
+//                   txVector.SetGuardInterval (guardInterval);
+//                   // If the node and peer are not both HE capable, only search (V)HT modes
+//                   if (!GetHeSupported () || !GetHeSupported (station))
+//                     {
+//                       continue;
+//                     }
+//                   for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
+//                     {
+//                       txVector.SetNss (nss);
+//                       if (!txVector.IsValid ())
+//                         {
+//                           NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
+//                                         " nss " << +nss <<
+//                                         " width " << +txVector.GetChannelWidth ());
+//                           continue;
+//                         }
+//                       double threshold = GetSnrThreshold (txVector);
+//                       uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
+//                       NS_LOG_DEBUG ("Testing mode = " << mode.GetUniqueName () <<
+//                                     " data rate " << dataRate <<
+//                                     " threshold " << threshold  << " last snr observed " <<
+//                                     station->m_lastSnrObserved << " cached " <<
+//                                     station->m_lastSnrCached);
+//                       if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
+//                         {
+//                           NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
+//                                         " data rate " << dataRate <<
+//                                         " threshold " << threshold  <<
+//                                         " last snr observed " <<
+//                                         station->m_lastSnrObserved);
+//                           bestRate = dataRate;
+//                           maxMode = mode;
+//                           selectedNss = nss;
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//       else
+//         {
+//           // Non-HT selection
+//           selectedNss = 1;
+//           for (uint8_t i = 0; i < GetNSupported (station); i++)
+//             {
+//               mode = GetSupported (station, i);
+//               txVector.SetMode (mode);
+//               txVector.SetNss (selectedNss);
+//               txVector.SetChannelWidth (GetChannelWidthForMode (mode));
+//               double threshold = GetSnrThreshold (txVector);
+//               uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
+//               NS_LOG_DEBUG ("mode = " << mode.GetUniqueName () <<
+//                             " threshold " << threshold  <<
+//                             " last snr observed " <<
+//                             station->m_lastSnrObserved);
+//               if (dataRate > bestRate && threshold < station->m_lastSnrObserved)
+//                 {
+//                   NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
+//                                 " data rate " << dataRate <<
+//                                 " threshold " << threshold  <<
+//                                 " last snr observed " <<
+//                                 station->m_lastSnrObserved);
+//                   bestRate = dataRate;
+//                   maxMode = mode;
+//                 }
+//             }
+//         }
+//       NS_LOG_DEBUG ("Updating cached values for station to " <<  maxMode.GetUniqueName () << " snr " << station->m_lastSnrObserved);
+//       station->m_lastSnrCached = station->m_lastSnrObserved;
+//       station->m_lastMode = maxMode;
+//       station->m_nss = selectedNss;
+//     }
+//   NS_LOG_DEBUG ("Found maxMode: " << maxMode << " channelWidth: " << channelWidth);
+//   if (maxMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+//     {
+//       guardInterval = std::max (GetGuardInterval (station), GetGuardInterval ());
+//     }
+//   else if ((maxMode.GetModulationClass () == WIFI_MOD_CLASS_HT) || (maxMode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+//     {
+//       guardInterval = static_cast<uint16_t> (std::max (GetShortGuardIntervalSupported (station) ? 400 : 800, GetShortGuardIntervalSupported () ? 400 : 800));
+//     }
+//   else
+//     {
+//       guardInterval = 800;
+//     }
+//   if (m_currentRate != maxMode.GetDataRate (channelWidth, guardInterval, selectedNss))
+//     {
+//       NS_LOG_DEBUG ("New datarate: " << maxMode.GetDataRate (channelWidth, guardInterval, selectedNss));
+//       m_currentRate = maxMode.GetDataRate (channelWidth, guardInterval, selectedNss);
+//     }
+
+//   return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station), false);
+// }
 
 WifiTxVector
 ObssWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
@@ -531,27 +643,17 @@ ObssWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   //We search within the Basic rate set the mode with the highest
   //snr threshold possible which is smaller than m_lastSnr to
   //ensure correct packet delivery.
-  double maxThreshold = 0.0;
   WifiTxVector txVector;
   WifiMode mode;
   uint8_t nss = 1;
-  WifiMode maxMode = GetDefaultMode ();
   //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac/ax
   //RTS is sent in a legacy frame; RTS with HT/VHT/HE is not yet supported
-  for (uint8_t i = 0; i < GetNBasicModes (); i++)
-    {
-      mode = GetBasicMode (i);
-      txVector.SetMode (mode);
-      txVector.SetNss (nss);
-      txVector.SetChannelWidth (GetChannelWidthForMode (mode));
-      double threshold = GetSnrThreshold (txVector);
-      if (threshold > maxThreshold && threshold < station->m_lastSnrObserved)
-        {
-          maxThreshold = threshold;
-          maxMode = mode;
-        }
-    }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, GetNumberOfAntennas (), nss, 0, GetChannelWidthForMode (maxMode), GetAggregation (station), false);
+  mode = GetBasicMode (0);
+  txVector.SetMode (mode);
+  txVector.SetNss (nss);
+  txVector.SetChannelWidth (GetChannelWidthForMode (mode));
+
+  return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, GetNumberOfAntennas (), nss, 0, GetChannelWidthForMode (mode), GetAggregation (station), false);
 }
 
 bool
@@ -574,7 +676,8 @@ ObssWifiManager::UpdatePathLoss(HePreambleParameters params)
       {
         if(i->second != loss)
         {
-          std::cout<<"different loss, old: "<< i->second << " new: "<< loss<< std::endl; 
+          // std::cout<<"different loss, old: "<< i->second << " new: "<< loss<< std::endl; 
+          NS_LOG_DEBUG("different loss, old: "<< i->second << " new: "<< loss);
         }
         return;
       }
@@ -582,7 +685,8 @@ ObssWifiManager::UpdatePathLoss(HePreambleParameters params)
 
     // no match
     m_lossPairs.push_back(std::make_pair(params.src, loss));
-    std::cout<<"Node mac "<< +m_myMac << " pushed src="<< +params.src <<" loss= "<<loss<<std::endl;
+    // std::cout<<"Node mac "<< +m_myMac << " pushed src="<< +params.src <<" loss= "<<loss<<std::endl;
+    NS_LOG_DEBUG("Node mac "<< +m_myMac << " pushed src="<< +params.src <<" loss= "<<loss);
 
     // update global loss pairs
 
@@ -594,13 +698,15 @@ ObssWifiManager::UpdatePathLoss(HePreambleParameters params)
       {
         if(i->second != loss)
         {
-          std::cout<<"global different loss, old: "<< i->second << " new: "<< loss<< std::endl; 
+          // std::cout<<"global different loss, old: "<< i->second << " new: "<< loss<< std::endl; 
+          NS_LOG_DEBUG("global different loss, old: "<< i->second << " new: "<< loss);
         }
         return;
       }
     }
     globalLossPairs.push_back(std::make_pair(((uint16_t)m_myMac<<8) + params.src, loss));
-    std::cout<<"Global pushed : dst= "<< +m_myMac << "  src="<< +params.src <<" loss= "<<loss<<std::endl;
+    // std::cout<<"Global pushed : dst= "<< +m_myMac << "  src="<< +params.src <<" loss= "<<loss<<std::endl;
+    NS_LOG_DEBUG("Global pushed : dst= "<< +m_myMac << "  src="<< +params.src <<" loss= "<<loss);
 
     return;
 }
@@ -609,12 +715,15 @@ void
 ObssWifiManager::ReceiveHeSig(HePreambleParameters params)
 {
   NS_LOG_FUNCTION (this<< +m_myMac);
-  std::cout<< "Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< \
-   "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<" Duration" << +params.time<< "  Mcs "<< +params.mcs <<std::endl;
+  // std::cout<< "Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< \
+  //  "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<" Duration" << +params.time<< "  Mcs "<< +params.mcs <<std::endl;
+  NS_LOG_DEBUG("Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< \
+  "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<"dbm  Duration" << +params.time<< "*1e5 NS  Mcs "<< +params.mcs );
 
   UpdatePathLoss(params);
   UpdateObssTransStatus(params);
-  CheckObssStatus(params);
+  CheckObssStatus();
+  ResetPhy();
 
   return;
 }
@@ -635,17 +744,19 @@ ObssWifiManager::UpdateObssTransStatus(HePreambleParameters params)
 }
 
 void
-ObssWifiManager::CheckObssStatus(HePreambleParameters params)
+ObssWifiManager::CheckObssStatus()
 {
   NS_LOG_FUNCTION (this<< +m_myMac);
 
-  std::cout<<"checkObssStatus"<<std::endl;
+  // std::cout<<"checkObssStatus"<<std::endl;
+  NS_LOG_DEBUG("checkObssStatus");
   //check timer
   for(int idx=0; idx<m_obssTrans.size(); idx++)
   {
     double startTime = std::get<2>(m_obssTrans[idx]);
     double duration = std::get<3>(m_obssTrans[idx]);
-    std::cout<<"start "<<startTime<< " duration "<<duration<<"  Now "<< +Simulator::Now().ToInteger(Time::Unit::NS)<<std::endl;
+    // std::cout<<"start "<<startTime<< " duration "<<duration<<"  Now "<< +Simulator::Now().ToInteger(Time::Unit::NS)<<std::endl;
+    NS_LOG_DEBUG("start "<<startTime<< " duration "<<duration<<"  Now "<< +Simulator::Now().ToInteger(Time::Unit::NS));
     if(startTime+duration < Simulator::Now().ToInteger(Time::Unit::NS))
     {
       // time past, delete it
@@ -653,8 +764,9 @@ ObssWifiManager::CheckObssStatus(HePreambleParameters params)
     }
 
   }
-  std::cout<<"m_obssTrans.size= "<<m_obssTrans.size()<<std::endl;
-  if(m_obssTrans.size()==0 || !CheckRouting(params))
+  // std::cout<<"m_obssTrans.size= "<<m_obssTrans.size()<<std::endl;
+  NS_LOG_DEBUG("m_obssTrans.size= "<<m_obssTrans.size());
+  if(m_obssTrans.size()==0 || !CheckRouting())
   {
     m_obssRestricted = false;
     return;
@@ -672,7 +784,9 @@ ObssWifiManager::CheckObssStatus(HePreambleParameters params)
     uint8_t temp_src = std::get<1>(m_obssTrans[idx]);
     double temp_txpower = std::get<4>(m_obssTrans[idx]);
     double temp_loss = GetPathLoss(m_nexthopMac, temp_src);
-    std::cout<<"dst: "<<+m_nexthopMac<<" src: "<<+temp_src<<" loss: "<<temp_loss<<std::endl;
+    // std::cout<<"dst: "<<+m_nexthopMac<<" src: "<<+temp_src<<" loss: "<<temp_loss<<std::endl;
+    NS_LOG_DEBUG("dst: "<<+m_nexthopMac<<" src: "<<+temp_src<<" loss: "<<temp_loss);
+
     if(temp_loss>0) // no path loss yet
     {
       m_obssRestricted = false;
@@ -718,8 +832,9 @@ ObssWifiManager::CheckObssStatus(HePreambleParameters params)
   bool isOk;
   double myTxpower;
   int level;
-  std::cout<<"we have "<<recvinfos.size()<<" recv info"<<std::endl;
-  for(level=GetPhy()->GetNTxPower();level>=0;level--)
+  // std::cout<<"we have "<<recvinfos.size()<<" recv info"<<std::endl;
+  NS_LOG_DEBUG("we have "<<recvinfos.size()<<" recv info");
+  for(level=GetPhy()->GetNTxPower()-1;level>=0;level--)
   {
     myTxpower = GetPhy()->GetPowerDbm(level); //dbm
     isOk=true;
@@ -738,21 +853,24 @@ ObssWifiManager::CheckObssStatus(HePreambleParameters params)
         return;
       }
       
-      WifiMode mode = GetPhy()->GetMcs(temp_mcs + 42); // Use HeMcs
-      std::cout<<"mcs: "<< temp_mcs << " name: "<< mode.GetUniqueName()<< std::endl;
+      WifiMode mode = GetPhy()->GetMcs(temp_mcs + HEMCS0); // Use HeMcs
+      // std::cout<<"mcs: "<< temp_mcs << " name: "<< mode.GetUniqueName()<< std::endl;
+      NS_LOG_DEBUG("mcs: "<< temp_mcs << " name: "<< mode.GetUniqueName());
 
       double myI = DbmToW(myTxpower+ temp_loss); // the interference I will introduce (W)
       uint16_t channelWidth = GetPhy ()->GetChannelWidth ();
-      std::cout<<"loss= "<<temp_loss<<" interference= "<<WToDbm(myI+temp_inf)<<" signal= "<<WToDbm(temp_signal)<<" ch= "<<channelWidth<<std::endl;
+      // std::cout<<"loss= "<<temp_loss<<" interference= "<<WToDbm(myI+temp_inf)<<" signal= "<<WToDbm(temp_signal)<<" ch= "<<channelWidth<<std::endl;
+      NS_LOG_DEBUG("loss= "<<temp_loss<<" interference= "<<WToDbm(myI+temp_inf)<<" signal= "<<WToDbm(temp_signal)<<" ch= "<<channelWidth);
       double dstSNR = WToDbm(CalculateSnr(temp_signal, myI+temp_inf, channelWidth));
 
       WifiTxVector txVector;
       txVector.SetChannelWidth (channelWidth);
       txVector.SetNss (1);
       txVector.SetMode (mode);
-      double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber) );
+      double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - SNRMARGIN;
 
-      std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
+      // std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
+      NS_LOG_DEBUG("mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
 
       if(dstSNR<SNRlimit)
       {
@@ -763,7 +881,8 @@ ObssWifiManager::CheckObssStatus(HePreambleParameters params)
 
     if(isOk)
     {
-      std::cout<<"Found right txpower!"<<myTxpower<<std::endl;
+      // std::cout<<"Found right txpower!"<<myTxpower<<std::endl;
+      NS_LOG_DEBUG("Found right txpower!"<<myTxpower);
       break;
     }
 
@@ -778,21 +897,28 @@ ObssWifiManager::CheckObssStatus(HePreambleParameters params)
     return;
   }
   uint16_t channelWidth = GetPhy ()->GetChannelWidth ();
-  std::cout<<"loss= "<<temp_loss<<" interference= "<<WToDbm(temp_inf)<<" signal= "<<(myTxpower+temp_loss)<<" ch= "<<channelWidth<<std::endl;
+  // std::cout<<"loss= "<<temp_loss<<" interference= "<<WToDbm(temp_inf)<<" signal= "<<(myTxpower+temp_loss)<<" ch= "<<channelWidth<<std::endl;
+  NS_LOG_DEBUG("loss= "<<temp_loss<<" interference= "<<WToDbm(temp_inf)<<" signal= "<<(myTxpower+temp_loss)<<" ch= "<<channelWidth);
   double SNR = WToDbm(CalculateSnr(DbmToW(myTxpower+temp_loss), temp_inf, channelWidth));
   int mcs;
   double SNRlimit;
   for(mcs=9;mcs>=0;mcs--)
   {
-    WifiMode mode = GetPhy()->GetMcs(mcs + 42);
+    WifiMode mode = GetPhy()->GetMcs(mcs + HEMCS0);
     WifiTxVector txVector;
     txVector.SetChannelWidth (channelWidth);
     txVector.SetNss (1);
     txVector.SetMode (mode);
-    SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber) );
+    SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - SNRMARGIN;
     if(SNRlimit<SNR)break;
   }
-  std::cout<<"final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR<<std::endl;
+  // std::cout<<"final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR<<std::endl;
+  NS_LOG_DEBUG("final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR);
+  if(mcs<0)
+  {
+    m_obssRestricted=false;
+    return;
+  }
   m_obssPowerLimit = level;
   m_obssMcsLimit = mcs;
   m_obssRestricted = true; // ?? When to set true
@@ -829,15 +955,20 @@ ObssWifiManager::GetPathLoss(uint8_t dst, uint8_t src)
       return i->second;
     }
   }
-  std::cout<<"No loss for dst "<<+dst<<" src "<<+src<<std::endl;
-  return 1; // loss must be negative, so use 1 to indicate no match #####
+  {
+    // std::cout<<"No match loss for "<<+src<<" to "<<+dst<< " give loss= -140"<<std::endl;
+    NS_LOG_DEBUG("No match loss for "<<+src<<" to "<<+dst<< " give loss= -140");
+    return -140;
+  }
+  // std::cout<<"No loss for dst "<<+dst<<" src "<<+src<<std::endl;
+  // return 1; // loss must be negative, so use 1 to indicate no match #####
 }
 
 
 // check routing table, 
 // return false if no nexthop or the params.src==myNexthop || params.dst == myMac
 bool
-ObssWifiManager::CheckRouting(HePreambleParameters params)
+ObssWifiManager::CheckRouting()
 {
   uint8_t addrs2[4]; // nexthop ip
 
@@ -880,6 +1011,19 @@ ObssWifiManager::CheckRouting(HePreambleParameters params)
     return false;
   }
   
+}
+
+
+void
+ObssWifiManager::ResetPhy()
+{
+  if(m_obssRestricted && TransNum > TRANLIMIT)
+  {
+    GetPhy()->ResetCca(true, 25, 25);
+    // std::cout<<"Phy Reset!"<<std::endl;
+    NS_LOG_DEBUG("Phy Reset!");
+  }
+  return;
 }
 
 } //namespace ns3
