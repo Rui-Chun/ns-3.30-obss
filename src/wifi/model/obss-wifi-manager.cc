@@ -25,7 +25,7 @@
 
 #define HEMCS0 42 // only consider HE Mcs
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
-#define SNRMARGIN 8
+#define SNRMARGIN 0
 
 namespace ns3 {
 /**
@@ -715,10 +715,10 @@ void
 ObssWifiManager::ReceiveHeSig(HePreambleParameters params)
 {
   NS_LOG_FUNCTION (this<< +m_myMac);
-  // std::cout<< "Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< \
+  // std::cout<< "Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< 
   //  "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<" Duration" << +params.time<< "  Mcs "<< +params.mcs <<std::endl;
   NS_LOG_DEBUG("Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< \
-  "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<"dbm  Duration" << +params.time<< "*1e5 NS  Mcs "<< +params.mcs );
+  "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<"dbm  Duration" << +params.time<< "*1e4 NS  Mcs "<< +params.mcs );
 
   UpdatePathLoss(params);
   UpdateObssTransStatus(params);
@@ -751,7 +751,7 @@ ObssWifiManager::CheckObssStatus()
   // std::cout<<"checkObssStatus"<<std::endl;
   NS_LOG_DEBUG("checkObssStatus");
   //check timer
-  for(int idx=0; idx<m_obssTrans.size(); idx++)
+  for(int idx=0; idx<(int)m_obssTrans.size(); idx++)
   {
     double startTime = std::get<2>(m_obssTrans[idx]);
     double duration = std::get<3>(m_obssTrans[idx]);
@@ -779,7 +779,7 @@ ObssWifiManager::CheckObssStatus()
 
   // sum up interference
   //for nexthop
-  for(int idx=0; idx<m_obssTrans.size(); idx++)
+  for(int idx=0; idx<(int)m_obssTrans.size(); idx++)
   {
     uint8_t temp_src = std::get<1>(m_obssTrans[idx]);
     double temp_txpower = std::get<4>(m_obssTrans[idx]);
@@ -799,13 +799,13 @@ ObssWifiManager::CheckObssStatus()
 
   // add other receivers
   double signal = 0;
-  for(int idx=0; idx<m_obssTrans.size(); idx++)
+  for(int idx=0; idx<(int)m_obssTrans.size(); idx++)
   {
     uint8_t temp_dst = std::get<0>(m_obssTrans[idx]);
     uint8_t temp_mcs = std::get<5>(m_obssTrans[idx]);
     interference = 0;
     signal = 0;
-    for(int idx2=0; idx2<m_obssTrans.size(); idx2++)
+    for(int idx2=0; idx2<(int)m_obssTrans.size(); idx2++)
     {
       uint8_t temp_src = std::get<1>(m_obssTrans[idx2]);
       uint8_t temp_dst2 = std::get<0>(m_obssTrans[idx2]);
@@ -840,7 +840,7 @@ ObssWifiManager::CheckObssStatus()
     isOk=true;
 
     // must not disturb on-going transimission
-    for(int idx=1;idx<recvinfos.size();idx++)
+    for(int idx=1;idx<(int)recvinfos.size();idx++)
     {
       uint8_t temp_recv = std::get<0>(recvinfos[idx]);
       double temp_inf = std::get<1>(recvinfos[idx]);
@@ -937,7 +937,7 @@ ObssWifiManager::CalculateSnr (double signal, double noiseInterference, uint16_t
   double noiseFloor = noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise; //linear scale
-  NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr=" << RatioToDb(snr) << "dB");
+  // NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr=" << RatioToDb(snr) << "dB");
   
   return snr;
 }
@@ -990,7 +990,7 @@ ObssWifiManager::CheckRouting()
       m_nexthopMac = addrs2[3];
 
       // check all on-going transmission
-      for(int idx=0; idx<m_obssTrans.size(); idx++)
+      for(int idx=0; idx<(int)m_obssTrans.size(); idx++)
       {
         uint8_t tran_dst = std::get<0>(m_obssTrans[idx]);
         uint8_t tran_src = std::get<1>(m_obssTrans[idx]);
