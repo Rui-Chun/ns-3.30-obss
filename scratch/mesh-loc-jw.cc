@@ -785,6 +785,25 @@ AodvExample::InstallApplications ()
       Simulator::Schedule (Seconds (startTime+10*i), Config::Set, "/NodeList/*/ApplicationList/*/$ns3::OnOffApplication/DataRate",
                            DataRateValue (DataRate ((uint64_t) (datarate*(i+1)))));
 
+  if (1)
+    {
+      uint16_t port = 9;
+      UdpEchoServerHelper server (port);
+      ApplicationContainer apps = server.Install (csmaNodes.Get (0));
+      apps.Start (Seconds (0.1));
+      apps.Stop (Seconds (totalTime + 0.1));
+
+      UdpEchoClientHelper client (csmaInterfaces.GetAddress (0), port);
+      client.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
+      client.SetAttribute ("PacketSize", UintegerValue (60));
+      if (aptx)
+        apps = client.Install (apNodes);
+      else
+        apps = client.Install (clNodes);
+      apps.Start (Seconds (1.0));
+      apps.Stop (Seconds (totalTime + 0.1));
+    }
+
   std::cout << "InstallApplications () DONE !!!\n";
 }
 
