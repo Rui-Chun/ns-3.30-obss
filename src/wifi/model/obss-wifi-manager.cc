@@ -22,6 +22,7 @@
 #include "obss-wifi-manager.h"
 #include "wifi-phy.h"
 #include "ns3/string.h"
+// #include <fstream>
 
 #define HEMCS0 42 // only consider HE Mcs
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
@@ -46,6 +47,8 @@ struct ObssWifiRemoteStation : public WifiRemoteStation
 static const double CACHE_INITIAL_VALUE = -100;
 
 static ObssWifiManager::PathLossPairs globalLossPairs; // (dst+src, loss)
+
+static ObssWifiManager::TransRecords globalTransRecords;
 
 static uint32_t TransNum =0;
 
@@ -411,6 +414,43 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   TransNum++;
   // std::cout<<"TransNum= "<<+TransNum<<std::endl;
   NS_LOG_DEBUG("TransNum= "<<+TransNum);
+  if(TransNum % 1000 ==0 )
+  {
+    std::ofstream myfile;
+    myfile.open ("/home/synrg/TransRecords.txt");
+    // std::cout<<"TransRecord writing"<<std::endl;
+    for(uint16_t i=0; i<globalTransRecords.size(); i++)
+    {
+      uint8_t temp_dst = std::get<0>(globalTransRecords[i]);
+      uint8_t temp_src = std::get<1>(globalTransRecords[i]);
+      int temp_mcs = std::get<2>(globalTransRecords[i]);
+      double temp_power = std::get<3>(globalTransRecords[i]);
+      uint64_t temp_num = std::get<4>(globalTransRecords[i]);
+      myfile << (int)temp_dst<<"\t"<<(int)temp_src<<"\t"<<temp_mcs<<"\t"<<temp_power<<"\t"<<(long)temp_num<<"\n";
+    }
+    myfile.close();
+  }
+
+  bool tranFlag=false;
+  for(uint16_t i=0;i<globalTransRecords.size(); i++)
+  {
+    uint8_t temp_dst = std::get<0>(globalTransRecords[i]);
+    uint8_t temp_src = std::get<1>(globalTransRecords[i]);
+    int temp_mcs = std::get<2>(globalTransRecords[i]);
+    uint8_t temp_power = std::get<3>(globalTransRecords[i]);
+    if(temp_dst==staAddrs[5] && temp_src==m_myMac && temp_mcs==maxMode.GetMcsValue() && temp_power==MyTxpower)
+    {
+      std::get<4>(globalTransRecords[i])++; // num ++
+      tranFlag=true;
+      break;
+    }
+  }
+  if(!tranFlag)
+  {
+    TransRecord tran(staAddrs[5], m_myMac, maxMode.GetMcsValue(), MyTxpower, 1);
+    globalTransRecords.push_back(tran);
+    // std::cout<<"TransRecord pushed"<<std::endl;
+  }
 
   return WifiTxVector (maxMode, MyTxpower, GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station), false);
 }
@@ -705,6 +745,7 @@ ObssWifiManager::UpdatePathLoss(HePreambleParameters params)
       }
     }
     globalLossPairs.push_back(std::make_pair(((uint16_t)m_myMac<<8) + params.src, loss));
+    globalLossPairs.push_back(std::make_pair(((uint16_t)params.src<<8) + m_myMac, loss));
     // std::cout<<"Global pushed : dst= "<< +m_myMac << "  src="<< +params.src <<" loss= "<<loss<<std::endl;
     NS_LOG_DEBUG("Global pushed : dst= "<< +m_myMac << "  src="<< +params.src <<" loss= "<<loss);
 
@@ -870,7 +911,7 @@ ObssWifiManager::CheckObssStatus()
       double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - SNRMARGIN;
 
       // std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
-      NS_LOG_DEBUG("mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
+      NS_LOG_DEBUG("mymac="<<+m_myMac<<" mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
 
       if(dstSNR<SNRlimit)
       {
@@ -913,7 +954,7 @@ ObssWifiManager::CheckObssStatus()
     if(SNRlimit<SNR)break;
   }
   // std::cout<<"final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR<<std::endl;
-  NS_LOG_DEBUG("final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR);
+  NS_LOG_DEBUG("final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR <<" dst="<<+m_nexthopMac <<" src="<<+m_myMac);
   if(mcs<0)
   {
     m_obssRestricted=false;

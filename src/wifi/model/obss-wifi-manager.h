@@ -61,6 +61,9 @@ public:
 
   typedef std::vector<std::pair<uint16_t, double> > PathLossPairs;
 
+  typedef std::tuple<uint8_t, uint8_t, int, double, uint64_t> TransRecord;
+  typedef std::vector<TransRecord> TransRecords;
+
 private:
   //overridden from base class
   void DoInitialize (void);

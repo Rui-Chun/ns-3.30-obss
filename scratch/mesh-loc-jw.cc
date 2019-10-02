@@ -467,9 +467,9 @@ AodvExample::CreateMeshDevices ()
   wifiPhy.Set ("Antennas", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
- wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
- wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
- wifiPhy.Set ("TxPowerLevels", UintegerValue (10));
+//  wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
+//  wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
+//  wifiPhy.Set ("TxPowerLevels", UintegerValue (10));
   wifiPhy.Set ("ShortGuardEnabled", BooleanValue (true));
 
   // if(isObss)
@@ -549,7 +549,7 @@ AodvExample::CreateMeshDevices ()
                                       "ControlMode", StringValue ("HeMcs0"),
                                       "DataMode", StringValue (constantRate),
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(9));
+                                      "DefaultTxPowerLevel", UintegerValue(0));
 
       if(isObss)
       {
@@ -656,6 +656,10 @@ AodvExample::InstallInternetStack ()
   aodv.Set ("DestinationOnly", BooleanValue (false));
 
   OlsrHelper olsr;
+  olsr.Set ("HelloInterval", TimeValue (Seconds (1)));
+  olsr.Set ("TcInterval", TimeValue (Seconds (2)));
+  olsr.Set ("MidInterval", TimeValue (Seconds (2)));
+  olsr.Set ("HnaInterval", TimeValue (Seconds (2)));
 
   DsdvHelper dsdv;
 
@@ -702,7 +706,7 @@ AodvExample::InstallApplications ()
   ApplicationContainer apps;
   Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
   x->SetAttribute ("Min", DoubleValue (0.0));
-  x->SetAttribute ("Max", DoubleValue (0.1));
+  x->SetAttribute ("Max", DoubleValue (100e-6));
 
   std::replace (appl.begin (), appl.end (), '+', ' ');
   std::vector<int> array;
@@ -728,7 +732,7 @@ AodvExample::InstallApplications ()
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
           client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-          client.SetAttribute ("PacketSize", UintegerValue (1472));
+          client.SetAttribute ("PacketSize", UintegerValue (1472*32));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("MaxBytes", UintegerValue (0));
           AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //

@@ -13,7 +13,7 @@
 ./waf --run "obss-pd-0917 --macType=adhoc --rateControl=const --datarate=35e6 --obssAlgo=mesh --obssLevel=-62 --app=udp-new --route=static --totalTime=400 --rndSeed=15 --lengthStep=25 --widthStep=70 --heMcs=HeMcs1" &> 7.txt
 
 
-// test
+// 1001
 ########
 
 ###1###
@@ -29,3 +29,24 @@
 ./waf --run "mesh-loc-jw --rateControl=const --datarateUp=true --apNum=6 --gridSize=3 --apXStep=40 --apYStep=70 --gateways=0+3 --appl=2+5 --RngSeed=12 --RngRun=12 --totalTime=200 --route=aodv --datarate=1e6 --mac=adhoc --app=udp --constantRate=HeMcs4" > 2-2.txt
 
 ./waf --run "mesh-loc-jw --rateControl=const --datarateUp=true --apNum=6 --gridSize=3 --apXStep=40 --apYStep=70 --gateways=0+3 --appl=2+5 --RngSeed=4 --RngRun=4 --totalTime=200 --route=aodv --datarate=5e5 --mac=adhoc --app=udp --constantRate=HeMcs4" > 2-4.txt
+
+
+
+####################1
+./waf --run "mesh-loc-jw --rateControl=const --datarateUp=true --apNum=8 --gridSize=4 --apXStep=30 --apYStep=70 --gateways=0+4 --appl=3+7 --RngSeed=35 --RngRun=5 --totalTime=250 --route=olsr --datarate=2e6 --mac=adhoc --app=udp --constantRate=HeMcs4" > 1-1.txt
+
+################2
+MARGIN=2
+./waf --run "mesh-loc-jw --rateControl=obss --datarateUp=true --apNum=8 --gridSize=4 --apXStep=30 --apYStep=70 --gateways=0+4 --appl=3+7 --RngSeed=35 --RngRun=5 --totalTime=250 --route=olsr --datarate=2e6 --mac=adhoc --app=udp --constantRate=HeMcs4" > 2-1.txt
+
+MARGIN=0
+./waf --run "mesh-loc-jw --rateControl=obss --datarateUp=true --apNum=8 --gridSize=4 --apXStep=30 --apYStep=70 --gateways=0+4 --appl=3+7 --RngSeed=35 --RngRun=5 --totalTime=250 --route=olsr --datarate=2e6 --mac=adhoc --app=udp --constantRate=HeMcs4" > 3-1.txt
+
+
+
+
+
+####### 3 lines
+./waf --run "mesh-loc-jw --rateControl=obss --datarateUp=true --apNum=12 --gridSize=4 --apXStep=30 --apYStep=70 --gateways=0+4+8 --appl=3+7+11 --RngSeed=42 --RngRun=42 --totalTime=250 --route=olsr --datarate=2e6 --mac=adhoc --app=udp --constantRate=HeMcs4" > new-2-1.txt
+
+./waf --run "mesh-loc-jw --rateControl=const --datarateUp=true --apNum=12 --gridSize=4 --apXStep=30 --apYStep=70 --gateways=0+4+8 --appl=3+7+11 --RngSeed=42 --RngRun=42 --totalTime=250 --route=olsr --datarate=2e6 --mac=adhoc --app=udp --constantRate=HeMcs4" > new-1-1.txt

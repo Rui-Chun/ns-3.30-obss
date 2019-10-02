@@ -1,0 +1,12 @@
+Waf: Entering directory `/home/synrg/ns-3.30-obss/build'
+Waf: Leaving directory `/home/synrg/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.374s)
+CreateVariables () DONE !!!
+Creating 4 APs 20.00 and 60.00 m apart.
+CreateApNodes () DONE !!!
+Creating CL 10.00 m away from each AP.
+CreateClNodes () DONE !!!
+CreateNodes () DONE !!!
+Attribute 'ShortGuardEnabled' is deprecated: Use the HtConfiguration instead
+Interrupted 
