@@ -660,6 +660,7 @@ AodvExample::InstallInternetStack ()
   olsr.Set ("TcInterval", TimeValue (Seconds (2)));
   olsr.Set ("MidInterval", TimeValue (Seconds (2)));
   olsr.Set ("HnaInterval", TimeValue (Seconds (2)));
+  olsr.Set ("Willingness", EnumValue (7));
 
   DsdvHelper dsdv;
 

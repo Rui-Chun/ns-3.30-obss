@@ -419,26 +419,34 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     std::ofstream myfile;
     myfile.open ("/home/synrg/TransRecords.txt");
     // std::cout<<"TransRecord writing"<<std::endl;
+    myfile<<"Dst\tSrc\tHeMcs\tTxlevel\tNum\tisObss\n";
     for(uint16_t i=0; i<globalTransRecords.size(); i++)
     {
       uint8_t temp_dst = std::get<0>(globalTransRecords[i]);
       uint8_t temp_src = std::get<1>(globalTransRecords[i]);
       int temp_mcs = std::get<2>(globalTransRecords[i]);
-      double temp_power = std::get<3>(globalTransRecords[i]);
+      uint8_t temp_power = std::get<3>(globalTransRecords[i]);
       uint64_t temp_num = std::get<4>(globalTransRecords[i]);
-      myfile << (int)temp_dst<<"\t"<<(int)temp_src<<"\t"<<temp_mcs<<"\t"<<temp_power<<"\t"<<(long)temp_num<<"\n";
+      int temp_isObss = std::get<5>(globalTransRecords[i]);
+      myfile << (int)temp_dst<<"\t"<<(int)temp_src<<"\t"<<temp_mcs<<"\t"<<(int)temp_power<<"\t"<<(long)temp_num<<"\t"<<temp_isObss<<"\n";
     }
     myfile.close();
   }
 
   bool tranFlag=false;
+  int obssFlag;
+
+  if(m_obssRestricted)obssFlag=1;
+  else obssFlag=0;
+
   for(uint16_t i=0;i<globalTransRecords.size(); i++)
   {
     uint8_t temp_dst = std::get<0>(globalTransRecords[i]);
     uint8_t temp_src = std::get<1>(globalTransRecords[i]);
     int temp_mcs = std::get<2>(globalTransRecords[i]);
     uint8_t temp_power = std::get<3>(globalTransRecords[i]);
-    if(temp_dst==staAddrs[5] && temp_src==m_myMac && temp_mcs==maxMode.GetMcsValue() && temp_power==MyTxpower)
+    int temp_isObss = std::get<5>(globalTransRecords[i]);
+    if(temp_dst==staAddrs[5] && temp_src==m_myMac && temp_mcs==maxMode.GetMcsValue() && temp_power==MyTxpower && obssFlag==temp_isObss)
     {
       std::get<4>(globalTransRecords[i])++; // num ++
       tranFlag=true;
@@ -447,7 +455,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   }
   if(!tranFlag)
   {
-    TransRecord tran(staAddrs[5], m_myMac, maxMode.GetMcsValue(), MyTxpower, 1);
+    TransRecord tran(staAddrs[5], m_myMac, maxMode.GetMcsValue(), MyTxpower, 1, obssFlag);
     globalTransRecords.push_back(tran);
     // std::cout<<"TransRecord pushed"<<std::endl;
   }
