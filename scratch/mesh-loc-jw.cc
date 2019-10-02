@@ -224,7 +224,7 @@ AodvExample::Configure (int argc, char **argv)
   // LogComponentEnable("WifiPhy", LOG_LEVEL_ALL);
   // Enable AODV logs by default. Comment this if too noisy
   // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
-  // LogComponentEnable("ObssWifiManager", LOG_LEVEL_DEBUG);
+  LogComponentEnable("ObssWifiManager", LOG_LEVEL_DEBUG);
 
   CommandLine cmd;
 
@@ -464,9 +464,9 @@ AodvExample::CreateMeshDevices ()
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   wifiPhy.Set ("ChannelNumber", UintegerValue (38));
-  wifiPhy.Set ("Antennas", UintegerValue (4));
-  wifiPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (4));
-  wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
+  // wifiPhy.Set ("Antennas", UintegerValue (4));
+  // wifiPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (4));
+  // wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
  wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
  wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
  wifiPhy.Set ("TxPowerLevels", UintegerValue (10));

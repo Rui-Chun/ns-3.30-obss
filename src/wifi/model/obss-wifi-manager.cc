@@ -24,9 +24,10 @@
 #include "ns3/string.h"
 // #include <fstream>
 
-#define HEMCS0 42 // only consider HE Mcs
+#define HEMCS0 18 // only consider HE Mcs
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
 #define SNRMARGIN 0
+#define DEFAULTLOSS -120
 
 namespace ns3 {
 /**
@@ -428,7 +429,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       uint8_t temp_power = std::get<3>(globalTransRecords[i]);
       uint64_t temp_num = std::get<4>(globalTransRecords[i]);
       int temp_isObss = std::get<5>(globalTransRecords[i]);
-      myfile << (int)temp_dst<<"\t"<<(int)temp_src<<"\t"<<temp_mcs<<"\t"<<(int)temp_power<<"\t"<<(long)temp_num<<"\t"<<temp_isObss<<"\n";
+      myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(int)temp_power<<"\t  "<<(long)temp_num<<"\t  "<<temp_isObss<<"\n";
     }
     myfile.close();
   }
@@ -1006,8 +1007,8 @@ ObssWifiManager::GetPathLoss(uint8_t dst, uint8_t src)
   }
   {
     // std::cout<<"No match loss for "<<+src<<" to "<<+dst<< " give loss= -140"<<std::endl;
-    NS_LOG_DEBUG("No match loss for "<<+src<<" to "<<+dst<< " give loss= -140");
-    return -140;
+    NS_LOG_DEBUG("No match loss for "<<+src<<" to "<<+dst<< " give loss= "<<DEFAULTLOSS);
+    return DEFAULTLOSS;
   }
   // std::cout<<"No loss for dst "<<+dst<<" src "<<+src<<std::endl;
   // return 1; // loss must be negative, so use 1 to indicate no match #####
