@@ -467,9 +467,9 @@ AodvExample::CreateMeshDevices ()
   wifiPhy.Set ("Antennas", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
-//  wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
-//  wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
-//  wifiPhy.Set ("TxPowerLevels", UintegerValue (10));
+ wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
+ wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
+ wifiPhy.Set ("TxPowerLevels", UintegerValue (10));
   wifiPhy.Set ("ShortGuardEnabled", BooleanValue (true));
 
   // if(isObss)
@@ -549,7 +549,7 @@ AodvExample::CreateMeshDevices ()
                                       "ControlMode", StringValue ("HeMcs0"),
                                       "DataMode", StringValue (constantRate),
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(0));
+                                      "DefaultTxPowerLevel", UintegerValue(9));
 
       if(isObss)
       {
