@@ -102,8 +102,6 @@ ObssPdAlgorithm::ResetPhy (HePreambleParameters params)
     {
       txPowerMaxSiso = m_txPowerRefSiso - (m_obssPdLevel - m_obssPdLevelMin);
       txPowerMaxMimo = m_txPowerRefMimo - (m_obssPdLevel - m_obssPdLevelMin);
-      // txPowerMaxSiso = m_txPowerRefSiso;
-      // txPowerMaxMimo = m_txPowerRefMimo;
       powerRestricted = true;
     }
   m_resetEvent (bssColor, WToDbm (params.rssiW), powerRestricted, txPowerMaxSiso, txPowerMaxMimo);

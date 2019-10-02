@@ -72,17 +72,11 @@ ConstantObssPdAlgorithm::ReceiveHeSig (HePreambleParameters params)
       return;
     }
 
-  // Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration ();
-  // NS_ASSERT (heConfiguration);
-  // UintegerValue bssColorAttribute;
-  // heConfiguration->GetAttribute ("BssColor", bssColorAttribute);
-  // uint8_t bssColor = bssColorAttribute.Get ();
-  
-  //####
-  //set bsscolor as self mac address(last number)
-  uint8_t addrs[6];
-  m_device->GetMac()->GetAddress().CopyTo(addrs);
-  uint8_t bssColor = addrs[5];
+  Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration ();
+  NS_ASSERT (heConfiguration);
+  UintegerValue bssColorAttribute;
+  heConfiguration->GetAttribute ("BssColor", bssColorAttribute);
+  uint8_t bssColor = bssColorAttribute.Get ();
 
   if (bssColor == 0)
     {
@@ -97,7 +91,6 @@ ConstantObssPdAlgorithm::ReceiveHeSig (HePreambleParameters params)
   //TODO: SRP_AND_NON-SRG_OBSS-PD_PROHIBITED=1 => OBSS_PD SR is not allowed
 
   bool isObss = (bssColor != params.bssColor);
-  NS_LOG_DEBUG ("isObss= "<< (int)isObss << "mybssColor= "<< (int)bssColor << "color in ="<< (int)params.bssColor);
   if (isObss)
     {
       if (WToDbm (params.rssiW) < m_obssPdLevel)
