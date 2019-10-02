@@ -255,7 +255,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
 
   // std::cout<<"Obss GetDataVector !"<<std::endl;
-  NS_LOG_DEBUG("Obss GetDataVector !");
+  NS_LOG_DEBUG("\nObss GetDataVector !");
   CheckObssStatus();
 
   ObssWifiRemoteStation *station = (ObssWifiRemoteStation *)st;
@@ -719,42 +719,48 @@ ObssWifiManager::UpdatePathLoss(HePreambleParameters params)
   double loss = WToDbm(params.rssiW) - params.txpower/10.0 ; // negative value(dbm)
 
   //TO DO: more complex updating method
-    for (PathLossPairs::const_iterator i = m_lossPairs.begin (); i != m_lossPairs.end (); i++)
+    for (uint8_t i=0; i< m_lossPairs.size(); i++)
     {
-      if(params.src == i->first)
+      uint8_t temp_src = std::get<1>(m_lossPairs[i]);
+      double temp_loss = std::get<2>(m_lossPairs[i]);
+      if(params.src == temp_src)
       {
-        if(i->second != loss)
+        if(temp_loss != loss)
         {
           // std::cout<<"different loss, old: "<< i->second << " new: "<< loss<< std::endl; 
-          NS_LOG_DEBUG("different loss, old: "<< i->second << " new: "<< loss);
+          NS_LOG_DEBUG("different loss, old: "<< temp_loss << " new: "<< loss);
+          // should not be here, since path loss of ns3 never changes
         }
         return;
       }
     }
 
     // no match
-    m_lossPairs.push_back(std::make_pair(params.src, loss));
+    PathLossPair pair(m_myMac, params.src, loss);
+    m_lossPairs.push_back(pair);
     // std::cout<<"Node mac "<< +m_myMac << " pushed src="<< +params.src <<" loss= "<<loss<<std::endl;
     NS_LOG_DEBUG("Node mac "<< +m_myMac << " pushed src="<< +params.src <<" loss= "<<loss);
 
     // update global loss pairs
 
-    for (PathLossPairs::const_iterator i = globalLossPairs.begin (); i != globalLossPairs.end (); i++)
+    for (uint8_t i=0; i<globalLossPairs.size(); i++)
     {
-      uint8_t i_dst = i->first / (1<<8);
-      uint8_t i_src = i->first % (1<<8);
+      uint8_t i_dst = std::get<0>(globalLossPairs[i]);
+      uint8_t i_src = std::get<1>(globalLossPairs[i]);
+      double i_loss = std::get<2>(globalLossPairs[i]);
       if(params.src == i_src && m_myMac == i_dst )
       {
-        if(i->second != loss)
+        if(i_loss != loss)
         {
           // std::cout<<"global different loss, old: "<< i->second << " new: "<< loss<< std::endl; 
-          NS_LOG_DEBUG("global different loss, old: "<< i->second << " new: "<< loss);
+          NS_LOG_DEBUG("global different loss, old: "<< i_loss << " new: "<< loss);
         }
         return;
       }
     }
-    globalLossPairs.push_back(std::make_pair(((uint16_t)m_myMac<<8) + params.src, loss));
-    globalLossPairs.push_back(std::make_pair(((uint16_t)params.src<<8) + m_myMac, loss));
+    globalLossPairs.push_back(pair);
+    PathLossPair pair2(params.src, m_myMac, loss); // both ways use same loss
+    globalLossPairs.push_back(pair2);
     // std::cout<<"Global pushed : dst= "<< +m_myMac << "  src="<< +params.src <<" loss= "<<loss<<std::endl;
     NS_LOG_DEBUG("Global pushed : dst= "<< +m_myMac << "  src="<< +params.src <<" loss= "<<loss);
 
@@ -765,6 +771,7 @@ void
 ObssWifiManager::ReceiveHeSig(HePreambleParameters params)
 {
   NS_LOG_FUNCTION (this<< +m_myMac);
+  NS_LOG_DEBUG("\nReceive HeSig");
   // std::cout<< "Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< 
   //  "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<" Duration" << +params.time<< "  Mcs "<< +params.mcs <<std::endl;
   NS_LOG_DEBUG("Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< \
@@ -835,7 +842,6 @@ ObssWifiManager::CheckObssStatus()
     double temp_txpower = std::get<4>(m_obssTrans[idx]);
     double temp_loss = GetPathLoss(m_nexthopMac, temp_src);
     // std::cout<<"dst: "<<+m_nexthopMac<<" src: "<<+temp_src<<" loss: "<<temp_loss<<std::endl;
-    NS_LOG_DEBUG("dst: "<<+m_nexthopMac<<" src: "<<+temp_src<<" loss: "<<temp_loss);
 
     if(temp_loss>0) // no path loss yet
     {
@@ -970,7 +976,7 @@ ObssWifiManager::CheckObssStatus()
     return;
   }
   m_obssPowerLimit = level;
-  m_obssMcsLimit = mcs;
+  m_obssMcsLimit = 0;
   m_obssRestricted = true; // ?? When to set true
 }
 
@@ -996,13 +1002,15 @@ double
 ObssWifiManager::GetPathLoss(uint8_t dst, uint8_t src)
 {
 
-  for (PathLossPairs::const_iterator i = globalLossPairs.begin (); i != globalLossPairs.end (); i++)
+  for (uint8_t i=0; i<globalLossPairs.size(); i++)
   {
-    uint8_t i_dst = i->first / (1<<8);
-    uint8_t i_src = i->first % (1<<8);
+    uint8_t i_dst = std::get<0>(globalLossPairs[i]);
+    uint8_t i_src = std::get<1>(globalLossPairs[i]);
+    double i_loss = std::get<2>(globalLossPairs[i]);
     if(src == i_src && dst == i_dst )
     {
-      return i->second;
+      NS_LOG_DEBUG("dst: "<<+dst<<" src: "<<+src<<" loss: "<<i_loss);
+      return i_loss;
     }
   }
   {
@@ -1057,7 +1065,8 @@ ObssWifiManager::CheckRouting()
   }
   else
   {
-    // std::cout<<"  myAddr= "<<sourceAddr<<"  error routing , no nexthop"<<std::endl;  
+    // std::cout<<"myAddr= "<<sourceAddr<<"  error routing , no nexthop"<<std::endl;  
+    NS_LOG_DEBUG("myAddr= "<<sourceAddr<<"  error routing , no nexthop");
     return false;
   }
   
@@ -1069,7 +1078,7 @@ ObssWifiManager::ResetPhy()
 {
   if(m_obssRestricted && TransNum > TRANLIMIT)
   {
-    GetPhy()->ResetCca(true, 25, 25);
+    GetPhy()->ResetCca(false, 25, 25);
     // std::cout<<"Phy Reset!"<<std::endl;
     NS_LOG_DEBUG("Phy Reset!");
   }
