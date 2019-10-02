@@ -871,7 +871,7 @@ ObssWifiManager::CheckObssStatus()
   }
 
   bool isOk;
-  double myTxpower;
+  double myTxpower = 0;
   int level;
   // std::cout<<"we have "<<recvinfos.size()<<" recv info"<<std::endl;
   NS_LOG_DEBUG("we have "<<recvinfos.size()<<" recv info");
