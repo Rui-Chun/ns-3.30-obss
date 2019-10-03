@@ -27,6 +27,7 @@
 #define HEMCS0 18 // only consider HE Mcs
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
 #define SNRMARGIN 0
+#define ACKSNRMARGIN 0
 #define DEFAULTLOSS -120
 
 namespace ns3 {
@@ -51,7 +52,9 @@ static ObssWifiManager::PathLossPairs globalLossPairs; // (dst+src, loss)
 
 static ObssWifiManager::TransRecords globalTransRecords;
 
-static uint32_t TransNum =0;
+static uint64_t TransNum =0;
+
+static uint64_t ResetNum = 0;
 
 NS_OBJECT_ENSURE_REGISTERED (ObssWifiManager);
 
@@ -434,6 +437,8 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       int temp_isObss = std::get<5>(globalTransRecords[i]);
       myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(int)temp_power<<"\t  "<<(long)temp_num<<"\t  "<<temp_isObss<<"\n";
     }
+
+    myfile<<"\n TotalReset Number= "<<+ResetNum<<"\n";
     myfile.close();
   }
 
@@ -969,9 +974,10 @@ ObssWifiManager::CheckObssStatus()
       // int temp_mcs = std::get<3>(recvinfos[idx]);
       double temp_loss;
 
-      if(GetNBasicMcs()==0){m_obssRestricted=false;return;}
+      // if(GetNBasicMcs()==0){m_obssRestricted=false;return;}
 
-      WifiMode mode = GetBasicMode(2); // Ack Basic Mode
+      // WifiMode mode = GetBasicMode(2); // Ack Basic Mode
+      WifiMode mode = GetPhy()->GetOfdmRate12Mbps(); // Ack Basic Mode
       // std::cout<<"mcs: "<< temp_mcs << " name: "<< mode.GetUniqueName()<< std::endl;
       NS_LOG_DEBUG("basic ack mcs: "<< 2 << " name: "<< mode.GetUniqueName());
 
@@ -995,7 +1001,7 @@ ObssWifiManager::CheckObssStatus()
       txVector.SetChannelWidth (channelWidth);
       txVector.SetNss (1);
       txVector.SetMode (mode);
-      double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - SNRMARGIN;
+      double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - ACKSNRMARGIN;
 
       // std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
       NS_LOG_DEBUG("mymac="<<+m_myMac<<" mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
@@ -1158,9 +1164,10 @@ ObssWifiManager::ResetPhy()
   if(m_obssRestricted && TransNum > TRANLIMIT)
   {
     GetPhy()->ResetCca(false, 25, 25);
-    std::cout<<"Phy Reset!"<<std::endl;
+    // std::cout<<"Phy Reset!"<<std::endl;
     // NS_LOG_DEBUG("Phy Reset!");
-    std::cout<<"reset\n";
+    // std::cout<<"reset\n";
+    ResetNum++;
   }
   return;
 }
