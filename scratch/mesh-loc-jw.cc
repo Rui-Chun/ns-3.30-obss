@@ -303,7 +303,7 @@ AodvExample::Run ()
       Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
       if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)))
         continue;
-      if ((t.destinationPort < 40000) || (t.destinationPort >= 40000 + apNodes.GetN ()))
+      if ((t.destinationPort < 50000) || (t.destinationPort >= 51000 + apNodes.GetN ()))
         continue;
       std::cout << t.sourceAddress << '\t';
       if (i->second.rxPackets > 1)
