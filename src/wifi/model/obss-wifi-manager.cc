@@ -180,6 +180,7 @@ ObssWifiManager::DoCreateStation (void) const
 void
 ObssWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMode txMode)
 {
+  NS_LOG_DEBUG("RX Ok!");
   NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
 
@@ -209,6 +210,8 @@ ObssWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                   double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode.GetUniqueName () << dataSnr);
+  NS_LOG_DEBUG("Data Ok, ackMode: "<< ackMode);
+
   uint8_t addrs[6];
   st->m_state->m_address.CopyTo(addrs);
 
@@ -832,7 +835,9 @@ ObssWifiManager::CheckObssStatus()
   // TO DO: Update power and rate limit
 
   double interference = 0;
+  double interference2 =0;
   ReceiverInfos recvinfos;
+  ReceiverInfos srcinfos;
 
   // sum up interference
   //for nexthop
@@ -841,37 +846,36 @@ ObssWifiManager::CheckObssStatus()
     uint8_t temp_src = std::get<1>(m_obssTrans[idx]);
     double temp_txpower = std::get<4>(m_obssTrans[idx]);
     double temp_loss = GetPathLoss(m_nexthopMac, temp_src);
+    double temp_loss2 = GetPathLoss(m_myMac, temp_src);
     // std::cout<<"dst: "<<+m_nexthopMac<<" src: "<<+temp_src<<" loss: "<<temp_loss<<std::endl;
 
-    if(temp_loss>0) // no path loss yet
-    {
-      m_obssRestricted = false;
-      return;
-    }
     interference += DbmToW(temp_txpower + temp_loss);
+    interference2 += DbmToW(temp_txpower + temp_loss2);
   }
   ReceiverInfo recvInfo(m_nexthopMac, interference, 0, -1); // first one
   recvinfos.push_back(recvInfo);
 
-  // add other receivers
+  NS_LOG_DEBUG("ack signal= "<< (double)(GetPhy()->GetTxPowerEnd() + GetPathLoss(m_myMac, m_nexthopMac)) );
+  ReceiverInfo srcinfo(m_myMac, interference2, DbmToW(GetPhy()->GetTxPowerEnd() + GetPathLoss(m_myMac, m_nexthopMac)), -1); // first one Src
+  srcinfos.push_back(srcinfo);
+
+  // add other receivers & srouces
   double signal = 0;
+  double signal2 = 0;
   for(int idx=0; idx<(int)m_obssTrans.size(); idx++)
   {
     uint8_t temp_dst = std::get<0>(m_obssTrans[idx]);
+    uint8_t temp_src = std::get<1>(m_obssTrans[idx]);
     uint8_t temp_mcs = std::get<5>(m_obssTrans[idx]);
     interference = 0;
     signal = 0;
     for(int idx2=0; idx2<(int)m_obssTrans.size(); idx2++)
     {
-      uint8_t temp_src = std::get<1>(m_obssTrans[idx2]);
       uint8_t temp_dst2 = std::get<0>(m_obssTrans[idx2]);
+      uint8_t temp_src2 = std::get<1>(m_obssTrans[idx2]);
       double temp_txpower = std::get<4>(m_obssTrans[idx2]);
-      double temp_loss = GetPathLoss(temp_dst, temp_src);
-      if(temp_loss>0) // no path loss yet
-      {
-        m_obssRestricted = false;
-        return;
-      }
+      double temp_loss = GetPathLoss(temp_dst, temp_src2);
+
       if(temp_dst2 == temp_dst) // not inf but signal !
       {
         signal = DbmToW(temp_txpower + temp_loss);
@@ -880,22 +884,39 @@ ObssWifiManager::CheckObssStatus()
       {
         interference += DbmToW(temp_txpower + temp_loss); 
       }
+
+      if(temp_src2==temp_src)
+      {
+        double temp_loss2 = GetPathLoss(temp_src, temp_dst);
+        signal2 = DbmToW(GetPhy()->GetTxPowerEnd() + temp_loss2); // Ack with highest power
+      }
+      else
+      {
+        double temp_loss2 = GetPathLoss(temp_src, temp_src2);
+        interference2 += DbmToW(temp_txpower + temp_loss2);
+      }
+      
+
     }
     ReceiverInfo recvInfo(temp_dst, interference, signal, temp_mcs);
     recvinfos.push_back(recvInfo);
+    if(signal2==0)NS_LOG_DEBUG("singal2 ==0");
+    ReceiverInfo srcinfo(temp_src, interference2, signal2, -1);
+    srcinfos.push_back(srcinfo);
   }
 
   bool isOk;
   double myTxpower = 0;
   int level;
   // std::cout<<"we have "<<recvinfos.size()<<" recv info"<<std::endl;
-  NS_LOG_DEBUG("we have "<<recvinfos.size()<<" recv info");
+  NS_LOG_DEBUG("Checking txpower. we have "<<recvinfos.size()<<" recv info");
   for(level=GetPhy()->GetNTxPower()-1;level>=0;level--)
   {
     myTxpower = GetPhy()->GetPowerDbm(level); //dbm
     isOk=true;
 
     // must not disturb on-going transimission
+    NS_LOG_DEBUG("must not disturb on-going transimission");
     for(int idx=1;idx<(int)recvinfos.size();idx++)
     {
       uint8_t temp_recv = std::get<0>(recvinfos[idx]);
@@ -934,6 +955,58 @@ ObssWifiManager::CheckObssStatus()
         break;
       }
     }
+    if(!isOk)continue;
+
+    //  must not disturb future ack
+    NS_LOG_DEBUG("must not disturb future ack");
+    for(int idx=0;idx<(int)srcinfos.size();idx++)
+    {
+      uint8_t temp_src = std::get<0>(srcinfos[idx]);
+      double temp_inf = std::get<1>(srcinfos[idx]);
+      double temp_signal = std::get<2>(srcinfos[idx]);
+      NS_LOG_DEBUG("temp_signal= "<< temp_signal);
+      if(temp_signal ==0)NS_LOG_DEBUG("Zero!");
+      // int temp_mcs = std::get<3>(recvinfos[idx]);
+      double temp_loss;
+
+      if(GetNBasicMcs()==0){m_obssRestricted=false;return;}
+
+      WifiMode mode = GetBasicMode(2); // Ack Basic Mode
+      // std::cout<<"mcs: "<< temp_mcs << " name: "<< mode.GetUniqueName()<< std::endl;
+      NS_LOG_DEBUG("basic ack mcs: "<< 2 << " name: "<< mode.GetUniqueName());
+
+      double myI;
+      if(idx==0)
+      {
+        temp_loss = GetPathLoss(m_myMac, m_nexthopMac);
+        myI = 0;
+      }
+      else
+      {
+        temp_loss = GetPathLoss(temp_src, m_myMac);
+        myI = DbmToW(myTxpower+ temp_loss); // the interference I will introduce (W)        
+      }
+      uint16_t channelWidth = GetPhy ()->GetChannelWidth ();
+      // std::cout<<"loss= "<<temp_loss<<" interference= "<<WToDbm(myI+temp_inf)<<" signal= "<<WToDbm(temp_signal)<<" ch= "<<channelWidth<<std::endl;
+      NS_LOG_DEBUG("loss= "<<temp_loss<<" interference= "<<WToDbm(myI+temp_inf)<<" signal= "<<WToDbm(temp_signal)<<" ch= "<<channelWidth);
+      double dstSNR = WToDbm(CalculateSnr(temp_signal, myI+temp_inf, channelWidth));
+
+      WifiTxVector txVector;
+      txVector.SetChannelWidth (channelWidth);
+      txVector.SetNss (1);
+      txVector.SetMode (mode);
+      double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - SNRMARGIN;
+
+      // std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
+      NS_LOG_DEBUG("mymac="<<+m_myMac<<" mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
+
+      if(dstSNR<SNRlimit)
+      {
+        isOk=false;
+        break;
+      }
+
+    }
 
     if(isOk)
     {
@@ -941,17 +1014,23 @@ ObssWifiManager::CheckObssStatus()
       NS_LOG_DEBUG("Found right txpower!"<<myTxpower);
       break;
     }
-
+    else
+    {
+      NS_LOG_DEBUG("Not Yet find txpower!"<<myTxpower);
+    }
+  }
+  
+  if(!isOk)
+  {
+    NS_LOG_DEBUG("No power finally.");
+    m_obssRestricted=false;
+    return;
   }
 
   uint8_t temp_recv = std::get<0>(recvinfos[0]);
   double temp_inf = std::get<1>(recvinfos[0]);
   double temp_loss = GetPathLoss(temp_recv, m_myMac);
-  if(temp_loss>0) // no path loss yet
-  {
-    m_obssRestricted = false;
-    return;
-  }
+
   uint16_t channelWidth = GetPhy ()->GetChannelWidth ();
   // std::cout<<"loss= "<<temp_loss<<" interference= "<<WToDbm(temp_inf)<<" signal= "<<(myTxpower+temp_loss)<<" ch= "<<channelWidth<<std::endl;
   NS_LOG_DEBUG("loss= "<<temp_loss<<" interference= "<<WToDbm(temp_inf)<<" signal= "<<(myTxpower+temp_loss)<<" ch= "<<channelWidth);
@@ -976,8 +1055,8 @@ ObssWifiManager::CheckObssStatus()
     return;
   }
   m_obssPowerLimit = level;
-  m_obssMcsLimit = 0;
-  m_obssRestricted = true; // ?? When to set true
+  m_obssMcsLimit = mcs;
+  m_obssRestricted = true; 
 }
 
 double 
@@ -1079,10 +1158,12 @@ ObssWifiManager::ResetPhy()
   if(m_obssRestricted && TransNum > TRANLIMIT)
   {
     GetPhy()->ResetCca(false, 25, 25);
-    // std::cout<<"Phy Reset!"<<std::endl;
-    NS_LOG_DEBUG("Phy Reset!");
+    std::cout<<"Phy Reset!"<<std::endl;
+    // NS_LOG_DEBUG("Phy Reset!");
+    std::cout<<"reset\n";
   }
   return;
 }
 
 } //namespace ns3
+

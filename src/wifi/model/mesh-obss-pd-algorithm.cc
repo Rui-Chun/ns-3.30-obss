@@ -72,7 +72,7 @@ MeshObssPdAlgorithm::ReceiveHeSig (HePreambleParameters params)
 {
   NS_LOG_FUNCTION (this << +params.dst << +params.src<< WToDbm (params.rssiW) <<Simulator::Now());
 
-  std::cout<< "Dst "<<(int)params.dst <<" Src "<< (int)params.src<< "  Power " << +params.txpower<< " Duration" << +params.time<< "  Mcs "<< +params.mcs <<std::endl;
+  // std::cout<< "Dst "<<(int)params.dst <<" Src "<< (int)params.src<< "  Power " << +params.txpower<< " Duration" << +params.time<< "  Mcs "<< +params.mcs <<std::endl;
 
   Ptr<StaWifiMac> mac = m_device->GetMac ()->GetObject<StaWifiMac>();
   if (mac && !mac->IsAssociated ())

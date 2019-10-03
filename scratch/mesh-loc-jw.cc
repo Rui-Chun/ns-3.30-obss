@@ -753,6 +753,7 @@ AodvExample::InstallApplications ()
   x->SetAttribute ("Min", DoubleValue (0.0));
   x->SetAttribute ("Max", DoubleValue (100e-6));
 
+
   std::replace (appl.begin (), appl.end (), '+', ' ');
   std::vector<int> array;
   std::stringstream ss(appl);
@@ -775,9 +776,9 @@ AodvExample::InstallApplications ()
           serverApps.Add (apps);
 
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
-          client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-          client.SetAttribute ("PacketSize", UintegerValue (1472*32));
+          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+          client.SetAttribute ("PacketSize", UintegerValue (1472*5));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("MaxBytes", UintegerValue (0));
           AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
