@@ -424,7 +424,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   if(TransNum % 1000 ==0 )
   {
     std::ofstream myfile;
-    myfile.open ("/home/jiaming/TransRecords.txt");
+    myfile.open ("TransRecords.txt");
     // std::cout<<"TransRecord writing"<<std::endl;
     myfile<<"Dst\tSrc\tHeMcs\tTxlevel\tNum\tisObss\n";
     for(uint16_t i=0; i<globalTransRecords.size(); i++)
