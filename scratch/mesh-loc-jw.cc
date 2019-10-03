@@ -263,7 +263,7 @@ AodvExample::Configure (int argc, char **argv)
 
   cmd.Parse (argc, argv);
 
-  if (gridSize < apNum)
+  if (gridSize*gridSize < apNum)
     gridSize = apNum;
 
   return true;
@@ -829,7 +829,7 @@ AodvExample::InstallApplications ()
       Simulator::Schedule (Seconds (startTime+10*i), Config::Set, "/NodeList/*/ApplicationList/*/$ns3::OnOffApplication/DataRate",
                            DataRateValue (DataRate ((uint64_t) (datarate*(i+1)))));
 
-  if (1)
+  if (0)
     {
       uint16_t port = 9;
       UdpEchoServerHelper server (port);
