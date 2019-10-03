@@ -472,7 +472,7 @@ AodvExample::CreateMeshDevices ()
   // wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
   wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
-  wifiPhy.Set ("TxPowerLevels", UintegerValue (10));
+  wifiPhy.Set ("TxPowerLevels", UintegerValue (11));
 
   // if(isObss)
   // {
@@ -534,7 +534,7 @@ AodvExample::CreateMeshDevices ()
       else if (rateControl == std::string ("obss"))
         wifi.SetRemoteStationManager ("ns3::ObssWifiManager",
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(9),
+                                      "DefaultTxPowerLevel", UintegerValue(10),
                                       "ConstantMode", StringValue(constantRate),
                                       "BerThreshold",DoubleValue(1e-1));
       else if (rateControl == std::string ("minstrel"))
@@ -778,7 +778,7 @@ AodvExample::InstallApplications ()
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
-          client.SetAttribute ("PacketSize", UintegerValue (1472));
+          client.SetAttribute ("PacketSize", UintegerValue (1472 * 5));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("MaxBytes", UintegerValue (0));
           AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
