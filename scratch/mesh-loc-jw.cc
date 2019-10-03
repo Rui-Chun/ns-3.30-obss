@@ -224,7 +224,7 @@ AodvExample::Configure (int argc, char **argv)
   // LogComponentEnable("WifiPhy", LOG_LEVEL_ALL);
   // Enable AODV logs by default. Comment this if too noisy
   // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
-  LogComponentEnable("ObssWifiManager", LOG_LEVEL_DEBUG);
+  // LogComponentEnable("ObssWifiManager", LOG_LEVEL_DEBUG);
 
   CommandLine cmd;
 
@@ -555,7 +555,7 @@ AodvExample::CreateMeshDevices ()
 
       if(isObss)
       {
-        wifi.SetObssPdAlgorithm ("ns3::MeshObssPdAlgorithm",
+        wifi.SetObssPdAlgorithm ("ns3::ConstantObssPdAlgorithm",
                       "ObssPdLevel", DoubleValue (obssLevel));  
       }
       meshDevices = wifi.Install (wifiPhy, wifiMac, apNodes);

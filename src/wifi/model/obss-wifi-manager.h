@@ -59,7 +59,8 @@ public:
 
   void SetupPhy (const Ptr<WifiPhy> phy);
 
-  typedef std::vector<std::pair<uint16_t, double> > PathLossPairs;
+  typedef std::tuple<uint8_t, uint8_t, double> PathLossPair;
+  typedef std::vector<PathLossPair> PathLossPairs;
 
   typedef std::tuple<uint8_t, uint8_t, int, uint8_t, uint64_t, int> TransRecord; // dst, src, mcs, powerLevel, Number, isObss
   typedef std::vector<TransRecord> TransRecords;
