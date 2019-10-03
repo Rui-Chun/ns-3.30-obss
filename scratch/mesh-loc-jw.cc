@@ -263,6 +263,9 @@ AodvExample::Configure (int argc, char **argv)
 
   cmd.Parse (argc, argv);
 
+  if (gridSize < apNum)
+    gridSize = apNum;
+
   return true;
 }
 
@@ -467,10 +470,9 @@ AodvExample::CreateMeshDevices ()
   // wifiPhy.Set ("Antennas", UintegerValue (4));
   // wifiPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (4));
   // wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
- wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
- wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
- wifiPhy.Set ("TxPowerLevels", UintegerValue (10));
-  wifiPhy.Set ("ShortGuardEnabled", BooleanValue (true));
+  wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
+  wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
+  wifiPhy.Set ("TxPowerLevels", UintegerValue (10));
 
   // if(isObss)
   // {
@@ -664,8 +666,13 @@ AodvExample::InstallInternetStack ()
 
   DsdvHelper dsdv;
 
+  Ipv4StaticRoutingHelper staticroute;
+
   Ipv4ListRoutingHelper list;
-  if (route == std::string ("olsr"))
+
+  if (route == std::string ("static"))
+    list.Add (staticroute, 100);
+  else if (route == std::string ("olsr"))
     list.Add (olsr, 100);
   else if (route == std::string ("dsdv"))
     list.Add (dsdv, 100);
@@ -696,6 +703,43 @@ AodvExample::InstallInternetStack ()
       apInterfaces.Add (interfaces);
       interfaces = address.Assign (clDevices.Get (i));
       clInterfaces.Add (interfaces);
+    }
+
+  if (route == std::string ("static"))
+    {
+      Ptr<Ipv4StaticRouting> staticRouting;
+      for (uint32_t i = 0; i < std::ceil ((double)apNum/gridSize); i++)
+        {
+          uint32_t istart = i*gridSize;
+          uint32_t iend = std::min (apNum, (i+1)*gridSize);
+
+          staticRouting = Ipv4RoutingHelper::GetRouting <Ipv4StaticRouting> (csmaNodes.Get (0)->GetObject<Ipv4> ()->GetRoutingProtocol ());
+          staticRouting->AddHostRouteTo (csmaInterfaces.GetAddress (i+1), csmaInterfaces.GetAddress (i+1), 1);
+          for (uint32_t j = istart; j < iend; j++)
+            staticRouting->AddHostRouteTo (meshInterfaces.GetAddress (j), csmaInterfaces.GetAddress (i+1), 1);
+
+          for (uint32_t j = istart; j < iend; j++)
+            {
+              staticRouting = Ipv4RoutingHelper::GetRouting <Ipv4StaticRouting> (apNodes.Get (j)->GetObject<Ipv4> ()->GetRoutingProtocol ());
+              if (j == istart)
+                {
+                  staticRouting->AddHostRouteTo (csmaInterfaces.GetAddress (0), csmaInterfaces.GetAddress (0), 2);
+                }
+              else
+                {
+                  staticRouting->AddHostRouteTo (csmaInterfaces.GetAddress (0), meshInterfaces.GetAddress (j-1), 1);
+                }
+              for (uint32_t k = istart; k < j; k++)
+                {
+                  staticRouting->AddHostRouteTo (meshInterfaces.GetAddress (k), meshInterfaces.GetAddress (j-1), 1);
+                }
+              for (uint32_t k = j+1; k < iend; k++)
+                {
+                  staticRouting->AddHostRouteTo (meshInterfaces.GetAddress (k), meshInterfaces.GetAddress (j+1), 1);
+                }
+            }
+          
+        }
     }
 
   std::cout << "InstallInternetStack () DONE !!!\n";
