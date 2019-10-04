@@ -168,6 +168,7 @@ private:
   uint8_t m_obssHeMcsLimit;
 
   WifiMode m_constMode;
+  std::string m_recordPath;
 };
 
 } //namespace ns3
