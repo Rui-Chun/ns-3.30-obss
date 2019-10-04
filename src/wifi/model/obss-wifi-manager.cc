@@ -76,6 +76,10 @@ ObssWifiManager::GetTypeId (void)
                    StringValue ("HeMcs6"),
                    MakeWifiModeAccessor (&ObssWifiManager::m_constMode),
                    MakeWifiModeChecker ())
+    .AddAttribute ("RecordPath", "The file path of records",
+                   StringValue ("TransRecords.txt"),
+                   MakeStringAccessor( &ObssWifiManager::m_recordPath),
+                   MakeStringChecker())
     .AddTraceSource ("Rate",
                      "Traced value for rate changes (b/s)",
                      MakeTraceSourceAccessor (&ObssWifiManager::m_currentRate),
@@ -424,7 +428,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   if(TransNum % 1000 ==0 )
   {
     std::ofstream myfile;
-    myfile.open ("TransRecords.txt");
+    myfile.open (m_recordPath);
     // std::cout<<"TransRecord writing"<<std::endl;
     myfile<<"Dst\tSrc\tHeMcs\tTxlevel\tNum\tisObss\n";
     for(uint16_t i=0; i<globalTransRecords.size(); i++)

@@ -125,6 +125,7 @@ private:
   // obss pd
   bool isObss;
   double obssLevel;
+  std::string recordPath;
   // network
   /// nodes used in the example
   NodeContainer apNodes;
@@ -213,7 +214,8 @@ AodvExample::AodvExample () :
   datarate (1e6),
   datarateUp (false),
   isObss(false),
-  obssLevel(-62)
+  obssLevel(-62),
+  recordPath("TransRecords.txt")
 {
 }
 
@@ -260,6 +262,7 @@ AodvExample::Configure (int argc, char **argv)
   cmd.AddValue ("datarateUp", "Increase datarate or not.", datarateUp);
   cmd.AddValue ("isObss", "Use obss pd or not", isObss);
   cmd.AddValue ("obssLevel", "Obss pd thershold level", obssLevel);
+  cmd.AddValue ("recordPath", "Obss trans records file path", recordPath);
 
   cmd.Parse (argc, argv);
 
@@ -536,7 +539,8 @@ AodvExample::CreateMeshDevices ()
                                       "RtsCtsThreshold", UintegerValue (99999),
                                       "DefaultTxPowerLevel", UintegerValue(10),
                                       "ConstantMode", StringValue(constantRate),
-                                      "BerThreshold",DoubleValue(1e-1));
+                                      "RecordPath", StringValue(recordPath),
+                                      "BerThreshold",DoubleValue(1e-1)); // quite large
       else if (rateControl == std::string ("minstrel"))
         wifi.SetRemoteStationManager ("ns3::MinstrelHtWifiManager",
                                       "RtsCtsThreshold", UintegerValue (99999));
@@ -551,7 +555,7 @@ AodvExample::CreateMeshDevices ()
                                       "ControlMode", StringValue ("HeMcs0"),
                                       "DataMode", StringValue (constantRate),
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(9));
+                                      "DefaultTxPowerLevel", UintegerValue(10)); // level changed 9->10 since tcp-1 exp
 
       if(isObss)
       {
