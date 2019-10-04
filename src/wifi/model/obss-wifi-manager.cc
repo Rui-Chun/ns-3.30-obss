@@ -52,7 +52,11 @@ static ObssWifiManager::PathLossPairs globalLossPairs; // (dst+src, loss)
 
 static ObssWifiManager::TransRecords globalTransRecords;
 
+static ObssWifiManager::RxRecords globalRxRecords;
+
 static uint64_t TransNum =0;
+
+static uint64_t RxNum = 0;
 
 static uint64_t ResetNum = 0;
 
@@ -188,7 +192,54 @@ void
 ObssWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMode txMode)
 {
   NS_LOG_DEBUG("RX Ok!");
+  RxNum++;
+  NS_LOG_DEBUG("RxNum= "<<+RxNum);
+  uint8_t staAddrs[6];
+  station->m_state->m_address.CopyTo(staAddrs);
+  if(RxNum % 1000 ==0 )
+  {
+    std::ofstream myfile;
+    myfile.open ("RxRecords.txt");
+    myfile<<"Dst\tSrc\tHeMcs\tRxSnr\tNum\n";
+    for(uint16_t i=0; i<globalRxRecords.size(); i++)
+    {
+      uint8_t temp_dst = std::get<0>(globalRxRecords[i]);
+      uint8_t temp_src = std::get<1>(globalRxRecords[i]);
+      int temp_mcs = std::get<2>(globalRxRecords[i]);
+      double temp_snr = std::get<3>(globalRxRecords[i]);
+      uint64_t temp_num = std::get<4>(globalRxRecords[i]);
+      myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(double)temp_snr<<"\t  "<<(long)temp_num<<"\n";
+    }
+
+    myfile<<"\n TotalRx Number= "<<+RxNum<<"\n";
+    myfile.close();
+  }
+
+  bool rxFlag=false;
+
+  for(uint16_t i=0;i<globalRxRecords.size(); i++)
+  {
+    uint8_t temp_dst = std::get<0>(globalRxRecords[i]);
+    uint8_t temp_src = std::get<1>(globalRxRecords[i]);
+    int temp_mcs = std::get<2>(globalRxRecords[i]);
+    double temp_snr = std::get<3>(globalRxRecords[i]);
+    if(temp_src==staAddrs[5] && temp_dst==m_myMac && temp_mcs==txMode.GetMcsValue() && std::abs(temp_snr-rxSnr) < 1e-3)
+    {
+      std::get<4>(globalRxRecords[i])++; // num ++
+      rxFlag=true;
+      break;
+    }
+  }
+  if(!rxFlag)
+  {
+    RxRecord rx(m_myMac, staAddrs[5], txMode.GetMcsValue(), rxSnr, 1);
+    globalRxRecords.push_back(rx);
+    // std::cout<<"TransRecord pushed"<<std::endl;
+  }
   NS_LOG_FUNCTION (this << station << rxSnr << txMode);
+
+
+  
 }
 
 void
@@ -441,7 +492,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       int temp_isObss = std::get<5>(globalTransRecords[i]);
       myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(int)temp_power<<"\t  "<<(long)temp_num<<"\t  "<<temp_isObss<<"\n";
     }
-
+    myfile<<"\n TotalTx Number= "<<+TransNum<<"\n";
     myfile<<"\n TotalReset Number= "<<+ResetNum<<"\n";
     myfile.close();
   }
@@ -981,7 +1032,7 @@ ObssWifiManager::CheckObssStatus()
       // if(GetNBasicMcs()==0){m_obssRestricted=false;return;}
 
       // WifiMode mode = GetBasicMode(2); // Ack Basic Mode
-      WifiMode mode = GetPhy()->GetOfdmRate12Mbps(); // Ack Basic Mode
+      WifiMode mode = GetPhy()->GetOfdmRate24Mbps(); // Ack Basic Mode
       // std::cout<<"mcs: "<< temp_mcs << " name: "<< mode.GetUniqueName()<< std::endl;
       NS_LOG_DEBUG("basic ack mcs: "<< 2 << " name: "<< mode.GetUniqueName());
 

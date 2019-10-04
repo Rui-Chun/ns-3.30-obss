@@ -222,8 +222,8 @@ AodvExample::AodvExample () :
 bool
 AodvExample::Configure (int argc, char **argv)
 {
-  Packet::EnablePrinting ();
-  // LogComponentEnable("WifiPhy", LOG_LEVEL_ALL);
+  // Packet::EnablePrinting ();
+  // LogComponentEnable("MacLow", LOG_LEVEL_ALL);
   // Enable AODV logs by default. Comment this if too noisy
   // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
   // LogComponentEnable("ObssWifiManager", LOG_LEVEL_DEBUG);
@@ -540,7 +540,7 @@ AodvExample::CreateMeshDevices ()
                                       "DefaultTxPowerLevel", UintegerValue(10),
                                       "ConstantMode", StringValue(constantRate),
                                       "RecordPath", StringValue(recordPath),
-                                      "BerThreshold",DoubleValue(1e-1)); // quite large
+                                      "BerThreshold",DoubleValue(1e-5)); // quite large
       else if (rateControl == std::string ("minstrel"))
         wifi.SetRemoteStationManager ("ns3::MinstrelHtWifiManager",
                                       "RtsCtsThreshold", UintegerValue (99999));
