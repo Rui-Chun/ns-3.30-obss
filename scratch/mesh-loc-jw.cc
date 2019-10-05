@@ -547,7 +547,7 @@ AodvExample::CreateMeshDevices ()
       else if (rateControl == std::string ("obss"))
         wifi.SetRemoteStationManager ("ns3::ObssWifiManager",
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(9),
+                                      "DefaultTxPowerLevel", UintegerValue(10),
                                       "ConstantMode", StringValue(constantRate),
                                       "RecordPath", StringValue(recordPath),
                                       "BerThreshold",DoubleValue(1e-5)); // quite large
@@ -565,7 +565,7 @@ AodvExample::CreateMeshDevices ()
                                       "ControlMode", StringValue ("HeMcs0"),
                                       "DataMode", StringValue (constantRate),
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(9)); // level changed 9->10 since tcp-1 exp
+                                      "DefaultTxPowerLevel", UintegerValue(10)); // level changed 9->10 since tcp-1 exp
 
       if(isObss)
       {
