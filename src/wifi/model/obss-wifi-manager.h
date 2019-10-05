@@ -68,6 +68,9 @@ public:
   typedef std::tuple<uint8_t, uint8_t, int, double, uint64_t> RxRecord; // dst, src, mcs, rxSnr, Number
   typedef std::vector<RxRecord> RxRecords;
 
+  typedef std::tuple<uint8_t, uint8_t, int, uint32_t, uint64_t, uint8_t> HeRecord; //dst, src, mcs, duration, num, power
+  typedef std::vector<HeRecord> HeRecords; 
+
 private:
   //overridden from base class
   void DoInitialize (void);

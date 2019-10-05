@@ -2669,8 +2669,8 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       heSig.SetDst(addrs[5]);
       heSig.SetSrc(addrs2[5]);
       heSig.SetTxPower((uint8_t)(10*(GetTxPowerForTransmission (txVector) + GetTxGain ())));
-      // std::cout<< "Time in : "<<txDuration<<"  "<< +(uint8_t)(txDuration.ToInteger(Time::Unit::US)/10)<<std::endl;
-      heSig.SetTime((uint8_t)(txDuration.ToInteger(Time::Unit::US)/10));
+      // std::cout<< "Time in : "<<txDuration<<"  "<< +(uint8_t)(txDuration.ToInteger(Time::Unit::NS)/1e4)<<std::endl;
+      heSig.SetTime((uint8_t)(txDuration.ToInteger(Time::Unit::NS)/1e4));
 
       newPacket->AddHeader (heSig);
     }

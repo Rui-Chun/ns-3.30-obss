@@ -54,9 +54,13 @@ static ObssWifiManager::TransRecords globalTransRecords;
 
 static ObssWifiManager::RxRecords globalRxRecords;
 
+static ObssWifiManager::HeRecords globalHeRecords;
+
 static uint64_t TransNum =0;
 
 static uint64_t RxNum = 0;
+
+static uint64_t HeNum = 0;
 
 static uint64_t ResetNum = 0;
 
@@ -839,11 +843,54 @@ ObssWifiManager::ReceiveHeSig(HePreambleParameters params)
   //  "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<" Duration" << +params.time<< "  Mcs "<< +params.mcs <<std::endl;
   NS_LOG_DEBUG("Mymac "<<+m_myMac <<"\t Dst "<<(int)params.dst <<" Src "<< (int)params.src<< \
   "  Power " << +params.txpower<<" Rssi: "<<WToDbm (params.rssiW) <<"dbm  Duration" << +params.time<< "*1e4 NS  Mcs "<< +params.mcs );
-
   UpdatePathLoss(params);
   UpdateObssTransStatus(params);
   CheckObssStatus();
   ResetPhy();
+
+  HeNum++;
+
+  if(HeNum % 1000 ==0 )
+  {
+    std::ofstream myfile;
+    myfile.open ("HeRecords.txt");
+    myfile<<"Dst\tSrc\tHeMcs\tDuration(Ns)\tNum\tPower\n";
+    for(uint16_t i=0; i<globalHeRecords.size(); i++)
+    {
+      uint8_t temp_dst = std::get<0>(globalHeRecords[i]);
+      uint8_t temp_src = std::get<1>(globalHeRecords[i]);
+      int temp_mcs = std::get<2>(globalHeRecords[i]);
+      uint32_t temp_duration = std::get<3>(globalHeRecords[i]);
+      uint64_t temp_num = std::get<4>(globalHeRecords[i]);
+      uint8_t temp_power = std::get<5>(globalHeRecords[i]);
+      myfile << +temp_dst<<" \t  "<<+temp_src<<"\t  "<<temp_mcs<<"\t  "<<+temp_duration<<"\t  "<<(long)temp_num<<"\t"<<+temp_power<<"\n";
+    }
+
+    myfile<<"\n TotalHe Number= "<<+HeNum<<"\n";
+    myfile.close();
+  }
+
+  bool heFlag=false;
+
+  for(uint16_t i=0;i<globalHeRecords.size(); i++)
+  {
+      uint8_t temp_dst = std::get<0>(globalHeRecords[i]);
+      uint8_t temp_src = std::get<1>(globalHeRecords[i]);
+      int temp_mcs = std::get<2>(globalHeRecords[i]);
+      uint32_t temp_duration = std::get<3>(globalHeRecords[i]);
+      uint8_t temp_power = std::get<5>(globalHeRecords[i]);
+    if(temp_src==params.src && temp_dst==params.dst && temp_duration==(uint64_t)params.time*1e4 && temp_mcs==params.mcs && temp_power==params.txpower)
+    {
+      std::get<4>(globalHeRecords[i])++; // num ++
+      heFlag=true;
+      break;
+    }
+  }
+  if(!heFlag)
+  {
+    HeRecord he(params.dst, params.src, params.mcs, (uint64_t)params.time*1e4, 1, params.txpower);
+    globalHeRecords.push_back(he);
+  }
 
   return;
 }
@@ -860,6 +907,8 @@ ObssWifiManager::UpdateObssTransStatus(HePreambleParameters params)
   // tran.startTime = Simulator::Now().ToInteger(Time::Unit::NS);
   // tran.duration = (uint64_t)params.time * 1e4 ; // ns 
   // tran.txPower = (double)params.txpower / 10.0;
+
+
   m_obssTrans.push_back(tran);
 }
 
