@@ -1210,6 +1210,7 @@ MacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 WifiMode
 MacLow::GetControlAnswerMode (WifiMode reqMode) const
 {
+  return GetPhy ()->GetOfdmRate6Mbps ();
   /**
    * The standard has relatively unambiguous rules for selecting a
    * control response rate (the below is quoted from IEEE 802.11-2012,

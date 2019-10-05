@@ -51,7 +51,10 @@ CalculateThroughput (double monitorInterval)
   for (uint32_t i = 0; i < packetSink.size (); ++i)
     {
       if (packetSink[i] == NULL)
-        throughput[i] = -1;
+        {
+          throughput[i] = -1;
+          continue;
+        }
       else
         throughput[i] = CalculateSingleStreamThroughput (packetSink[i], lastTotalRx[i], monitorInterval);
       std::cout << '\t' << throughput[i];
@@ -65,8 +68,8 @@ PrintThroughputTitle (uint32_t apNum)
 {
   std::cout << "-------------------------------------------------\n";
   std::cout << "Time[s]";
-  for (uint32_t i = 0; i < apNum; ++i)
-      std::cout << '\t' << "cl-" << i;
+  // for (uint32_t i = 0; i < apNum; ++i)
+  //     std::cout << '\t' << "cl-" << i;
   std::cout << std::endl;
 }
 
@@ -306,12 +309,19 @@ AodvExample::Run ()
       Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
       if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)))
         continue;
-      if ((t.destinationPort < 50000) || (t.destinationPort >= 51000 + apNodes.GetN ()))
-        continue;
-      std::cout << t.sourceAddress << '\t';
+      // if ((t.destinationPort < 50000) || (t.destinationPort >= 51000 + apNodes.GetN ()))
+      //   continue;
+      std::cout << t.sourceAddress << '\t' << t.destinationAddress << '\t';
       if (i->second.rxPackets > 1)
         {
           std::cout << (double)i->second.rxBytes * 8/1e6 / (i->second.timeLastTxPacket.GetSeconds () - i->second.timeFirstTxPacket.GetSeconds ()) << '\t';
+          std::cout << +i->second.lostPackets << "/" << i->second.rxPackets << "/" << i->second.txPackets << '\t';
+          uint32_t dropPackets=0;
+          for(uint32_t id=0;id< i->second.packetsDropped.size(); id++)
+          {
+            dropPackets+=i->second.packetsDropped[id];
+          }
+          std::cout << dropPackets << '\t';
         }
       else
         std::cout << 0 << '\t';
@@ -537,7 +547,7 @@ AodvExample::CreateMeshDevices ()
       else if (rateControl == std::string ("obss"))
         wifi.SetRemoteStationManager ("ns3::ObssWifiManager",
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(10),
+                                      "DefaultTxPowerLevel", UintegerValue(9),
                                       "ConstantMode", StringValue(constantRate),
                                       "RecordPath", StringValue(recordPath),
                                       "BerThreshold",DoubleValue(1e-5)); // quite large
@@ -555,7 +565,7 @@ AodvExample::CreateMeshDevices ()
                                       "ControlMode", StringValue ("HeMcs0"),
                                       "DataMode", StringValue (constantRate),
                                       "RtsCtsThreshold", UintegerValue (99999),
-                                      "DefaultTxPowerLevel", UintegerValue(10)); // level changed 9->10 since tcp-1 exp
+                                      "DefaultTxPowerLevel", UintegerValue(9)); // level changed 9->10 since tcp-1 exp
 
       if(isObss)
       {
