@@ -28,7 +28,7 @@
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
 #define SNRMARGIN 0
 #define ACKSNRMARGIN 0
-#define DEFAULTLOSS -120
+#define DEFAULTLOSS -150
 
 namespace ns3 {
 /**
@@ -208,7 +208,7 @@ ObssWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMod
       int temp_mcs = std::get<2>(globalRxRecords[i]);
       double temp_snr = std::get<3>(globalRxRecords[i]);
       uint64_t temp_num = std::get<4>(globalRxRecords[i]);
-      myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(double)temp_snr<<"\t  "<<(long)temp_num<<"\n";
+      myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(double) WToDbm (temp_snr)<<"\t  "<<(long)temp_num<<"\n";
     }
 
     myfile<<"\n TotalRx Number= "<<+RxNum<<"\n";
@@ -223,7 +223,7 @@ ObssWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMod
     uint8_t temp_src = std::get<1>(globalRxRecords[i]);
     int temp_mcs = std::get<2>(globalRxRecords[i]);
     double temp_snr = std::get<3>(globalRxRecords[i]);
-    if(temp_src==staAddrs[5] && temp_dst==m_myMac && temp_mcs==txMode.GetMcsValue() && std::abs(temp_snr-rxSnr) < 1e-3)
+    if(temp_src==staAddrs[5] && temp_dst==m_myMac && temp_mcs==txMode.GetMcsValue() && std::abs(temp_snr-rxSnr) < 1e-2)
     {
       std::get<4>(globalRxRecords[i])++; // num ++
       rxFlag=true;
@@ -1032,7 +1032,7 @@ ObssWifiManager::CheckObssStatus()
       // if(GetNBasicMcs()==0){m_obssRestricted=false;return;}
 
       // WifiMode mode = GetBasicMode(2); // Ack Basic Mode
-      WifiMode mode = GetPhy()->GetOfdmRate24Mbps(); // Ack Basic Mode
+      WifiMode mode = GetPhy()->GetOfdmRate6Mbps(); // Ack Basic Mode
       // std::cout<<"mcs: "<< temp_mcs << " name: "<< mode.GetUniqueName()<< std::endl;
       NS_LOG_DEBUG("basic ack mcs: "<< 2 << " name: "<< mode.GetUniqueName());
 
