@@ -1282,12 +1282,7 @@ ObssWifiManager::ResetPhy()
 {
   if(m_obssRestricted && TransNum > TRANLIMIT)
   {
-<<<<<<< HEAD
-    GetPhy()->ResetCca(true, 25, 25);
-    // std::cout<<"Phy Reset!"<<std::endl;
-=======
     GetPhy()->ResetCca(false, 25, 25);
->>>>>>> e053b60c4884c62a4066a28cbc9996ffcc3e4694
     // NS_LOG_DEBUG("Phy Reset!");
     std::cout<<"myMac="<<+m_myMac<<"  Phy reset now!\n";
     ResetNum++;
