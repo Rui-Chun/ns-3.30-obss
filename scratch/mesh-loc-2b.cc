@@ -497,14 +497,13 @@ AodvExample::CreateMeshDevices ()
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (channel);
   wifiPhy.SetChannel (wifiChannel.Create ());
-  wifiPhy.Set ("ChannelNumber", UintegerValue (161));
+  wifiPhy.Set ("ChannelNumber", UintegerValue (155));
   wifiPhy.Set ("Antennas", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
   wifiPhy.Set ("TxPowerStart", DoubleValue (30.0));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (30.0));
   wifiPhy.Set ("TxPowerLevels", UintegerValue (1));
-  wifiPhy.Set ("ShortGuardEnabled", BooleanValue (true));
 
   Config::SetDefault ("ns3::dot11s::PeerLink::MaxBeaconLoss", UintegerValue (20));
   Config::SetDefault ("ns3::dot11s::PeerLink::MaxRetries", UintegerValue (4));
