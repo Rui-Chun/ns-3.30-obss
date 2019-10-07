@@ -1,29 +1,51 @@
 Waf: Entering directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
 Waf: Leaving directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
 Build commands will be stored in build/compile_commands.json
-Traceback (most recent call last):
-  File "/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 119, in waf_entry_point
-    run_commands()
-  File "/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 182, in run_commands
-    ctx=run_command(cmd_name)
-  File "/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 173, in run_command
-    ctx.execute()
-  File "/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 375, in execute
-    return execute_method(self)
-  File "/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 93, in execute
-    self.execute_build()
-  File "/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 112, in execute_build
-    self.post_build()
-  File "/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 272, in post_build
-    m(self)
-  File "waf-tools/clang_compilation_database.py", line 47, in write_compilation_database
-    root = json.load(database_file)
-  File "/home/jiaming/anaconda3/lib/python3.6/json/__init__.py", line 299, in load
-    parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
-  File "/home/jiaming/anaconda3/lib/python3.6/json/__init__.py", line 354, in loads
-    return _default_decoder.decode(s)
-  File "/home/jiaming/anaconda3/lib/python3.6/json/decoder.py", line 339, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-  File "/home/jiaming/anaconda3/lib/python3.6/json/decoder.py", line 355, in raw_decode
-    obj, end = self.scan_once(s, idx)
-json.decoder.JSONDecodeError: Unterminated string starting at: line 2034 column 16 (char 237185)
+'build' finished successfully (0.420s)
+CreateVariables () DONE !!!
+Creating 9 APs 30.00 and 30.00 m apart.
+CreateApNodes () DONE !!!
+Creating CL 10.00 m away from each AP.
+CreateClNodes () DONE !!!
+CreateNodes () DONE !!!
+CreateMeshDevices () DONE !!!
+CreateWifiDevices () DONE !!!
+CreateCsmaDevices () DONE !!!
+CreateDevices () DONE !!!
+InstallInternetStack () DONE !!!
+InstallApplications () DONE !!!
+Starting simulation for 40.00 s ...
+-------------------------------------------------
+Time[s]
+11.00	3.30	2.59	0.71
+12.00	1.53	3.47	2.77
+13.00	2.77	2.47	2.06
+14.00	1.77	2.53	1.30
+15.00	2.83	2.89	1.77
+16.00	1.65	2.18	2.36
+17.00	1.12	2.00	0.59
+18.00	2.94	3.36	1.83
+19.00	1.94	2.65	3.77
+20.00	3.18	3.06	2.18
+21.00	2.83	3.42	1.71
+22.00	1.47	2.53	2.83
+23.00	1.24	3.12	2.41
+24.00	1.59	1.88	0.06
+25.00	0.65	2.30	1.88
+26.00	2.65	2.47	1.53
+27.00	2.06	1.65	2.41
+28.00	2.77	0.00	2.36
+29.00	3.53	1.41	1.24
+30.00	1.71	2.18	1.18
+31.00	3.12	1.71	1.83
+32.00	1.12	2.53	2.71
+33.00	0.53	1.53	1.71
+34.00	3.42	1.94	3.36
+35.00	0.82	1.59	1.83
+36.00	0.94	1.30	3.71
+37.00	3.59	0.94	2.47
+38.00	2.41	1.88	1.83
+39.00	0.24	2.89	2.71
+10.1.1.3	10.2.1.1	2.09	1/1055/1056	0	2406.35
+10.1.1.6	10.2.1.1	2.22	2/1114/1116	0	2294.15
+10.1.1.9	10.2.1.1	2.11	2/1040/1042	0	2373.73
