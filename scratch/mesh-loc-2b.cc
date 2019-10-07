@@ -204,7 +204,7 @@ int main (int argc, char **argv)
   if (!test.Configure (argc, argv))
     NS_FATAL_ERROR ("Configuration failed. Aborted.");
 
-  std::cout << std::setprecision (2) << std::fixed;
+  std::cout << std::setprecision (4) << std::fixed;
 
   test.Run ();
   // test.Report (std::cout);
