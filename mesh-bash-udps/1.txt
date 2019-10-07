@@ -1,7 +1,7 @@
 Waf: Entering directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
 Waf: Leaving directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
 Build commands will be stored in build/compile_commands.json
-'build' finished successfully (0.469s)
+'build' finished successfully (0.446s)
 read locations done
 CreateVariables () DONE !!!
 Creating 26 APs 50.00 m apart.
