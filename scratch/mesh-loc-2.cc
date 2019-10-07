@@ -632,6 +632,11 @@ AodvExample::InstallInternetStack ()
   aodv.Set ("DestinationOnly", BooleanValue (false));
 
   OlsrHelper olsr;
+  // olsr.Set ("HelloInterval", TimeValue (Seconds (1)));
+  // olsr.Set ("TcInterval", TimeValue (Seconds (2)));
+  // olsr.Set ("MidInterval", TimeValue (Seconds (2)));
+  // olsr.Set ("HnaInterval", TimeValue (Seconds (2)));
+  olsr.Set ("Willingness", EnumValue (7));
 
   DsdvHelper dsdv;
 
