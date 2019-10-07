@@ -213,7 +213,7 @@ AodvExample::AodvExample () :
   apStep (50),
   clStep (20),
   startTime (100),
-  totalTime (150),
+  totalTime (160),
   beaconInterval (0.5),
   pcap (false),
   printRoutes (false),
