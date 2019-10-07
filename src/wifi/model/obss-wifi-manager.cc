@@ -200,46 +200,53 @@ ObssWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMod
   NS_LOG_DEBUG("RxNum= "<<+RxNum);
   uint8_t staAddrs[6];
   station->m_state->m_address.CopyTo(staAddrs);
-  if(RxNum % 1000 ==0 )
+
+  if(txMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
   {
-    std::ofstream myfile;
-    myfile.open ("RxRecords.txt");
-    myfile<<"Dst\tSrc\tHeMcs\tRxSnr\tNum\n";
-    for(uint16_t i=0; i<globalRxRecords.size(); i++)
+      if(RxNum % 1000 ==0 )
+    {
+      std::ofstream myfile;
+      myfile.open ("RxRecords.txt");
+      myfile<<"Dst\tSrc\tHeMcs\tRxSnr\tNum\n";
+      for(uint16_t i=0; i<globalRxRecords.size(); i++)
+      {
+        uint8_t temp_dst = std::get<0>(globalRxRecords[i]);
+        uint8_t temp_src = std::get<1>(globalRxRecords[i]);
+        int temp_mcs = std::get<2>(globalRxRecords[i]);
+        double temp_snr = std::get<3>(globalRxRecords[i]);
+        uint64_t temp_num = std::get<4>(globalRxRecords[i]);
+        myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(double) WToDbm (temp_snr)<<"\t  "<<(long)temp_num<<"\n";
+      }
+
+      myfile<<"\n TotalRx Number= "<<+RxNum<<"\n";
+      myfile.close();
+    }
+
+    bool rxFlag=false;
+
+    for(uint16_t i=0;i<globalRxRecords.size(); i++)
     {
       uint8_t temp_dst = std::get<0>(globalRxRecords[i]);
       uint8_t temp_src = std::get<1>(globalRxRecords[i]);
       int temp_mcs = std::get<2>(globalRxRecords[i]);
       double temp_snr = std::get<3>(globalRxRecords[i]);
-      uint64_t temp_num = std::get<4>(globalRxRecords[i]);
-      myfile << (int)temp_dst<<" \t  "<<(int)temp_src<<"\t  "<<temp_mcs<<"\t  "<<(double) WToDbm (temp_snr)<<"\t  "<<(long)temp_num<<"\n";
+      if(temp_src==staAddrs[5] && temp_dst==m_myMac && temp_mcs==txMode.GetMcsValue() && std::abs(temp_snr-rxSnr) < 1e-2)
+      {
+        std::get<4>(globalRxRecords[i])++; // num ++
+        rxFlag=true;
+        break;
+      }
     }
-
-    myfile<<"\n TotalRx Number= "<<+RxNum<<"\n";
-    myfile.close();
-  }
-
-  bool rxFlag=false;
-
-  for(uint16_t i=0;i<globalRxRecords.size(); i++)
-  {
-    uint8_t temp_dst = std::get<0>(globalRxRecords[i]);
-    uint8_t temp_src = std::get<1>(globalRxRecords[i]);
-    int temp_mcs = std::get<2>(globalRxRecords[i]);
-    double temp_snr = std::get<3>(globalRxRecords[i]);
-    if(temp_src==staAddrs[5] && temp_dst==m_myMac && temp_mcs==txMode.GetMcsValue() && std::abs(temp_snr-rxSnr) < 1e-2)
+    if(!rxFlag)
     {
-      std::get<4>(globalRxRecords[i])++; // num ++
-      rxFlag=true;
-      break;
+      RxRecord rx(m_myMac, staAddrs[5], txMode.GetMcsValue(), rxSnr, 1);
+      globalRxRecords.push_back(rx);
+      // std::cout<<"TransRecord pushed"<<std::endl;
     }
+
   }
-  if(!rxFlag)
-  {
-    RxRecord rx(m_myMac, staAddrs[5], txMode.GetMcsValue(), rxSnr, 1);
-    globalRxRecords.push_back(rx);
-    // std::cout<<"TransRecord pushed"<<std::endl;
-  }
+
+
   NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 
 
@@ -372,8 +379,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                 selectedNss = nss;
               }
           }
-          // std::cout<< "Obss! Testing mode = " << maxMode.GetUniqueName () <<
-          //       " data rate " << bestRate << std::endl;
+          std::cout<<"mymac="<<+m_myMac<< " Obss!  Dst=" <<+m_nexthopMac<<" mode="<<maxMode.GetUniqueName() << std::endl;
           NS_LOG_DEBUG("Obss! Using mode = " << maxMode.GetUniqueName () << " data rate " << bestRate );
 
       }
@@ -1056,7 +1062,9 @@ ObssWifiManager::CheckObssStatus()
       double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - SNRMARGIN;
 
       // std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
-      NS_LOG_DEBUG("mymac="<<+m_myMac<<" mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
+      NS_LOG_DEBUG("mymac="<<+m_myMac<<"  mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
+
+      std::cout<<"mymac="<<+m_myMac<<"  recv= "<<+temp_recv<<", if mypower= "<<myTxpower<<"Data SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
 
       if(dstSNR<SNRlimit)
       {
@@ -1108,7 +1116,10 @@ ObssWifiManager::CheckObssStatus()
       double SNRlimit = WToDbm( GetPhy()->CalculateSnr(txVector, m_ber)) - ACKSNRMARGIN;
 
       // std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
-      NS_LOG_DEBUG("mymac="<<+m_myMac<<" mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
+      NS_LOG_DEBUG("mymac="<<+m_myMac<<"  mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
+
+
+      std::cout<<"mymac="<<+m_myMac<<"  ack_recv= "<<+temp_src<<", if mypower= "<<myTxpower<<"Ack SNRlimit= "<<SNRlimit<<" ackSNR= "<<dstSNR<<std::endl;
 
       if(dstSNR<SNRlimit)
       {
@@ -1122,6 +1133,7 @@ ObssWifiManager::CheckObssStatus()
     {
       // std::cout<<"Found right txpower!"<<myTxpower<<std::endl;
       NS_LOG_DEBUG("Found right txpower!"<<myTxpower);
+      std::cout<<"mymac= "<<+m_myMac<<"  Found right txpower!"<<myTxpower<<std::endl;
       break;
     }
     else
@@ -1133,6 +1145,7 @@ ObssWifiManager::CheckObssStatus()
   if(!isOk)
   {
     NS_LOG_DEBUG("No power finally.");
+    std::cout<<"mymac= "<<+m_myMac<<"  No power final"<<std::endl;
     m_obssRestricted=false;
     return;
   }
@@ -1159,6 +1172,8 @@ ObssWifiManager::CheckObssStatus()
   }
   // std::cout<<"final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR<<std::endl;
   NS_LOG_DEBUG("final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR <<" dst="<<+m_nexthopMac <<" src="<<+m_myMac);
+  std::cout<<"myMac="<<+m_myMac<<"  final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR <<" dst="<<+m_nexthopMac<<std::endl;
+
   if(mcs<0)
   {
     m_obssRestricted=false;
@@ -1268,9 +1283,8 @@ ObssWifiManager::ResetPhy()
   if(m_obssRestricted && TransNum > TRANLIMIT)
   {
     GetPhy()->ResetCca(false, 25, 25);
-    // std::cout<<"Phy Reset!"<<std::endl;
     // NS_LOG_DEBUG("Phy Reset!");
-    // std::cout<<"reset\n";
+    std::cout<<"myMac="<<+m_myMac<<"  Phy reset now!\n";
     ResetNum++;
   }
   return;

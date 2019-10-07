@@ -73,12 +73,14 @@ ThresholdPreambleDetectionModel::IsPreambleDetected (double rssi, double snr, do
       else
         {
           NS_LOG_DEBUG ("Received RSSI is above the target RSSI but SNR is too low");
+          std::cout<<"Received RSSI is above the target RSSI but SNR is too low" <<" rssi(dbm)="<<WToDbm (rssi)<<"/"<<m_rssiMin<<" snr(db)="<<RatioToDb(snr)<<"/"<<m_threshold<<std::endl;
           return false;
         }
     }
   else
     {
       NS_LOG_DEBUG ("Received RSSI is below the target RSSI");
+      std::cout<<"Received RSSI is below the target RSSI" <<" rssi(dbm)="<<WToDbm (rssi)<<"/"<<m_rssiMin<<" snr(db)="<<RatioToDb(snr)<<"/"<<m_threshold<<std::endl;
       return false;
     }
   
