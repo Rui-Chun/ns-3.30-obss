@@ -152,6 +152,7 @@ private:
 
   /// specified real implementation
   std::string locationFile;
+  std::string routeFile;
   std::vector<std::vector<double>> locations;
   std::vector<std::vector<double>> pairloss;
   uint32_t gateways;
@@ -212,7 +213,7 @@ AodvExample::AodvExample () :
   apStep (50),
   clStep (20),
   startTime (100),
-  totalTime (150),
+  totalTime (160),
   beaconInterval (0.5),
   pcap (false),
   printRoutes (false),
@@ -223,6 +224,7 @@ AodvExample::AodvExample () :
   aptx (true),
   naptx (0),
   locationFile ("./my-simulations/3_real_topology/input/location2.txt"),
+  routeFile ("./my-simulations/3_real_topology/input/route2.txt"),
   gateways (3),
   scale (100),
   route ("olsr"),
@@ -632,13 +634,20 @@ AodvExample::InstallInternetStack ()
   aodv.Set ("DestinationOnly", BooleanValue (false));
 
   OlsrHelper olsr;
+  // olsr.Set ("HelloInterval", TimeValue (Seconds (1)));
+  // olsr.Set ("TcInterval", TimeValue (Seconds (2)));
+  // olsr.Set ("MidInterval", TimeValue (Seconds (2)));
+  // olsr.Set ("HnaInterval", TimeValue (Seconds (2)));
+  olsr.Set ("Willingness", EnumValue (7));
 
   DsdvHelper dsdv;
 
   Ipv4StaticRoutingHelper staticroute;
 
   Ipv4ListRoutingHelper list;
-  if (route == std::string ("olsr"))
+  if (route == std::string ("static"))
+    list.Add (staticroute, 100);
+  else if (route == std::string ("olsr"))
     list.Add (olsr, 100);
   else if (route == std::string ("dsdv"))
     list.Add (dsdv, 100);
@@ -670,6 +679,49 @@ AodvExample::InstallInternetStack ()
       apInterfaces[i] = address.Assign (apDevices[i]);
       clInterfaces[i] = address.Assign (clDevices[i]);
     }
+
+  if (route == std::string ("static"))
+  {
+    if (routeFile.empty ())
+      return;
+    std::ifstream fin (routeFile);
+    Ptr<Ipv4StaticRouting> staticRouting;
+    int32_t nodeId = 0;
+    int32_t dstId = 0;
+    Ipv4Address dstAdd = Ipv4Address ();
+    int32_t nextId = 0;
+    Ipv4Address nextAdd = Ipv4Address ();
+    int32_t intId = 0;
+    if (fin.is_open ())
+      {
+        while (fin >> nodeId)
+          {
+            fin >> dstId >> nextId;
+            if (nodeId == -1)
+              staticRouting = Ipv4RoutingHelper::GetRouting <Ipv4StaticRouting> (csmaNodes.Get (0)->GetObject<Ipv4> ()->GetRoutingProtocol ());
+            else
+              staticRouting = Ipv4RoutingHelper::GetRouting <Ipv4StaticRouting> (apNodes.Get (nodeId)->GetObject<Ipv4> ()->GetRoutingProtocol ());
+            if (dstId < (int32_t)gateways)
+              dstAdd = csmaInterfaces.GetAddress (dstId+1);
+            else
+              dstAdd = meshInterfaces.GetAddress (dstId);
+            if (nextId == -1)
+                nextAdd = csmaInterfaces.GetAddress (nextId+1);
+            else if (nextId >= (int32_t)gateways)
+                nextAdd = meshInterfaces.GetAddress (nextId);
+            else if (nodeId == -1)
+              nextAdd = csmaInterfaces.GetAddress (nextId+1);
+            else
+              nextAdd = meshInterfaces.GetAddress (nextId);
+            if (nodeId >= 0 && nodeId < (int32_t)gateways && nextId == -1)
+              intId = 2;
+            else
+              intId = 1;
+            staticRouting->AddHostRouteTo (dstAdd, nextAdd, intId);
+          }
+      }
+    fin.close ();
+  }
 
   std::cout << "InstallInternetStack () DONE !!!\n";
 }
