@@ -26,9 +26,9 @@
 
 #define HEMCS0 18 // only consider HE Mcs
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
-#define SNRMARGIN 0
+#define SNRMARGIN -1
 #define ACKSNRMARGIN 0
-#define DEFAULTLOSS -150
+#define DEFAULTLOSS -120
 
 namespace ns3 {
 /**
@@ -907,8 +907,11 @@ ObssWifiManager::UpdateObssTransStatus(HePreambleParameters params)
 {
   NS_LOG_FUNCTION (this<< +m_myMac);
 
-  ObssTran tran(params.dst, params.src, Simulator::Now().ToInteger(Time::Unit::NS),\
-   (uint64_t)params.time * 1e4, (double)params.txpower / 10.0, params.mcs);
+  // std::cout << NanoSeconds ((uint64_t)params.time * 1e4) << '/' << GetPhy ()->GetDelayUntilIdle () << std::endl;
+  ObssTran tran(params.dst, params.src, Simulator::Now().ToInteger(Time::Unit::NS),
+   GetPhy ()->GetDelayUntilIdle ().ToInteger (Time::Unit::NS), (double)params.txpower / 10.0, params.mcs);
+  // ObssTran tran(params.dst, params.src, Simulator::Now().ToInteger(Time::Unit::NS),
+  //               (uint64_t)params.time * 1e4, (double)params.txpower / 10.0, params.mcs);
   // tran.dst = params.dst;
   // tran.src = params.src;
   // tran.startTime = Simulator::Now().ToInteger(Time::Unit::NS);
