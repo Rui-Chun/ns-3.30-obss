@@ -301,11 +301,11 @@ AodvExample::Run ()
   for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
     {
       Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
-      if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)))
+      if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)) && !t.sourceAddress.IsEqual (csmaInterfaces.GetAddress (0)))
         continue;
       if ((t.destinationPort < 40000) || (t.destinationPort >= 40000 + apNodes.GetN ()))
         continue;
-      std::cout << t.sourceAddress << '\t';
+      std::cout << t.sourceAddress << '\t' << t.destinationAddress << '\t';
       if (i->second.rxPackets > 1)
         {
           std::cout << (double)i->second.rxBytes * 8/1e6 / (i->second.timeLastTxPacket.GetSeconds () - i->second.timeFirstTxPacket.GetSeconds ()) << '\t';
@@ -729,6 +729,8 @@ AodvExample::InstallInternetStack ()
 void
 AodvExample::InstallApplications ()
 {
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpVegas"));
+
   if (app == std::string("udp"))
     {
       // UDP flow
@@ -762,6 +764,8 @@ AodvExample::InstallApplications ()
             {
               if (i < naptx)
                 continue;
+              if (locations[i][3] == 0)
+                continue;
 
               uint16_t port = 40000+i;
               Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
@@ -782,6 +786,69 @@ AodvExample::InstallApplications ()
               AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
               client.SetAttribute ("Remote", remoteAddress);
               clientApp[apNum*clNum+i] = client.Install (apNodes.Get (i));
+              clientApp[apNum*clNum+i].Start (Seconds (startTime));
+              clientApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
+            }
+        }
+    }
+
+  if (app == std::string("udpr"))
+    {
+      // UDP flow
+
+      for (uint32_t i = 0; i < apNum; ++i)
+        {
+          for (uint32_t j = 0; j < clNum; ++j)
+            {
+              uint16_t port = 50000+i*100+j;
+              Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+              PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
+              serverApp[i*clNum+j] = server.Install (csmaNodes.Get (0)); //
+              serverApp[i*clNum+j].Start (Seconds (1.0));
+              serverApp[i*clNum+j].Stop (Seconds (totalTime + 0.1));
+              packetSink[i*clNum+j] = StaticCast<PacketSink> (serverApp[i*clNum+j].Get (0));
+
+              OnOffHelper client ("ns3::UdpSocketFactory", Address ());
+              client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+              client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+              client.SetAttribute ("PacketSize", UintegerValue (1472));
+              client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
+              client.SetAttribute ("MaxBytes", UintegerValue (0));
+              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+              client.SetAttribute ("Remote", remoteAddress);
+              clientApp[i*clNum+j] = client.Install (clNodes[i].Get (j));
+              clientApp[i*clNum+j].Start (Seconds (startTime));
+              clientApp[i*clNum+j].Stop (Seconds (totalTime + 0.1));
+            }
+
+          if (aptx)
+            {
+              if (i < naptx)
+                continue;
+              if (locations[i][3] == 0)
+                continue;
+
+              uint16_t port = 40000+i;
+              Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+              PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
+              serverApp[apNum*clNum+i] = server.Install (apNodes.Get (i)); //
+              serverApp[apNum*clNum+i].Start (Seconds (1.0));
+              serverApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
+              packetSink[apNum*clNum+i] = StaticCast<PacketSink> (serverApp[apNum*clNum+i].Get (0));
+
+              OnOffHelper client ("ns3::UdpSocketFactory", Address ());
+              // client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+              // client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+              client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+              client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+              client.SetAttribute ("PacketSize", UintegerValue (1472));
+              client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3]))));
+              client.SetAttribute ("MaxBytes", UintegerValue (0));
+              AddressValue remoteAddress (InetSocketAddress (meshInterfaces.GetAddress (i), port)); //
+              if (i < gateways)
+                remoteAddress = AddressValue (InetSocketAddress (csmaInterfaces.GetAddress (i+1), port));
+              client.SetAttribute ("Remote", remoteAddress);
+              clientApp[apNum*clNum+i] = client.Install (csmaNodes.Get (0));
               clientApp[apNum*clNum+i].Start (Seconds (startTime));
               clientApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
             }
@@ -821,6 +888,8 @@ AodvExample::InstallApplications ()
             {
               if (i < naptx)
                 continue;
+              if (locations[i][3] == 0)
+                continue;
 
               uint16_t port = 40000+i;
               Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
@@ -841,6 +910,69 @@ AodvExample::InstallApplications ()
               AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
               client.SetAttribute ("Remote", remoteAddress);
               clientApp[apNum*clNum+i] = client.Install (apNodes.Get (i));
+              clientApp[apNum*clNum+i].Start (Seconds (startTime));
+              clientApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
+            }
+        }
+    }
+
+  if (app == std::string("tcpr"))
+    {
+      // TCP flow
+
+      for (uint32_t i = 0; i < apNum; ++i)
+        {
+          for (uint32_t j = 0; j < clNum; ++j)
+            {
+              uint16_t port = 50000+i*100+j;
+              Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+              PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
+              serverApp[i*clNum+j] = server.Install (csmaNodes.Get (0)); //
+              serverApp[i*clNum+j].Start (Seconds (1.0));
+              serverApp[i*clNum+j].Stop (Seconds (totalTime + 0.1));
+              packetSink[i*clNum+j] = StaticCast<PacketSink> (serverApp[i*clNum+j].Get (0));
+
+              OnOffHelper client ("ns3::TcpSocketFactory", Address ());
+              client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+              client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+              client.SetAttribute ("PacketSize", UintegerValue (1448));
+              client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
+              client.SetAttribute ("MaxBytes", UintegerValue (0));
+              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+              client.SetAttribute ("Remote", remoteAddress);
+              clientApp[i*clNum+j] = client.Install (clNodes[i].Get (j));
+              clientApp[i*clNum+j].Start (Seconds (startTime));
+              clientApp[i*clNum+j].Stop (Seconds (totalTime + 0.1));
+            }
+
+          if (aptx)
+            {
+              if (i < naptx)
+                continue;
+              if (locations[i][3] == 0)
+                continue;
+
+              uint16_t port = 40000+i;
+              Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+              PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
+              serverApp[apNum*clNum+i] = server.Install (apNodes.Get (i)); //
+              serverApp[apNum*clNum+i].Start (Seconds (1.0));
+              serverApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
+              packetSink[apNum*clNum+i] = StaticCast<PacketSink> (serverApp[apNum*clNum+i].Get (0));
+
+              OnOffHelper client ("ns3::TcpSocketFactory", Address ());
+              // client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+              // client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+              client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+              client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+              client.SetAttribute ("PacketSize", UintegerValue (1448));
+              client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3]))));
+              client.SetAttribute ("MaxBytes", UintegerValue (0));
+              AddressValue remoteAddress (InetSocketAddress (meshInterfaces.GetAddress (i), port)); //
+              if (i < gateways)
+                remoteAddress = AddressValue (InetSocketAddress (csmaInterfaces.GetAddress (i+1), port));
+              client.SetAttribute ("Remote", remoteAddress);
+              clientApp[apNum*clNum+i] = client.Install (csmaNodes.Get (0));
               clientApp[apNum*clNum+i].Start (Seconds (startTime));
               clientApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
             }

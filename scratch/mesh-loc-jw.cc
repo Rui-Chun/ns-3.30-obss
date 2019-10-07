@@ -307,7 +307,7 @@ AodvExample::Run ()
   for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
     {
       Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
-      if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)))
+      if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)) && !t.sourceAddress.IsEqual (csmaInterfaces.GetAddress (0)))
         continue;
       // if ((t.destinationPort < 50000) || (t.destinationPort >= 51000 + apNodes.GetN ()))
       //   continue;
@@ -808,6 +808,38 @@ AodvExample::InstallApplications ()
         }
     }
 
+  if (app == std::string("udpr"))
+    {
+      for (uint32_t j = 0; j < array.size(); ++j)
+        {
+          uint32_t i = array[j];
+          uint16_t port = 50000+i;
+          Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+          PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
+          if (aptx)
+            apps = server.Install (apNodes.Get (i)); //
+          else
+            apps = server.Install (clNodes.Get (i));
+          apps.Start (Seconds (0.1));
+          apps.Stop (Seconds (totalTime + 0.1));
+          packetSink[i] = StaticCast<PacketSink> (apps.Get (0));
+          serverApps.Add (apps);
+
+          OnOffHelper client ("ns3::UdpSocketFactory", Address ());
+          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+          client.SetAttribute ("PacketSize", UintegerValue (1472 * 5));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
+          client.SetAttribute ("MaxBytes", UintegerValue (0));
+          AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+          client.SetAttribute ("Remote", remoteAddress);
+          apps = client.Install (csmaNodes.Get (0));
+          apps.Start (Seconds (startTime + x->GetValue ()));
+          apps.Stop (Seconds (totalTime + 0.1));
+          clientApps.Add (apps);
+        }
+    }
+
   if (app == std::string("tcp"))
     {
       for (uint32_t j = 0; j < array.size(); ++j)
@@ -834,6 +866,38 @@ AodvExample::InstallApplications ()
             apps = client.Install (apNodes.Get (i));
           else
             apps = client.Install (clNodes.Get (i));
+          apps.Start (Seconds (startTime + x->GetValue ()));
+          apps.Stop (Seconds (totalTime + 0.1));
+          clientApps.Add (apps);
+        }
+    }
+
+  if (app == std::string("tcpr"))
+    {
+      for (uint32_t j = 0; j < array.size(); ++j)
+        {
+          uint32_t i = array[j];
+          uint16_t port = 50000+i;
+          Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+          PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
+          if (aptx)
+            apps = server.Install (apNodes.Get (i)); //
+          else
+            apps = server.Install (clNodes.Get (i));
+          apps.Start (Seconds (0.1));
+          apps.Stop (Seconds (totalTime + 0.1));
+          packetSink[i] = StaticCast<PacketSink> (apps.Get (0));
+          serverApps.Add (apps);
+
+          OnOffHelper client ("ns3::TcpSocketFactory", Address ());
+          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
+          client.SetAttribute ("PacketSize", UintegerValue (1448));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
+          client.SetAttribute ("MaxBytes", UintegerValue (0));
+          AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+          client.SetAttribute ("Remote", remoteAddress);
+          apps = client.Install (csmaNodes.Get (0));
           apps.Start (Seconds (startTime + x->GetValue ()));
           apps.Stop (Seconds (totalTime + 0.1));
           clientApps.Add (apps);
