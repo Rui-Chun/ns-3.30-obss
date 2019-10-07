@@ -486,6 +486,7 @@ AodvExample::CreateMeshDevices ()
   wifiPhy.Set ("TxPowerStart", DoubleValue (1.0));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (21.0));
   wifiPhy.Set ("TxPowerLevels", UintegerValue (11));
+  //  wifiPhy.DisablePreambleDetectionModel ();
 
   // if(isObss)
   // {
@@ -824,7 +825,7 @@ AodvExample::InstallApplications ()
           OnOffHelper client ("ns3::TcpSocketFactory", Address ());
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Bound=1|Mean=0.5]"));
-          client.SetAttribute ("PacketSize", UintegerValue (1448 * 5));
+          client.SetAttribute ("PacketSize", UintegerValue (1448));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("MaxBytes", UintegerValue (0));
           AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //

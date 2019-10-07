@@ -26,9 +26,9 @@
 
 #define HEMCS0 18 // only consider HE Mcs
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
-#define SNRMARGIN 0
-#define ACKSNRMARGIN 0
-#define DEFAULTLOSS -150
+#define SNRMARGIN -2
+#define ACKSNRMARGIN -2
+#define DEFAULTLOSS -120
 
 namespace ns3 {
 /**
@@ -1274,7 +1274,7 @@ ObssWifiManager::ResetPhy()
 {
   if(m_obssRestricted && TransNum > TRANLIMIT)
   {
-    GetPhy()->ResetCca(false, 25, 25);
+    GetPhy()->ResetCca(true, 25, 25);
     // std::cout<<"Phy Reset!"<<std::endl;
     // NS_LOG_DEBUG("Phy Reset!");
     // std::cout<<"reset\n";
