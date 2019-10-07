@@ -2597,9 +2597,9 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
   // }
 
   Ptr<Packet> obssPacket = packet->Copy (); // obtain non-const Packet
-  // std::cout<<"packet : ";
-  // obssPacket->Print(std::cout);
-  // std::cout<<std::endl;
+  std::cout<<"\nmyMac="<<m_device->GetAddress()<< " sending packet : ";
+  obssPacket->Print(std::cout);
+  std::cout<<std::endl;
 
   WifiMacHeader head;
   AmpduSubframeHeader head2;
@@ -2737,6 +2737,7 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
   InterferenceHelper::SnrPer snrPer = m_interference.CalculateLegacyPhyHeaderSnrPer (event);
   double snr = snrPer.snr;
   NS_LOG_DEBUG ("snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per);
+  std::cout<<"myMac="<<m_device->GetAddress()<<" StartReceive Header "<<"snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per<<std::endl;
 
   if (!m_preambleDetectionModel || (m_preambleDetectionModel->IsPreambleDetected (event->GetRxPowerW (), snr, m_channelWidth)))
     {
@@ -2942,6 +2943,8 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       txVector.SetObssSrc(heSigHdr.GetSrc());
       txVector.SetObssTime(heSigHdr.GetTime());
       txVector.SetObssPower(heSigHdr.GetTxPower());
+      std::cout<<std::endl;
+      std::cout<<Simulator::Now()<<"StartReceivePreamble MyMac="<<m_device->GetAddress() <<" Get packet dst="<<+heSigHdr.GetDst()<<" src="<<+heSigHdr.GetSrc()<<" mcs="<<+heSigHdr.GetMcs()<<std::endl;
 
       if (IsAmpdu (packet))
         {
@@ -3004,6 +3007,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
         {
           AbortCurrentReception (FRAME_CAPTURE_PACKET_SWITCH);
           NS_LOG_DEBUG ("Switch to new packet");
+          std::cout<<"MyMac="<<m_device->GetAddress()<<" Switch to new packet\n";
           StartRx (event, rxPowerW, rxDuration);
         }
       else
@@ -3011,6 +3015,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
           NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
                         rxPowerW << "W)");
           NotifyRxDrop (packet, NOT_ALLOWED);
+          std::cout<<"mymac="<<m_device->GetAddress()<<"Drop packet because already in Rx (power=" << rxPowerW << "W)"<<std::endl;
           if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
             {
               //that packet will be noise _after_ the reception of the currently-received packet.
@@ -3023,6 +3028,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       NS_LOG_DEBUG ("Drop packet because already in Tx (power=" <<
                     rxPowerW << "W)");
       NotifyRxDrop (packet, NOT_ALLOWED);
+      std::cout<<"myMac="<<m_device->GetAddress()<<"Drop packet because already in Tx (power=" <<rxPowerW << "W)"<<std::endl;
       if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
         {
           //that packet will be noise _after_ the transmission of the currently-transmitted packet.
@@ -3062,6 +3068,8 @@ WifiPhy::MaybeCcaBusyDuration ()
 void
 WifiPhy::StartReceivePayload (Ptr<Event> event)
 {
+  std::cout<<"myMac="<<m_device->GetAddress()<<" Start Receive Payload"<<std::endl;
+
   NS_LOG_FUNCTION (this << event->GetPacket () << event->GetTxVector ());
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
@@ -3087,6 +3095,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
           Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePlcpPreambleAndHeaderDuration (txVector);
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
           NS_LOG_DEBUG ("Receiving payload");
+          std::cout<<"myMac="<<m_device->GetAddress()<<"Receiving Payload"<<std::endl;
           if (txMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
             {
               HePreambleParameters params;
@@ -4302,6 +4311,7 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration)
   NS_LOG_FUNCTION (this << event->GetPacket () << event->GetTxVector () << event << rxPowerW << rxDuration);
 
   NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
+  std::cout<<"mymac="<<m_device->GetAddress()<<" Start Rx (power="<< rxPowerW << "W)"<<std::endl;
   m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
 
   if (!m_endPreambleDetectionEvent.IsRunning ())

@@ -1,0 +1,51 @@
+Waf: Entering directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
+Waf: Leaving directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.419s)
+CreateVariables () DONE !!!
+Creating 9 APs 30.00 and 30.00 m apart.
+CreateApNodes () DONE !!!
+Creating CL 10.00 m away from each AP.
+CreateClNodes () DONE !!!
+CreateNodes () DONE !!!
+CreateMeshDevices () DONE !!!
+CreateWifiDevices () DONE !!!
+CreateCsmaDevices () DONE !!!
+CreateDevices () DONE !!!
+InstallInternetStack () DONE !!!
+InstallApplications () DONE !!!
+Starting simulation for 40.00 s ...
+-------------------------------------------------
+Time[s]
+11.00	0.75	0.52	0.70
+12.00	1.62	0.93	1.56
+13.00	1.91	0.81	0.87
+14.00	0.93	0.52	0.75
+15.00	0.98	1.74	1.22
+16.00	0.70	0.75	1.91
+17.00	0.70	1.97	1.10
+18.00	0.87	1.62	1.22
+19.00	0.87	0.58	1.39
+20.00	1.10	0.87	1.51
+21.00	0.29	0.81	1.16
+22.00	1.22	1.27	1.80
+23.00	1.39	0.75	1.10
+24.00	0.87	0.58	1.91
+25.00	0.81	1.22	0.75
+26.00	1.27	1.04	0.70
+27.00	1.62	0.06	1.04
+28.00	0.35	0.46	1.80
+29.00	1.56	1.39	0.64
+30.00	0.87	1.68	1.68
+31.00	0.75	0.93	0.52
+32.00	0.41	1.74	1.56
+33.00	0.81	0.98	1.16
+34.00	1.80	0.81	1.33
+35.00	0.58	0.81	0.29
+36.00	0.81	0.17	0.52
+37.00	1.27	0.35	0.58
+38.00	1.56	1.33	1.04
+39.00	0.81	0.93	0.93
+10.1.1.6	10.2.1.1	1.06	0/7002/7002	0	2395.89
+10.1.1.3	10.2.1.1	1.13	0/7467/7468	0	2933.20
+10.1.1.9	10.2.1.1	1.23	0/8038/8038	0	2715.01
