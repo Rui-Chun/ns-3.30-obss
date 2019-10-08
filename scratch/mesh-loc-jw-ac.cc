@@ -192,7 +192,7 @@ int main (int argc, char **argv)
 //-----------------------------------------------------------------------------
 AodvExample::AodvExample () :
   // Simulation parameters
-  totalTime (100),
+  totalTime (90),
   monitorInterval (1),
   anim (false),
   flowout ("out-flow.xml"),
@@ -219,7 +219,7 @@ AodvExample::AodvExample () :
   app ("udpr"),
   appl ("all"),
   aptx (true),
-  startTime (40),
+  startTime (60),
   datarate (1e6),
   datarateUp (false),
   isObss(false),

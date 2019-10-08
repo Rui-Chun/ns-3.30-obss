@@ -10,7 +10,7 @@ do
         if [ -f ./mesh-bash-power-udpr/${pow}-${cnt}.txt ]; then
             echo exist
         else
-            ./waf --run "mesh-loc-jw-ac --RngSeed=${cnt} --txPower=${pow}" | tee ./mesh-bash-power-udpr/${pow}-${cnt}.txt
+            ./waf --run "mesh-loc-jw-ac --RngSeed=${cnt} --txPower=${pow} --RngRun=5" | tee ./mesh-bash-power-udpr/${pow}-${cnt}.txt
         fi
     done
 done
