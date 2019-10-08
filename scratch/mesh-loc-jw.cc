@@ -831,7 +831,9 @@ AodvExample::InstallApplications ()
           client.SetAttribute ("PacketSize", UintegerValue (1472 * 5));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("MaxBytes", UintegerValue (0));
-          AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+          AddressValue remoteAddress (InetSocketAddress (meshInterfaces.GetAddress (i), port)); //
+          if (!aptx)
+            remoteAddress = AddressValue (InetSocketAddress (clInterfaces.GetAddress (i), port));
           client.SetAttribute ("Remote", remoteAddress);
           apps = client.Install (csmaNodes.Get (0));
           apps.Start (Seconds (startTime + x->GetValue ()));
@@ -895,7 +897,9 @@ AodvExample::InstallApplications ()
           client.SetAttribute ("PacketSize", UintegerValue (1448));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("MaxBytes", UintegerValue (0));
-          AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+          AddressValue remoteAddress (InetSocketAddress (meshInterfaces.GetAddress (i), port)); //
+          if (!aptx)
+            remoteAddress = AddressValue (InetSocketAddress (clInterfaces.GetAddress (i), port));
           client.SetAttribute ("Remote", remoteAddress);
           apps = client.Install (csmaNodes.Get (0));
           apps.Start (Seconds (startTime + x->GetValue ()));
