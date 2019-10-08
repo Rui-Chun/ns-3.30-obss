@@ -1,0 +1,2 @@
+Waf: Entering directory `/Users/ruichun/ns-3.30-obss/build'
+[1358/1870] Compiling src/wifi/model/obss-wifi-manager.cc
