@@ -301,9 +301,9 @@ AodvExample::Run ()
   for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
     {
       Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
-      if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)) && !t.sourceAddress.IsEqual (csmaInterfaces.GetAddress (0)))
-        continue;
-      if ((t.destinationPort < 40000) || (t.destinationPort >= 40000 + apNodes.GetN ()))
+      // if (!t.destinationAddress.IsEqual (csmaInterfaces.GetAddress (0)) && !t.sourceAddress.IsEqual (csmaInterfaces.GetAddress (0)))
+      //   continue;
+      if ((t.destinationPort < 40000) || (t.destinationPort >= 50000))
         continue;
       std::cout << t.sourceAddress << '\t' << t.destinationAddress << '\t';
       if (i->second.rxPackets > 1)
@@ -476,9 +476,9 @@ AodvExample::CreateMeshDevices ()
 {
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Ptr<YansWifiChannel> channel = wifiChannel.Create ();
-  // Ptr<MatrixPropagationLossModel> propLoss = CreateObject<MatrixPropagationLossModel> ();
-  // UpdatePropagationLoss (propLoss);
-  // channel->SetPropagationLossModel (propLoss);
+  Ptr<MatrixPropagationLossModel> propLoss = CreateObject<MatrixPropagationLossModel> ();
+  UpdatePropagationLoss (propLoss);
+  channel->SetPropagationLossModel (propLoss);
 
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (channel);
@@ -489,8 +489,8 @@ AodvExample::CreateMeshDevices ()
   wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
   // wifiPhy.Set ("TxPowerStart", DoubleValue (30.0));
   // wifiPhy.Set ("TxPowerEnd", DoubleValue (30.0));
-  wifiPhy.Set ("TxPowerStart", DoubleValue (24.0));
-  wifiPhy.Set ("TxPowerEnd", DoubleValue (24.0));
+  wifiPhy.Set ("TxPowerStart", DoubleValue (30.0));
+  wifiPhy.Set ("TxPowerEnd", DoubleValue (30.0));
   wifiPhy.Set ("TxPowerLevels", UintegerValue (1));
   wifiPhy.Set ("ShortGuardEnabled", BooleanValue (true));
 
@@ -568,7 +568,7 @@ AodvExample::CreateMeshDevices ()
 void
 AodvExample::CreateCsmaDevices ()
 {
-  csmaNodes.Create (1);
+  csmaNodes.Create (apNum);
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
@@ -660,10 +660,10 @@ AodvExample::InstallInternetStack ()
   InternetStackHelper stack;
   stack.SetRoutingHelper (list); // has effect on the next Install ()
   stack.Install (apNodes);
-  stack.SetRoutingHelper (list); // has effect on the next Install ()
-  stack.Install (csmaNodes.Get (0));
   for (uint32_t i = 0; i < apNum; ++i)
     {
+    stack.SetRoutingHelper (list); // has effect on the next Install ()
+    stack.Install (csmaNodes.Get (i));
       stack.SetRoutingHelper (list);
       stack.Install (clNodes[i]);
     }
@@ -744,7 +744,7 @@ AodvExample::InstallApplications ()
               uint16_t port = 50000+i*100+j;
               Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
               PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
-              serverApp[i*clNum+j] = server.Install (csmaNodes.Get (0)); //
+              serverApp[i*clNum+j] = server.Install (csmaNodes.Get (i)); //
               serverApp[i*clNum+j].Start (Seconds (1.0));
               serverApp[i*clNum+j].Stop (Seconds (totalTime + 0.1));
               packetSink[i*clNum+j] = StaticCast<PacketSink> (serverApp[i*clNum+j].Get (0));
@@ -755,7 +755,7 @@ AodvExample::InstallApplications ()
               client.SetAttribute ("PacketSize", UintegerValue (1472));
               client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
               client.SetAttribute ("MaxBytes", UintegerValue (0));
-              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (i), port)); //
               client.SetAttribute ("Remote", remoteAddress);
               clientApp[i*clNum+j] = client.Install (clNodes[i].Get (j));
               clientApp[i*clNum+j].Start (Seconds (startTime));
@@ -772,7 +772,7 @@ AodvExample::InstallApplications ()
               uint16_t port = 40000+i;
               Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
               PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
-              serverApp[apNum*clNum+i] = server.Install (csmaNodes.Get (0)); //
+              serverApp[apNum*clNum+i] = server.Install (csmaNodes.Get (i)); //
               serverApp[apNum*clNum+i].Start (Seconds (1.0));
               serverApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
               packetSink[apNum*clNum+i] = StaticCast<PacketSink> (serverApp[apNum*clNum+i].Get (0));
@@ -785,7 +785,7 @@ AodvExample::InstallApplications ()
               client.SetAttribute ("PacketSize", UintegerValue (1472));
               client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3]))));
               client.SetAttribute ("MaxBytes", UintegerValue (0));
-              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (i), port)); //
               client.SetAttribute ("Remote", remoteAddress);
               clientApp[apNum*clNum+i] = client.Install (apNodes.Get (i));
               clientApp[apNum*clNum+i].Start (Seconds (startTime));
@@ -848,9 +848,9 @@ AodvExample::InstallApplications ()
               client.SetAttribute ("MaxBytes", UintegerValue (0));
               AddressValue remoteAddress (InetSocketAddress (meshInterfaces.GetAddress (i), port)); //
               if (i < gateways)
-                remoteAddress = AddressValue (InetSocketAddress (csmaInterfaces.GetAddress (i+1), port));
+                remoteAddress = AddressValue (InetSocketAddress (csmaInterfaces.GetAddress (i+apNum), port));
               client.SetAttribute ("Remote", remoteAddress);
-              clientApp[apNum*clNum+i] = client.Install (csmaNodes.Get (0));
+              clientApp[apNum*clNum+i] = client.Install (csmaNodes.Get (i));
               clientApp[apNum*clNum+i].Start (Seconds (startTime));
               clientApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
             }
@@ -896,7 +896,7 @@ AodvExample::InstallApplications ()
               uint16_t port = 40000+i;
               Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
               PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
-              serverApp[apNum*clNum+i] = server.Install (csmaNodes.Get (0)); //
+              serverApp[apNum*clNum+i] = server.Install (csmaNodes.Get (i)); //
               serverApp[apNum*clNum+i].Start (Seconds (1.0));
               serverApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
               packetSink[apNum*clNum+i] = StaticCast<PacketSink> (serverApp[apNum*clNum+i].Get (0));
@@ -909,7 +909,7 @@ AodvExample::InstallApplications ()
               client.SetAttribute ("PacketSize", UintegerValue (1448));
               client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3]))));
               client.SetAttribute ("MaxBytes", UintegerValue (0));
-              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (0), port)); //
+              AddressValue remoteAddress (InetSocketAddress (csmaInterfaces.GetAddress (i), port)); //
               client.SetAttribute ("Remote", remoteAddress);
               clientApp[apNum*clNum+i] = client.Install (apNodes.Get (i));
               clientApp[apNum*clNum+i].Start (Seconds (startTime));
@@ -972,9 +972,9 @@ AodvExample::InstallApplications ()
               client.SetAttribute ("MaxBytes", UintegerValue (0));
               AddressValue remoteAddress (InetSocketAddress (meshInterfaces.GetAddress (i), port)); //
               if (i < gateways)
-                remoteAddress = AddressValue (InetSocketAddress (csmaInterfaces.GetAddress (i+1), port));
+                remoteAddress = AddressValue (InetSocketAddress (csmaInterfaces.GetAddress (i+apNum), port));
               client.SetAttribute ("Remote", remoteAddress);
-              clientApp[apNum*clNum+i] = client.Install (csmaNodes.Get (0));
+              clientApp[apNum*clNum+i] = client.Install (csmaNodes.Get (i));
               clientApp[apNum*clNum+i].Start (Seconds (startTime));
               clientApp[apNum*clNum+i].Stop (Seconds (totalTime + 0.1));
             }
