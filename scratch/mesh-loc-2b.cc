@@ -266,6 +266,7 @@ AodvExample::Configure (int argc, char **argv)
   cmd.AddValue ("aptx", "Mount OnOffApplication on AP or not, for test.", aptx);
   cmd.AddValue ("naptx", "Number of AP without throughput.", naptx);
   cmd.AddValue ("locationFile", "Location file name.", locationFile);
+  cmd.AddValue ("routeFile", "Route file name.", routeFile);
   cmd.AddValue ("gateways", "Number of gateway AP.", gateways);
   cmd.AddValue ("scale", "Ratio between experiment and simulation.", scale);
   cmd.AddValue ("route", "Routing protocol", route);
@@ -497,7 +498,7 @@ AodvExample::CreateMeshDevices ()
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (channel);
   wifiPhy.SetChannel (wifiChannel.Create ());
-  wifiPhy.Set ("ChannelNumber", UintegerValue (155));
+  wifiPhy.Set ("ChannelNumber", UintegerValue (42));
   wifiPhy.Set ("Antennas", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (4));
   wifiPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (4));
@@ -666,7 +667,12 @@ AodvExample::InstallInternetStack ()
     list.Add (dsdv, 100);
   else if (route == std::string ("aodv"))
     list.Add (aodv, 100);
-    
+
+  if (printRoutes)
+    {
+      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("list.routes", std::ios::out);
+      list.PrintRoutingTableAllAt (Seconds (totalTime - 0.1), routingStream);
+    }    
 
   InternetStackHelper stack;
   stack.SetRoutingHelper (list); // has effect on the next Install ()
