@@ -1,0 +1,13 @@
+Dst	Src	HeMcs	Txlevel	Num	isObss
+6 	  5	  4	  10	  10	  0
+5 	  6	  4	  10	  31652	  0
+5 	  4	  4	  10	  10	  0
+4 	  5	  4	  10	  26237	  0
+3 	  2	  4	  10	  10	  0
+2 	  3	  4	  10	  30261	  0
+2 	  1	  4	  10	  10	  0
+1 	  2	  4	  10	  24809	  0
+
+ TotalTx Number= 113000
+
+ TotalReset Number= 0
