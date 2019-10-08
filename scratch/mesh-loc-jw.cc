@@ -186,7 +186,7 @@ int main (int argc, char **argv)
 //-----------------------------------------------------------------------------
 AodvExample::AodvExample () :
   // Simulation parameters
-  totalTime (100),
+  totalTime (40),
   monitorInterval (1),
   anim (false),
   flowout ("out-flow.xml"),
@@ -194,24 +194,24 @@ AodvExample::AodvExample () :
   // Layout parameters
   locationFile (""),
   scale (1),
-  gridSize (3), 
-  apNum (2),
+  gridSize (2), 
+  apNum (4),
   apXStep (20),
-  apYStep (30),
+  apYStep (75),
   clStep (10),
-  gateways ("0"),
+  gateways ("0+2"),
   // MAC parameters
   linkFail (false),
-  mac ("mesh"),
+  mac ("adhoc"),
   // Rate adaptation parameters
   rateControl ("constant"),
-  constantRate ("VhtMcs0"),
+  constantRate ("HeMcs4"),
   // Routing parameters
-  route ("aodv"),
+  route ("static"),
   printRoutes ("false"),
   // App parameters
-  app ("tcp"),
-  appl ("1"),
+  app ("udp"),
+  appl ("1+3"),
   aptx (true),
   startTime (10),
   datarate (1e6),

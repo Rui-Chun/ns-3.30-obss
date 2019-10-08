@@ -1,0 +1,55 @@
+########quite good ############
+
+#define SNRMARGIN -3.5
+#define ACKSNRMARGIN -3.5
+#define DEFAULTLOSS -105
+
+2x2 20mx75m topo
+./waf --run "mesh-loc-jw --rateControl=obss --datarate=3e6 --apXStep=20 --apYStep=75 --datarateUp=1 --RngSeed=1 --totalTime=100"
+
+########################
+
+################# some improve!!
+#define SNRMARGIN -4.5
+#define ACKSNRMARGIN -4.5
+#define DEFAULTLOSS -105
+
+2x2 ./waf --run "mesh-loc-jw --rateControl=obss --datarate=5e6 --apXStep=20 --apYStep=75 --datarateUp=1 --RngSeed=1 --totalTime=100"
+
+
+  totalTime (40),
+  monitorInterval (1),
+  anim (false),
+  flowout ("out-flow.xml"),
+  pcap (false),
+  // Layout parameters
+  locationFile (""),
+  scale (1),
+  gridSize (2), 
+  apNum (4),
+  apXStep (20),
+  apYStep (30),
+  clStep (10),
+  gateways ("0+2"),
+  // MAC parameters
+  linkFail (false),
+  mac ("adhoc"),
+  // Rate adaptation parameters
+  rateControl ("constant"),
+  constantRate ("HeMcs4"),
+  // Routing parameters
+  route ("static"),
+  printRoutes ("false"),
+  // App parameters
+  app ("udp"),
+  appl ("1+3"),
+  aptx (true),
+  startTime (10),
+  datarate (1e6),
+  datarateUp (false),
+  isObss(false),
+  obssLevel(-62),
+  recordPath("TransRecords.txt")
+
+##########################################33
+

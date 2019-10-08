@@ -26,9 +26,9 @@
 
 #define HEMCS0 18 // only consider HE Mcs
 #define TRANLIMIT 500 // the initial transmission will be sent at lowest rate
-#define SNRMARGIN -2
-#define ACKSNRMARGIN -2
-#define DEFAULTLOSS -120
+#define SNRMARGIN -4.5
+#define ACKSNRMARGIN -4.5
+#define DEFAULTLOSS -105
 
 namespace ns3 {
 /**
@@ -379,7 +379,7 @@ ObssWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                 selectedNss = nss;
               }
           }
-          std::cout<<"mymac="<<+m_myMac<< " Obss!  Dst=" <<+m_nexthopMac<<" mode="<<maxMode.GetUniqueName() << std::endl;
+          // std::cout<<"mymac="<<+m_myMac<< " Obss!  Dst=" <<+m_nexthopMac<<" mode="<<maxMode.GetUniqueName() << std::endl;
           NS_LOG_DEBUG("Obss! Using mode = " << maxMode.GetUniqueName () << " data rate " << bestRate );
 
       }
@@ -1018,7 +1018,6 @@ ObssWifiManager::CheckObssStatus()
     }
     ReceiverInfo recvInfo(temp_dst, interference, signal, temp_mcs);
     recvinfos.push_back(recvInfo);
-    if(signal2==0)NS_LOG_DEBUG("singal2 ==0");
     ReceiverInfo srcinfo(temp_src, interference2, signal2, -1);
     srcinfos.push_back(srcinfo);
   }
@@ -1067,7 +1066,7 @@ ObssWifiManager::CheckObssStatus()
       // std::cout<<"mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
       NS_LOG_DEBUG("mymac="<<+m_myMac<<"  mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
 
-      std::cout<<"mymac="<<+m_myMac<<"  recv= "<<+temp_recv<<", if mypower= "<<myTxpower<<"Data SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
+      // std::cout<<"mymac="<<+m_myMac<<"  recv= "<<+temp_recv<<", if mypower= "<<myTxpower<<"Data SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR<<std::endl;
 
       if(dstSNR<SNRlimit)
       {
@@ -1122,7 +1121,9 @@ ObssWifiManager::CheckObssStatus()
       NS_LOG_DEBUG("mymac="<<+m_myMac<<"  mypower= "<<myTxpower<<" SNRlimit= "<<SNRlimit<<" dstSNR= "<<dstSNR);
 
 
-      std::cout<<"mymac="<<+m_myMac<<"  ack_recv= "<<+temp_src<<", if mypower= "<<myTxpower<<"Ack SNRlimit= "<<SNRlimit<<" ackSNR= "<<dstSNR<<std::endl;
+      // std::cout<<"mymac="<<+m_myMac<<"  ack_recv= "<<+temp_src<<", if mypower= "<<myTxpower<<"Ack SNRlimit= "<<SNRlimit<<" ackSNR= "<<dstSNR<<std::endl;
+
+
 
       if(dstSNR<SNRlimit)
       {
@@ -1136,7 +1137,7 @@ ObssWifiManager::CheckObssStatus()
     {
       // std::cout<<"Found right txpower!"<<myTxpower<<std::endl;
       NS_LOG_DEBUG("Found right txpower!"<<myTxpower);
-      std::cout<<"mymac= "<<+m_myMac<<"  Found right txpower!"<<myTxpower<<std::endl;
+      // std::cout<<"mymac= "<<+m_myMac<<"  Found right txpower!"<<myTxpower<<std::endl;
       break;
     }
     else
@@ -1148,7 +1149,7 @@ ObssWifiManager::CheckObssStatus()
   if(!isOk)
   {
     NS_LOG_DEBUG("No power finally.");
-    std::cout<<"mymac= "<<+m_myMac<<"  No power final"<<std::endl;
+    // std::cout<<"mymac= "<<+m_myMac<<"  No power final"<<std::endl;
     m_obssRestricted=false;
     return;
   }
@@ -1175,7 +1176,7 @@ ObssWifiManager::CheckObssStatus()
   }
   // std::cout<<"final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR<<std::endl;
   NS_LOG_DEBUG("final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR <<" dst="<<+m_nexthopMac <<" src="<<+m_myMac);
-  std::cout<<"myMac="<<+m_myMac<<"  final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR <<" dst="<<+m_nexthopMac<<std::endl;
+  // std::cout<<"myMac="<<+m_myMac<<"  final mcs: "<<mcs<<" SNRlimit:"<<SNRlimit<<" SNR:"<<SNR <<" dst="<<+m_nexthopMac<<std::endl;
 
   if(mcs<0)
   {
@@ -1201,7 +1202,7 @@ ObssWifiManager::CalculateSnr (double signal, double noiseInterference, uint16_t
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise; //linear scale
   // NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr=" << RatioToDb(snr) << "dB");
-  
+    // std::cout<<"noiseInf="<<WToDbm(noiseInterference)<<"  noise="<<WToDbm(noise)<<" signal= "<<WToDbm(signal) <<" snr="<<WToDbm(snr)<<std::endl;
   return snr;
 }
 
@@ -1287,7 +1288,7 @@ ObssWifiManager::ResetPhy()
   {
     GetPhy()->ResetCca(false, 25, 25);
     // NS_LOG_DEBUG("Phy Reset!");
-    std::cout<<"myMac="<<+m_myMac<<"  Phy reset now!\n";
+    // std::cout<<"myMac="<<+m_myMac<<"  Phy reset now!\n";
     ResetNum++;
   }
   return;
