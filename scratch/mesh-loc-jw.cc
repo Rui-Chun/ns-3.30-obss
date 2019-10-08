@@ -194,12 +194,12 @@ AodvExample::AodvExample () :
   // Layout parameters
   locationFile (""),
   scale (1),
-  gridSize (2), 
-  apNum (4),
+  gridSize (3), 
+  apNum (6),
   apXStep (20),
   apYStep (75),
   clStep (10),
-  gateways ("0+2"),
+  gateways ("0+3"),
   // MAC parameters
   linkFail (false),
   mac ("adhoc"),
@@ -211,7 +211,7 @@ AodvExample::AodvExample () :
   printRoutes ("false"),
   // App parameters
   app ("udp"),
-  appl ("1+3"),
+  appl ("2+5"),
   aptx (true),
   startTime (10),
   datarate (1e6),

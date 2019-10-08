@@ -51,5 +51,49 @@
   obssLevel(-62),
   recordPath("TransRecords.txt")
 
-##########################################33
+##########################################
 
+#####################gain!
+
+#define SNRMARGIN -4.5
+#define ACKSNRMARGIN -4.5
+#define DEFAULTLOSS -105
+
+./waf --run "mesh-loc-jw --rateControl=obss --datarate=2e6 --apXStep=20 --apYStep=75 --datarateUp=1 --RngSeed=143 --totalTime=100"
+
+2x3 20m,75m
+
+  // Simulation parameters
+  totalTime (40),
+  monitorInterval (1),
+  anim (false),
+  flowout ("out-flow.xml"),
+  pcap (false),
+  // Layout parameters
+  locationFile (""),
+  scale (1),
+  gridSize (3), 
+  apNum (6),
+  apXStep (20),
+  apYStep (75),
+  clStep (10),
+  gateways ("0+3"),
+  // MAC parameters
+  linkFail (false),
+  mac ("adhoc"),
+  // Rate adaptation parameters
+  rateControl ("constant"),
+  constantRate ("HeMcs4"),
+  // Routing parameters
+  route ("static"),
+  printRoutes ("false"),
+  // App parameters
+  app ("udp"),
+  appl ("2+5"),
+  aptx (true),
+  startTime (10),
+  datarate (1e6),
+  datarateUp (false),
+  isObss(false),
+  obssLevel(-62),
+  recordPath("TransRecords.txt")
