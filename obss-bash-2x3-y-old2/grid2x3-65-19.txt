@@ -1,0 +1,50 @@
+Waf: Entering directory `/home/synrg/ns-3.30-obss/build'
+Waf: Leaving directory `/home/synrg/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.526s)
+CreateVariables () DONE !!!
+Creating 6 APs 20.0000 and 65.0000 m apart.
+CreateApNodes () DONE !!!
+Creating CL 10.0000 m away from each AP.
+CreateClNodes () DONE !!!
+CreateNodes () DONE !!!
+CreateMeshDevices () DONE !!!
+CreateWifiDevices () DONE !!!
+CreateCsmaDevices () DONE !!!
+CreateDevices () DONE !!!
+InstallInternetStack () DONE !!!
+InstallApplications () DONE !!!
+Starting simulation for 40.0000 s ...
+-------------------------------------------------
+Time[s]
+11.0000	5.1814	5.3581
+12.0000	12.2470	12.4237
+13.0000	6.7123	15.0144
+14.0000	0.2355	1.0598
+15.0000	10.7750	8.0077
+16.0000	10.2451	9.1264
+17.0000	5.8291	4.0038
+18.0000	6.1235	14.6611
+19.0000	6.8890	12.6003
+20.0000	9.6563	8.0666
+21.0000	11.7171	15.0144
+22.0000	10.0096	4.6515
+23.0000	14.4845	9.6563
+24.0000	7.6544	10.8339
+25.0000	4.2982	8.7731
+26.0000	4.4160	6.5946
+27.0000	2.3552	11.7171
+28.0000	7.5955	10.4806
+29.0000	5.9469	8.3610
+30.0000	8.3021	12.6592
+31.0000	10.3629	4.4160
+32.0000	11.2461	6.7123
+33.0000	6.1235	4.9459
+34.0000	1.9430	13.3069
+35.0000	3.8272	6.9478
+36.0000	15.3088	6.5357
+37.0000	10.7162	2.7674
+38.0000	13.7190	5.4170
+39.0000	15.1322	2.7674
+10.1.1.3	10.2.1.1	8.3551	4/4168/4185	0	54033.4523
+10.1.1.6	10.2.1.1	8.7402	38/4298/4340	0	57339.5921
