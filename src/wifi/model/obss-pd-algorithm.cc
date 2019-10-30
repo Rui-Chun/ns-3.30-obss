@@ -106,7 +106,6 @@ ObssPdAlgorithm::ResetPhy (HePreambleParameters params)
     }
   m_resetEvent (bssColor, WToDbm (params.rssiW), powerRestricted, txPowerMaxSiso, txPowerMaxMimo);
   phy->ResetCca (powerRestricted, txPowerMaxSiso, txPowerMaxMimo);
-  std::cout<<"phy reset!\n";
 }
 
 } //namespace ns3

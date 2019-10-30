@@ -97,7 +97,6 @@ MeshHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
       Ptr<Node> node = *i;
       // Create a mesh point device
       Ptr<MeshPointDevice> mp = CreateObject<MeshPointDevice> ();
-
       node->AddDevice (mp);
       // Create wifi interfaces (single interface by default)
       for (uint32_t i = 0; i < m_nInterfaces; ++i)
