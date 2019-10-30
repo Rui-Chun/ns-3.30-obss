@@ -2566,64 +2566,9 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       NS_LOG_DEBUG ("Transmitting without power restriction");
     }
 
-  // #############
-  // // set BSS color
-  // if(txVector.GetBssColor())
-  // {
-  //   Ptr<Packet> obssPacket = packet->Copy (); // obtain non-const Packet
-  //   WifiMacHeader head;
-  //   AmpduSubframeHeader head2;
-  //   uint8_t addrs[6]; 
-  //   uint8_t addrs2[6];
-  //   // uint32_t testFlag=0;
-  //   // obssPacket->PeekHeader(head2);
-  //   obssPacket->PeekHeader(head); // may be mac header or AmpduSubframeHeader
-  //   head.GetAddr1().CopyTo(addrs); // dst address
-  //   head.GetAddr2().CopyTo(addrs2); // src address
-  //   if(addrs[0]+addrs[1]+addrs[2]+addrs[3]+addrs[4]!=0 || !addrs[5]) // should be the wrong mac address
-  //   {
-  //     obssPacket->RemoveHeader(head2);
-  //     obssPacket->PeekHeader(head); // may be mac header or AmpduSubframeHeader
-  //     head.GetAddr1().CopyTo(addrs);
-  //     head.GetAddr2().CopyTo(addrs2);
-  //   }
-  //   // std::cout<<"packet : ";
-  //   // obssPacket->Print(std::cout);
-  //   // std::cout<<std::endl;
-  //   // std::cout<<"sending to mac: "<<head.GetAddr1()<<std::endl;
-
-  //   txVector.SetBssColor(addrs[5]*8 + addrs2[5]); // set BSS color as dst mac addr + src mac addr
-
-  // }
-
-  Ptr<Packet> obssPacket = packet->Copy (); // obtain non-const Packet
-  // std::cout<<"packet : ";
-  // obssPacket->Print(std::cout);
-  // std::cout<<std::endl;
-
-  WifiMacHeader head;
-  AmpduSubframeHeader head2;
-  uint8_t addrs[6]; 
-  uint8_t addrs2[6];
-  // uint32_t testFlag=0;
-  // obssPacket->PeekHeader(head2);
-  obssPacket->PeekHeader(head); // may be mac header or AmpduSubframeHeader
-  head.GetAddr1().CopyTo(addrs); // dst address
-  head.GetAddr2().CopyTo(addrs2); // src address
-  if(addrs[0]+addrs[1]+addrs[2]+addrs[3]+addrs[4]!=0 || !addrs[5]) // should be the wrong mac address
-  {
-    obssPacket->RemoveHeader(head2);
-    obssPacket->PeekHeader(head); // may be mac header or AmpduSubframeHeader
-    head.GetAddr1().CopyTo(addrs);
-    head.GetAddr2().CopyTo(addrs2);
-  }
-  // std::cout<<"sending to mac: "<<head.GetAddr1()<<std::endl;
-
   NotifyTxBegin (packet, DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ()));
   NotifyMonitorSniffTx (packet, GetFrequency (), txVector);
   m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
-
-  // std::cout<< "power: "<< GetTxPowerForTransmission (txVector) + GetTxGain () <<"  txDuration: "<< txDuration<<std::endl;
 
   Ptr<Packet> newPacket = packet->Copy (); // obtain non-const Packet
   WifiPhyTag oldtag;
@@ -2665,13 +2610,6 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       heSig.SetChannelWidth (txVector.GetChannelWidth ());
       heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
       heSig.SetNStreams (txVector.GetNss ());
-      // heSig.SetSrc(123);
-      heSig.SetDst(addrs[5]);
-      heSig.SetSrc(addrs2[5]);
-      heSig.SetTxPower((uint8_t)(10*(GetTxPowerForTransmission (txVector) + GetTxGain ())));
-      // std::cout<< "Time in : "<<txDuration<<"  "<< +(uint8_t)(txDuration.ToInteger(Time::Unit::NS)/1e4)<<std::endl;
-      heSig.SetTime((uint8_t)(txDuration.ToInteger(Time::Unit::NS)/1e4));
-
       newPacket->AddHeader (heSig);
     }
   if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
@@ -2724,7 +2662,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
   StartTx (newPacket, txVector, txDuration);
 
   m_channelAccessRequested = false;
-  m_powerRestricted = false; // set back to false when got txop
+  m_powerRestricted = false;
 }
 
 void
@@ -2921,8 +2859,6 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
           NS_FATAL_ERROR ("Received 802.11ax signal with no HE-SIG field");
           return;
         }
-      // std::cout << "packet header: "<< (int)heSigHdr.GetSrc()<< std::endl;
-
       txVector.SetChannelWidth (heSigHdr.GetChannelWidth ());
       txVector.SetNss (heSigHdr.GetNStreams ());
       for (uint8_t i = 0; i < GetNMcs (); i++)
