@@ -2689,4 +2689,100 @@ MacLow::CanTransmitNextCfFrame (void) const
   return ((GetRemainingCfpDuration () - nextTransmission).IsPositive ());
 }
 
+void
+MacLow::SendMuRts (void)
+{
+  NS_LOG_FUNCTION (this);
+  /* send an MU-RTS for packet(s). */
+
+  WifiTxVector rtsTxVector = GetRtsTxVector (*m_currentPacket->begin ());
+
+  CtrlTriggerHeader trigger;
+  uint16_t ulLength = 2100;
+  bool moreTF = true;
+  bool csRequired = true;
+  uint8_t ulBandwidth = m_phy->GetChannelWidth ();
+  int8_t apTxPower = m_phy->GetTxPowerForTransmission (rtsTxVector);
+  uint16_t ulSpatialReuse = 60500;
+  trigger.SetType (MU_RTS_TRIGGER);
+  trigger.SetUlLength (ulLength);
+  trigger.SetMoreTF (moreTF);
+  trigger.SetCsRequired (csRequired);
+  trigger.SetUlBandwidth (ulBandwidth);
+  trigger.SetApTxPower (apTxPower);
+  trigger.SetUlSpatialReuse (ulSpatialReuse);
+
+  // Add a User Info field
+  CtrlTriggerUserInfoField& ui1 = trigger.AddUserInfoField ();
+  uint16_t aid1 = 1555;
+  bool primary80MHz1 = true;
+  HeRu::RuType ru1 = HeRu::RU_26_TONE;
+  std::size_t index1 = 1;
+  bool ldpc1 = true;
+  uint8_t mcs1 = 5;
+  bool ulDcm1 = false;
+  uint8_t startSs = 2;
+  uint8_t nSs = 2;
+  int8_t ulTargetRssi = -40;
+  uint8_t spacingFactor1 = 2;
+  uint8_t tidLimitCopy = 4;
+  AcIndex prefAc1 = AC_BK;
+  ui1.SetAid12 (aid1);
+  ui1.SetRuAllocation ({primary80MHz1, ru1, index1});
+  ui1.SetUlFecCodingType (ldpc1);
+  ui1.SetUlMcs (mcs1);
+  ui1.SetUlDcm (ulDcm1);
+  ui1.SetSsAllocation (startSs, nSs);
+  ui1.SetUlTargetRssi (ulTargetRssi);
+  ui1.SetBasicTriggerDepUserInfo (spacingFactor1, tidLimitCopy, prefAc1);
+
+
+  WifiMacHeader rts;
+  rts.SetType (WIFI_MAC_CTL_RTS);
+  rts.SetDsNotFrom ();
+  rts.SetDsNotTo ();
+  rts.SetNoRetry ();
+  rts.SetNoMoreFragments ();
+  rts.SetAddr1 (m_currentPacket->GetAddr1 ());
+  rts.SetAddr2 (m_self);
+  WifiTxVector rtsTxVector = GetRtsTxVector (*m_currentPacket->begin ());
+  Time duration = Seconds (0);
+
+  duration += GetSifs ();
+  duration += GetCtsDuration (m_currentPacket->GetAddr1 (), rtsTxVector);
+  duration += GetSifs ();
+  duration += m_phy->CalculateTxDuration (m_currentPacket->GetSize (),
+                                          m_currentTxVector, m_phy->GetFrequency ());
+  duration += GetSifs ();
+  if (m_txParams.MustWaitBlockAck ())
+    {
+      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (), m_currentTxVector.GetMode ());
+      duration += GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
+    }
+  else if (m_txParams.MustWaitNormalAck ())
+    {
+      duration += GetAckDuration (m_currentPacket->GetAddr1 (), m_currentTxVector);
+    }
+  if (m_txParams.HasNextPacket ())
+    {
+      duration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (),
+                                              m_currentTxVector, m_phy->GetFrequency ());
+      if (m_txParams.MustWaitNormalAck ())
+        {
+          duration += GetSifs ();
+          duration += GetAckDuration (m_currentPacket->GetAddr1 (), m_currentTxVector);
+        }
+    }
+  rts.SetDuration (duration);
+
+  Time txDuration = m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, m_phy->GetFrequency ());
+  Time timerDelay = txDuration + GetCtsTimeout ();
+
+  NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
+  NotifyCtsTimeoutStartNow (timerDelay);
+  m_ctsTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::CtsTimeout, this);
+
+  ForwardDown (Create<const WifiPsdu> (Create<Packet> (), rts), rtsTxVector);
+}
+
 } //namespace ns3

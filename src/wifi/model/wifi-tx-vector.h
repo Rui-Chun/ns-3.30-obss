@@ -24,6 +24,7 @@
 
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
+#include "he-ru.h"
 
 namespace ns3 {
 
@@ -215,6 +216,9 @@ public:
    * \return true if the WifiTxVector parameters are allowed by the standard
    */
   bool IsValid (void) const;
+  void SetRu (HeRu::RuSpec ru);
+  bool IsRu (void);
+  HeRu::RuSpec GetRu (void);
 
   // ######
   // store obss info
@@ -250,6 +254,9 @@ private:
   uint8_t m_obss_txpower;
 
   bool     m_modeInitialized;         /**< Internal initialization flag */
+
+  bool m_isRu;
+  HeRu::RuSpec m_ru;
 };
 
 /**

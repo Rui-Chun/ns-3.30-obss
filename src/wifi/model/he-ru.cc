@@ -218,4 +218,22 @@ HeRu::Overlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v)
   return false;
 }
 
+bool
+HeRu::IsValid (uint8_t bw, RuSpec ru)
+{
+  if (ru.index < 1)
+    {
+      return false;
+    }
+
+  if (bw == 160 && ru.ruType == RU_2x996_TONE)
+    {
+      return ru.primary80MHz;
+    }
+  else
+    {
+      return (ru.index <= GetNRus (bw == 160 ? 80 : bw, ru.ruType));
+    }
+}
+
 } //namespace ns3

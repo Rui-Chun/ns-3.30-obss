@@ -129,9 +129,45 @@ WifiMode::GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss
 }
 
 uint64_t
+WifiMode::GetPhyRate (HeRu::RuSpec ru, uint16_t guardInterval, uint8_t nss) const
+{
+  //TODO: nss > 4 not supported yet
+  NS_ASSERT (nss <= 4);
+  uint64_t dataRate, phyRate;
+  dataRate = GetDataRate (ru, guardInterval, nss);
+  switch (GetCodeRate ())
+    {
+    case WIFI_CODE_RATE_5_6:
+      phyRate = dataRate * 6 / 5;
+      break;
+    case WIFI_CODE_RATE_3_4:
+      phyRate = dataRate * 4 / 3;
+      break;
+    case WIFI_CODE_RATE_2_3:
+      phyRate = dataRate * 3 / 2;
+      break;
+    case WIFI_CODE_RATE_1_2:
+      phyRate = dataRate * 2 / 1;
+      break;
+    case WIFI_CODE_RATE_UNDEFINED:
+    default:
+      phyRate = dataRate;
+      break;
+    }
+  return phyRate;
+}
+
+uint64_t
 WifiMode::GetPhyRate (WifiTxVector txVector) const
 {
-  return GetPhyRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
+  if (txVector.IsRu ())
+    {
+      return GetPhyRate (txVector.GetRu (), txVector.GetGuardInterval (), txVector.GetNss ());
+    }
+  else
+    {
+      return GetPhyRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
+    }
 }
 
 uint64_t
@@ -143,7 +179,14 @@ WifiMode::GetDataRate (uint16_t channelWidth) const
 uint64_t
 WifiMode::GetDataRate (WifiTxVector txVector) const
 {
-  return GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
+  if (txVector.IsRu ())
+    {
+      return GetDataRate (txVector.GetRu (), txVector.GetGuardInterval (), txVector.GetNss ());
+    }
+  else
+    {
+      return GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
+    }
 }
 
 uint64_t
@@ -287,6 +330,77 @@ WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t ns
           break;
         case 160:
           usableSubCarriers = 1960;
+          break;
+        }
+
+      switch (GetCodeRate ())
+        {
+        case WIFI_CODE_RATE_5_6:
+          codingRate = (5.0 / 6.0);
+          break;
+        case WIFI_CODE_RATE_3_4:
+          codingRate = (3.0 / 4.0);
+          break;
+        case WIFI_CODE_RATE_2_3:
+          codingRate = (2.0 / 3.0);
+          break;
+        case WIFI_CODE_RATE_1_2:
+          codingRate = (1.0 / 2.0);
+          break;
+        case WIFI_CODE_RATE_UNDEFINED:
+        default:
+          NS_FATAL_ERROR ("trying to get datarate for a mcs without any coding rate defined with nss: " << +nss);
+          break;
+        }
+
+      dataRate = lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
+    }
+  else
+    {
+      NS_ASSERT ("undefined datarate for the modulation class!");
+    }
+  dataRate *= nss; // number of spatial streams
+  return dataRate;
+}
+
+uint64_t
+WifiMode::GetDataRate (HeRu::RuSpec ru, uint16_t guardInterval, uint8_t nss) const
+{
+  //TODO: nss > 4 not supported yet
+  NS_ASSERT (nss <= 4);
+  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  uint64_t dataRate = 0;
+  uint16_t usableSubCarriers = 0;
+  double symbolRate = 0;
+  double codingRate = 0;
+  uint16_t numberOfBitsPerSubcarrier = static_cast<uint16_t> (log2 (GetConstellationSize ()));
+  if (item->modClass == WIFI_MOD_CLASS_HE)
+    {
+      NS_ASSERT (guardInterval == 800 || guardInterval == 1600 || guardInterval == 3200);
+      symbolRate = (1 / (12.8 + (static_cast<double> (guardInterval) / 1000))) * 1e6;
+
+      switch (ru.ruType)
+        {
+        case HeRu::RU_26_TONE:
+          usableSubCarriers = 26;
+          break;
+        case HeRu::RU_52_TONE:
+          usableSubCarriers = 52;
+          break;
+        case HeRu::RU_106_TONE:
+          usableSubCarriers = 106;
+          break;
+        case HeRu::RU_242_TONE:
+          usableSubCarriers = 242;
+          break;
+        case HeRu::RU_484_TONE:
+          usableSubCarriers = 484;
+          break;
+        case HeRu::RU_996_TONE:
+          usableSubCarriers = 996;
+          break;
+        case HeRu::RU_2x996_TONE:
+          usableSubCarriers = 2*996;
           break;
         }
 

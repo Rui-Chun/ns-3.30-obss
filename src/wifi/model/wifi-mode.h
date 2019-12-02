@@ -24,6 +24,7 @@
 
 #include <vector>
 #include "ns3/attribute-helper.h"
+#include "he-ru.h"
 
 namespace ns3 {
 
@@ -116,6 +117,7 @@ public:
    * data rate is 3.25Mbps, the phy rate is 6.5Mbps
    */
   uint64_t GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
+  uint64_t GetPhyRate (HeRu::RuSpec ru, uint16_t guardInterval, uint8_t nss) const;
   /**
    * \param txVector the WifiTxVector of the signal
    *
@@ -134,6 +136,7 @@ public:
    * \returns the data bit rate of this signal.
    */
   uint64_t GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
+  uint64_t GetDataRate (HeRu::RuSpec ru, uint16_t guardInterval, uint8_t nss) const;
   /**
    * \param txVector the WifiTxVector of the signal
    *

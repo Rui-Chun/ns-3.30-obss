@@ -865,6 +865,20 @@ private:
    */
   void RemovePhyMacLowListener (Ptr<WifiPhy> phy);
 
+  // OFDMA DL
+  void SendMuRts (void);
+  void SendMuCtsAfterMuRts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr) {};
+  void SendDataAfterMuCts () {};
+  void SendMuBarAfterData () {};
+  void SendMuBaAfterMuBar () {};
+  // OFDMA UL
+  void SendBsrp () {};
+  void SendMuBsrAfterBsrp () {};
+  /* RTS/CTS */
+  void SendTfAfterMuCts () {};
+  void SendDataAfterTf () {};
+  void SendMuBaAfterData () {};
+
   Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
   Ptr<WifiMac> m_mac; //!< Pointer to WifiMac (to fetch configuration)
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)

@@ -33,7 +33,8 @@ WifiTxVector::WifiTxVector ()
     m_aggregation (false),
     m_stbc (false),
     m_bssColor (0),
-    m_modeInitialized (false)
+    m_modeInitialized (false),
+    m_isRu (false)
 {
 }
 
@@ -59,7 +60,8 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_aggregation (aggregation),
     m_stbc (stbc),
     m_bssColor (bssColor),
-    m_modeInitialized (true)
+    m_modeInitialized (true),
+    m_isRu (false)
 {
 }
 
@@ -235,6 +237,10 @@ WifiTxVector::IsValid (void) const
           return (modeName != "VhtMcs9");
         }
     }
+  if ((m_isRu == true) && (HeRu::IsValid ((uint8_t) m_channelWidth, m_ru) == false))
+    {
+      return false;
+    }
   return true;
 }
 
@@ -291,6 +297,25 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
     " MPDU aggregation: " << v.IsAggregation () <<
     " STBC: " << v.IsStbc ();
   return os;
+}
+
+void
+WifiTxVector::SetRu (HeRu::RuSpec ru)
+{
+  m_isRu = true;
+  m_ru = ru;
+}
+
+bool
+WifiTxVector::IsRu (void)
+{
+  return m_isRu;
+}
+
+HeRu::RuSpec
+WifiTxVector::GetRu (void)
+{
+  return m_ru;
 }
 
 } //namespace ns3
