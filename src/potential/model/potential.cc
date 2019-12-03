@@ -38,8 +38,8 @@
 #include "ns3/double.h"
 #include "ns3/boolean.h"
 
-#define POTENTIAL_ALL_NODE "224.0.0.9"
-#define POTENTIAL_PORT 520
+#define POTENTIAL_ALL_NODE "224.0.0.19"
+#define POTENTIAL_PORT 1520
 
 namespace ns3 {
 
@@ -48,7 +48,10 @@ NS_LOG_COMPONENT_DEFINE ("Potential");
 NS_OBJECT_ENSURE_REGISTERED (Potential);
 
 Potential::Potential ()
-  : m_ipv4 (0), m_splitHorizonStrategy (Potential::POISON_REVERSE), m_initialized (false)
+  : m_ipv4 (0),
+    m_initialized (false),
+    m_fixedPotential (true),
+    m_potential (0)
 {
   m_rng = CreateObject<UniformRandomVariable> ();
 }
@@ -65,7 +68,7 @@ Potential::GetTypeId (void)
     .SetGroupName ("Internet")
     .AddConstructor<Potential> ()
     .AddAttribute ("UnsolicitedRoutingUpdate", "The time between two Unsolicited Routing Updates.",
-                   TimeValue (Seconds(30)),
+                   TimeValue (Seconds(3)),
                    MakeTimeAccessor (&Potential::m_unsolicitedUpdate),
                    MakeTimeChecker ())
     .AddAttribute ("StartupDelay", "Maximum random delay for protocol startup (send route requests).",
@@ -88,29 +91,24 @@ Potential::GetTypeId (void)
                    TimeValue (Seconds(5)),
                    MakeTimeAccessor (&Potential::m_maxTriggeredUpdateDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("SplitHorizon", "Split Horizon strategy.",
-                   EnumValue (Potential::POISON_REVERSE),
-                   MakeEnumAccessor (&Potential::m_splitHorizonStrategy),
-                   MakeEnumChecker (Potential::NO_SPLIT_HORIZON, "NoSplitHorizon",
-                                    Potential::SPLIT_HORIZON, "SplitHorizon",
-                                    Potential::POISON_REVERSE, "PoisonReverse"))
     .AddAttribute ("LinkDownValue", "Value for link down in count to infinity.",
                    UintegerValue (16),
                    MakeUintegerAccessor (&Potential::m_linkDown),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("FixedPotential", "Updatable potential or not",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&Potential::m_fixedPotential),
                    MakeBooleanChecker ())
     .AddAttribute ("Potential", "Initial potential value",
                    DoubleValue (0),
-                   MakeDoubleAccessor (&Potential::m_potential),
-                   MakeDoubleChecker<double> ())
+                   MakeUintegerAccessor (&Potential::m_potential),
+                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }
 
-int64_t Potential::AssignStreams (int64_t stream)
+int64_t
+Potential::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
 
@@ -118,7 +116,8 @@ int64_t Potential::AssignStreams (int64_t stream)
   return 1;
 }
 
-void Potential::DoInitialize ()
+void
+Potential::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -194,7 +193,8 @@ void Potential::DoInitialize ()
   Ipv4RoutingProtocol::DoInitialize ();
 }
 
-Ptr<Ipv4Route> Potential::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
+Ptr<Ipv4Route>
+Potential::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << header << oif);
 
@@ -224,7 +224,8 @@ Ptr<Ipv4Route> Potential::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, 
   return rtentry;
 }
 
-bool Potential::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
+bool
+Potential::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                         UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                         LocalDeliverCallback lcb, ErrorCallback ecb)
 {
@@ -298,7 +299,8 @@ bool Potential::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<c
     }
 }
 
-void Potential::NotifyInterfaceUp (uint32_t i)
+void
+Potential::NotifyInterfaceUp (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
 
@@ -379,7 +381,8 @@ void Potential::NotifyInterfaceUp (uint32_t i)
     }
 }
 
-void Potential::NotifyInterfaceDown (uint32_t interface)
+void
+Potential::NotifyInterfaceDown (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
 
@@ -410,7 +413,8 @@ void Potential::NotifyInterfaceDown (uint32_t interface)
     }
 }
 
-void Potential::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
+void
+Potential::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
 
@@ -435,7 +439,8 @@ void Potential::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress addre
   SendTriggeredRouteUpdate ();
 }
 
-void Potential::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
+void
+Potential::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
 
@@ -472,7 +477,8 @@ void Potential::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress ad
 
 }
 
-void Potential::SetIpv4 (Ptr<Ipv4> ipv4)
+void
+Potential::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_LOG_FUNCTION (this << ipv4);
 
@@ -493,7 +499,8 @@ void Potential::SetIpv4 (Ptr<Ipv4> ipv4)
     }
 }
 
-void Potential::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
+void
+Potential::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   NS_LOG_FUNCTION (this << stream);
 
@@ -551,7 +558,8 @@ void Potential::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit u
   *os << std::endl;
 }
 
-void Potential::DoDispose ()
+void
+Potential::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -581,7 +589,8 @@ void Potential::DoDispose ()
 }
 
 
-Ptr<Ipv4Route> Potential::Lookup (Ipv4Address dst, Ptr<NetDevice> interface)
+Ptr<Ipv4Route>
+Potential::Lookup (Ipv4Address dst, Ptr<NetDevice> interface)
 {
   NS_LOG_FUNCTION (this << dst << interface);
 
@@ -655,7 +664,8 @@ Ptr<Ipv4Route> Potential::Lookup (Ipv4Address dst, Ptr<NetDevice> interface)
   return rtentry;
 }
 
-void Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, Ipv4Address nextHop, uint32_t interface)
+void
+Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, Ipv4Address nextHop, uint32_t interface)
 {
   NS_LOG_FUNCTION (this << network << networkPrefix << nextHop << interface);
 
@@ -667,7 +677,8 @@ void Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, 
   m_routes.push_back (std::make_pair (route, EventId ()));
 }
 
-void Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, uint32_t interface)
+void
+Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, uint32_t interface)
 {
   NS_LOG_FUNCTION (this << network << networkPrefix << interface);
 
@@ -679,7 +690,8 @@ void Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, 
   m_routes.push_back (std::make_pair (route, EventId ()));
 }
 
-void Potential::InvalidateRoute (PotentialRoutingTableEntry *route)
+void
+Potential::InvalidateRoute (PotentialRoutingTableEntry *route)
 {
   NS_LOG_FUNCTION (this << *route);
 
@@ -701,7 +713,8 @@ void Potential::InvalidateRoute (PotentialRoutingTableEntry *route)
   NS_ABORT_MSG ("POTENTIAL::InvalidateRoute - cannot find the route to update");
 }
 
-void Potential::DeleteRoute (PotentialRoutingTableEntry *route)
+void
+Potential::DeleteRoute (PotentialRoutingTableEntry *route)
 {
   NS_LOG_FUNCTION (this << *route);
 
@@ -718,7 +731,8 @@ void Potential::DeleteRoute (PotentialRoutingTableEntry *route)
 }
 
 
-void Potential::Receive (Ptr<Socket> socket)
+void
+Potential::Receive (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 
@@ -776,162 +790,24 @@ void Potential::HandleRequests (PotentialHeader requestHdr, Ipv4Address senderAd
 {
   NS_LOG_FUNCTION (this << senderAddress << int (senderPort) << incomingInterface << int (hopLimit) << requestHdr);
 
-  std::list<PotentialRte> rtes = requestHdr.GetRteList ();
-
-  if (rtes.empty ())
+  if (m_interfaceExclusions.find (incomingInterface) != m_interfaceExclusions.end ())
     {
+      NS_LOG_LOGIC ("Ignoring an update message from an excluded interface: " << incomingInterface);
       return;
     }
 
-  // check if it's a request for the full table from a neighbor
-  if (rtes.size () == 1)
-    {
-      if (rtes.begin ()->GetPrefix () == Ipv4Address::GetAny () &&
-          rtes.begin ()->GetSubnetMask ().GetPrefixLength () == 0 &&
-          rtes.begin ()->GetRouteMetric () == m_linkDown)
-        {
-          // Output whole thing. Use Split Horizon
-          if (m_interfaceExclusions.find (incomingInterface) == m_interfaceExclusions.end ())
-            {
-              // we use one of the sending sockets, as they're bound to the right interface
-              // and the local address might be used on different interfaces.
-              Ptr<Socket> sendingSocket;
-              for (SocketListI iter = m_sendSocketList.begin (); iter != m_sendSocketList.end (); iter++ )
-                {
-                  if (iter->second == incomingInterface)
-                    {
-                      sendingSocket = iter->first;
-                    }
-                }
-              NS_ASSERT_MSG (sendingSocket, "HandleRequest - Impossible to find a socket to send the reply");
+  Ptr<Packet> p = Create<Packet> ();
+  SocketIpTtlTag tag;
+  p->RemovePacketTag (tag);
+  tag.SetTtl (1);
+  p->AddPacketTag (tag);
 
-              uint16_t mtu = m_ipv4->GetMtu (incomingInterface);
-              uint16_t maxRte = (mtu - Ipv4Header ().GetSerializedSize () - UdpHeader ().GetSerializedSize () - PotentialHeader ().GetSerializedSize ()) / PotentialRte ().GetSerializedSize ();
-
-              Ptr<Packet> p = Create<Packet> ();
-              SocketIpTtlTag tag;
-              p->RemovePacketTag (tag);
-              if (senderAddress == Ipv4Address(POTENTIAL_ALL_NODE))
-                {
-                  tag.SetTtl (1);
-                }
-              else
-                {
-                  tag.SetTtl (255);
-                }
-              p->AddPacketTag (tag);
-
-              PotentialHeader hdr;
-              hdr.SetCommand (PotentialHeader::RESPONSE);
-
-              for (RoutesI rtIter = m_routes.begin (); rtIter != m_routes.end (); rtIter++)
-                {
-                  bool splitHorizoning = (rtIter->first->GetInterface () == incomingInterface);
-
-                  Ipv4InterfaceAddress rtDestAddr = Ipv4InterfaceAddress(rtIter->first->GetDestNetwork (), rtIter->first->GetDestNetworkMask ());
-
-                  bool isGlobal = (rtDestAddr.GetScope () == Ipv4InterfaceAddress::GLOBAL);
-                  bool isDefaultRoute = ((rtIter->first->GetDestNetwork () == Ipv4Address::GetAny ()) &&
-                      (rtIter->first->GetDestNetworkMask () == Ipv4Mask::GetZero ()) &&
-                      (rtIter->first->GetInterface () != incomingInterface));
-
-                  if ((isGlobal || isDefaultRoute) &&
-                      (rtIter->first->GetRouteStatus () == PotentialRoutingTableEntry::POTENTIAL_VALID) )
-                    {
-                      PotentialRte rte;
-                      rte.SetPrefix (rtIter->first->GetDestNetwork ());
-                      rte.SetSubnetMask (rtIter->first->GetDestNetworkMask ());
-                      if (m_splitHorizonStrategy == POISON_REVERSE && splitHorizoning)
-                        {
-                          rte.SetRouteMetric (m_linkDown);
-                        }
-                      else
-                        {
-                          rte.SetRouteMetric (rtIter->first->GetRouteMetric ());
-                        }
-                      rte.SetRouteTag (rtIter->first->GetRouteTag ());
-                      if ((m_splitHorizonStrategy != SPLIT_HORIZON) ||
-                          (m_splitHorizonStrategy == SPLIT_HORIZON && !splitHorizoning))
-                        {
-                          hdr.AddRte (rte);
-                        }
-                    }
-                  if (hdr.GetRteNumber () == maxRte)
-                    {
-                      p->AddHeader (hdr);
-                      NS_LOG_DEBUG ("SendTo: " << *p);
-                      sendingSocket->SendTo (p, 0, InetSocketAddress (senderAddress, POTENTIAL_PORT));
-                      p->RemoveHeader (hdr);
-                      hdr.ClearRtes ();
-                    }
-                }
-              if (hdr.GetRteNumber () > 0)
-                {
-                  p->AddHeader (hdr);
-                  NS_LOG_DEBUG ("SendTo: " << *p);
-                  sendingSocket->SendTo (p, 0, InetSocketAddress (senderAddress, POTENTIAL_PORT));
-                }
-            }
-        }
-    }
-  else
-    {
-      // note: we got the request as a single packet, so no check is necessary for MTU limit
-
-      Ptr<Packet> p = Create<Packet> ();
-      SocketIpTtlTag tag;
-      p->RemovePacketTag (tag);
-      if (senderAddress == Ipv4Address(POTENTIAL_ALL_NODE))
-        {
-          tag.SetTtl (1);
-        }
-      else
-        {
-          tag.SetTtl (255);
-        }
-      p->AddPacketTag (tag);
-
-      PotentialHeader hdr;
-      hdr.SetCommand (PotentialHeader::RESPONSE);
-
-      for (std::list<PotentialRte>::iterator iter = rtes.begin ();
-          iter != rtes.end (); iter++)
-        {
-          bool found = false;
-          for (RoutesI rtIter = m_routes.begin (); rtIter != m_routes.end (); rtIter++)
-            {
-
-              Ipv4InterfaceAddress rtDestAddr = Ipv4InterfaceAddress (rtIter->first->GetDestNetwork (), rtIter->first->GetDestNetworkMask ());
-              if ((rtDestAddr.GetScope () == Ipv4InterfaceAddress::GLOBAL) &&
-                  (rtIter->first->GetRouteStatus () == PotentialRoutingTableEntry::POTENTIAL_VALID))
-                {
-                  Ipv4Address requestedAddress = iter->GetPrefix ();
-                  requestedAddress.CombineMask (iter->GetSubnetMask ());
-                  Ipv4Address rtAddress = rtIter->first->GetDestNetwork ();
-                  rtAddress.CombineMask (rtIter->first->GetDestNetworkMask ());
-
-                  if (requestedAddress == rtAddress)
-                    {
-                      iter->SetRouteMetric (rtIter->first->GetRouteMetric ());
-                      iter->SetRouteTag (rtIter->first->GetRouteTag ());
-                      hdr.AddRte (*iter);
-                      found = true;
-                      break;
-                    }
-                }
-            }
-          if (!found)
-            {
-              iter->SetRouteMetric (m_linkDown);
-              iter->SetRouteTag (0);
-              hdr.AddRte (*iter);
-            }
-        }
-      p->AddHeader (hdr);
-      NS_LOG_DEBUG ("SendTo: " << *p);
-      m_recvSocket->SendTo (p, 0, InetSocketAddress (senderAddress, senderPort));
-    }
-
+  PotentialHeader hdr;
+  hdr.SetCommand (PotentialHeader::RESPONSE);
+  hdr.SetPotential (m_potential);
+  p->AddHeader (hdr);
+  NS_LOG_DEBUG ("SendTo: " << *p);
+  m_recvSocket->SendTo (p, 0, InetSocketAddress (senderAddress, senderPort));
 }
 
 void Potential::HandleResponses (PotentialHeader hdr, Ipv4Address senderAddress, uint32_t incomingInterface, uint8_t hopLimit)
@@ -944,225 +820,39 @@ void Potential::HandleResponses (PotentialHeader hdr, Ipv4Address senderAddress,
       return;
     }
 
-  std::list<PotentialRte> rtes = hdr.GetRteList ();
-
-  // validate the RTEs before processing
-  for (std::list<PotentialRte>::iterator iter = rtes.begin ();
-      iter != rtes.end (); iter++)
+  auto it = m_neighbors.find (senderAddress);
+  if (it == m_neighbors.end ())
     {
-      if (iter->GetRouteMetric () == 0 || iter->GetRouteMetric () > m_linkDown)
-        {
-          NS_LOG_LOGIC ("Ignoring an update message with malformed metric: " << int (iter->GetRouteMetric ()));
-          return;
-        }
-      if (iter->GetPrefix ().IsLocalhost () ||
-          iter->GetPrefix ().IsBroadcast () ||
-          iter->GetPrefix ().IsMulticast ())
-        {
-          NS_LOG_LOGIC ("Ignoring an update message with wrong prefixes: " << iter->GetPrefix ());
-          return;
-        }
+      m_neighbors[senderAddress] = std::make_pair (hdr.GetPotential (), Simulator::Now ());
     }
-
-  bool changed = false;
-
-  for (std::list<PotentialRte>::iterator iter = rtes.begin ();
-      iter != rtes.end (); iter++)
+  else
     {
-      Ipv4Mask rtePrefixMask = iter->GetSubnetMask ();
-      Ipv4Address rteAddr = iter->GetPrefix ().CombineMask (rtePrefixMask);
-
-      NS_LOG_LOGIC ("Processing RTE " << *iter);
-
-      uint32_t interfaceMetric = 1;
-      if (m_interfaceMetrics.find (incomingInterface) != m_interfaceMetrics.end ())
+      it->second.second = Simulator::Now ();
+      if (it->second.first != hdr.GetPotential ())
         {
-          interfaceMetric = m_interfaceMetrics[incomingInterface];
-        }
-      uint64_t rteMetric = iter->GetRouteMetric () + interfaceMetric;
-      if (rteMetric > m_linkDown)
-        {
-          rteMetric = m_linkDown;
-        }
-
-      RoutesI it;
-      bool found = false;
-      for (it = m_routes.begin (); it != m_routes.end (); it++)
-        {
-          if (it->first->GetDestNetwork () == rteAddr &&
-              it->first->GetDestNetworkMask () == rtePrefixMask)
-            {
-              found = true;
-              if (rteMetric < it->first->GetRouteMetric ())
-                {
-                  if (senderAddress != it->first->GetGateway ())
-                    {
-                      PotentialRoutingTableEntry* route = new PotentialRoutingTableEntry (rteAddr, rtePrefixMask, senderAddress, incomingInterface);
-                      delete it->first;
-                      it->first = route;
-                    }
-                  it->first->SetRouteMetric (rteMetric);
-                  it->first->SetRouteStatus (PotentialRoutingTableEntry::POTENTIAL_VALID);
-                  it->first->SetRouteTag (iter->GetRouteTag ());
-                  it->first->SetRouteChanged (true);
-                  it->second.Cancel ();
-                  it->second = Simulator::Schedule (m_timeoutDelay, &Potential::InvalidateRoute, this, it->first);
-                  changed = true;
-                }
-              else if (rteMetric == it->first->GetRouteMetric ())
-                {
-                  if (senderAddress == it->first->GetGateway ())
-                    {
-                      it->second.Cancel ();
-                      it->second = Simulator::Schedule (m_timeoutDelay, &Potential::InvalidateRoute, this, it->first);
-                    }
-                  else
-                    {
-                      if (Simulator::GetDelayLeft (it->second) < m_timeoutDelay/2)
-                        {
-                          PotentialRoutingTableEntry* route = new PotentialRoutingTableEntry (rteAddr, rtePrefixMask, senderAddress, incomingInterface);
-                          route->SetRouteMetric (rteMetric);
-                          route->SetRouteStatus (PotentialRoutingTableEntry::POTENTIAL_VALID);
-                          route->SetRouteTag (iter->GetRouteTag ());
-                          route->SetRouteChanged (true);
-                          delete it->first;
-                          it->first = route;
-                          it->second.Cancel ();
-                          it->second = Simulator::Schedule (m_timeoutDelay, &Potential::InvalidateRoute, this, route);
-                          changed = true;
-                        }
-                    }
-                }
-              else if (rteMetric > it->first->GetRouteMetric () && senderAddress == it->first->GetGateway ())
-                {
-                  it->second.Cancel ();
-                  if (rteMetric < m_linkDown)
-                    {
-                      it->first->SetRouteMetric (rteMetric);
-                      it->first->SetRouteStatus (PotentialRoutingTableEntry::POTENTIAL_VALID);
-                      it->first->SetRouteTag (iter->GetRouteTag ());
-                      it->first->SetRouteChanged (true);
-                      it->second.Cancel ();
-                      it->second = Simulator::Schedule (m_timeoutDelay, &Potential::InvalidateRoute, this, it->first);
-                    }
-                  else
-                    {
-                      InvalidateRoute (it->first);
-                    }
-                  changed = true;
-                }
-            }
-        }
-      if (!found && rteMetric != m_linkDown)
-        {
-          NS_LOG_LOGIC ("Received a RTE with new route, adding.");
-
-          PotentialRoutingTableEntry* route = new PotentialRoutingTableEntry (rteAddr, rtePrefixMask, senderAddress, incomingInterface);
-          route->SetRouteMetric (rteMetric);
-          route->SetRouteStatus (PotentialRoutingTableEntry::POTENTIAL_VALID);
-          route->SetRouteChanged (true);
-          m_routes.push_front (std::make_pair (route, EventId ()));
-          EventId invalidateEvent = Simulator::Schedule (m_timeoutDelay, &Potential::InvalidateRoute, this, route);
-          (m_routes.begin ())->second = invalidateEvent;
-          changed = true;
-        }
+          it->second.first = hdr.GetPotential ();
+        }      
     }
+  
 
-  if (changed)
-    {
-      SendTriggeredRouteUpdate ();
-    }
 }
 
 void Potential::DoSendRouteUpdate (bool periodic)
 {
   NS_LOG_FUNCTION (this << (periodic ? " periodic" : " triggered"));
 
-  for (SocketListI iter = m_sendSocketList.begin (); iter != m_sendSocketList.end (); iter++ )
-    {
-      uint32_t interface = iter->second;
+  Ptr<Packet> p = Create<Packet> ();
+  SocketIpTtlTag tag;
+  p->RemovePacketTag (tag);
+  tag.SetTtl (1);
+  p->AddPacketTag (tag);
 
-      if (m_interfaceExclusions.find (interface) == m_interfaceExclusions.end ())
-        {
-          uint16_t mtu = m_ipv4->GetMtu (interface);
-          uint16_t maxRte = (mtu - Ipv4Header ().GetSerializedSize () - UdpHeader ().GetSerializedSize () - PotentialHeader ().GetSerializedSize ()) / PotentialRte ().GetSerializedSize ();
-
-          Ptr<Packet> p = Create<Packet> ();
-          SocketIpTtlTag tag;
-          tag.SetTtl (1);
-          p->AddPacketTag (tag);
-
-          PotentialHeader hdr;
-          hdr.SetCommand (PotentialHeader::RESPONSE);
-
-          for (RoutesI rtIter = m_routes.begin (); rtIter != m_routes.end (); rtIter++)
-            {
-              bool splitHorizoning = (rtIter->first->GetInterface () == interface);
-              Ipv4InterfaceAddress rtDestAddr = Ipv4InterfaceAddress(rtIter->first->GetDestNetwork (), rtIter->first->GetDestNetworkMask ());
-
-              NS_LOG_DEBUG ("Processing RT " << rtDestAddr << " " << int(rtIter->first->IsRouteChanged ()));
-
-              bool isGlobal = (rtDestAddr.GetScope () == Ipv4InterfaceAddress::GLOBAL);
-              bool isDefaultRoute = ((rtIter->first->GetDestNetwork () == Ipv4Address::GetAny ()) &&
-                  (rtIter->first->GetDestNetworkMask () == Ipv4Mask::GetZero ()) &&
-                  (rtIter->first->GetInterface () != interface));
-
-              bool sameNetwork = false;
-              for (uint32_t index = 0; index < m_ipv4->GetNAddresses (interface); index++)
-                {
-                  Ipv4InterfaceAddress addr = m_ipv4->GetAddress (interface, index);
-                  if (addr.GetLocal ().CombineMask (addr.GetMask ()) == rtIter->first->GetDestNetwork ())
-                    {
-                      sameNetwork = true;
-                    }
-                }
-
-              if ((isGlobal || isDefaultRoute) &&
-                  (periodic || rtIter->first->IsRouteChanged ()) &&
-                  !sameNetwork)
-                {
-                  PotentialRte rte;
-                  rte.SetPrefix (rtIter->first->GetDestNetwork ());
-                  rte.SetSubnetMask (rtIter->first->GetDestNetworkMask ());
-                  if (m_splitHorizonStrategy == POISON_REVERSE && splitHorizoning)
-                    {
-                      rte.SetRouteMetric (m_linkDown);
-                    }
-                  else
-                    {
-                      rte.SetRouteMetric (rtIter->first->GetRouteMetric ());
-                    }
-                  rte.SetRouteTag (rtIter->first->GetRouteTag ());
-                  if (m_splitHorizonStrategy == SPLIT_HORIZON && !splitHorizoning)
-                    {
-                      hdr.AddRte (rte);
-                    }
-                  else if (m_splitHorizonStrategy != SPLIT_HORIZON)
-                    {
-                      hdr.AddRte (rte);
-                    }
-                }
-              if (hdr.GetRteNumber () == maxRte)
-                {
-                  p->AddHeader (hdr);
-                  NS_LOG_DEBUG ("SendTo: " << *p);
-                  iter->first->SendTo (p, 0, InetSocketAddress (POTENTIAL_ALL_NODE, POTENTIAL_PORT));
-                  p->RemoveHeader (hdr);
-                  hdr.ClearRtes ();
-                }
-            }
-          if (hdr.GetRteNumber () > 0)
-            {
-              p->AddHeader (hdr);
-              NS_LOG_DEBUG ("SendTo: " << *p);
-              iter->first->SendTo (p, 0, InetSocketAddress (POTENTIAL_ALL_NODE, POTENTIAL_PORT));
-            }
-        }
-    }
-  for (RoutesI rtIter = m_routes.begin (); rtIter != m_routes.end (); rtIter++)
-    {
-      rtIter->first->SetRouteChanged (false);
-    }
+  PotentialHeader hdr;
+  hdr.SetCommand (PotentialHeader::RESPONSE);
+  hdr.SetPotential (m_potential);
+  p->AddHeader (hdr);
+  NS_LOG_DEBUG ("SendTo: " << *p);
+  m_recvSocket->SendTo (p, 0, InetSocketAddress (POTENTIAL_ALL_NODE, POTENTIAL_PORT));
 }
 
 void Potential::SendTriggeredRouteUpdate ()
@@ -1174,22 +864,6 @@ void Potential::SendTriggeredRouteUpdate ()
       NS_LOG_LOGIC ("Skipping Triggered Update due to cooldown");
       return;
     }
-
-  // DoSendRouteUpdate (false);
-
-  // note: The RFC states:
-  //     After a triggered
-  //     update is sent, a timer should be set for a random interval between 1
-  //     and 5 seconds.  If other changes that would trigger updates occur
-  //     before the timer expires, a single update is triggered when the timer
-  //     expires.  The timer is then reset to another random value between 1
-  //     and 5 seconds.  Triggered updates may be suppressed if a regular
-  //     update is due by the time the triggered update would be sent.
-  // Here we rely on this:
-  // When an update occurs (either Triggered or Periodic) the "IsChanged ()"
-  // route field will be cleared.
-  // Hence, the following Triggered Update will be fired, but will not send
-  // any route update.
 
   Time delay = Seconds (m_rng->GetValue (m_minTriggeredUpdateDelay.GetSeconds (), m_maxTriggeredUpdateDelay.GetSeconds ()));
   m_nextTriggeredUpdate = Simulator::Schedule (delay, &Potential::DoSendRouteUpdate, this, false);
@@ -1210,19 +884,22 @@ void Potential::SendUnsolicitedRouteUpdate ()
   m_nextUnsolicitedUpdate = Simulator::Schedule (delay, &Potential::SendUnsolicitedRouteUpdate, this);
 }
 
-std::set<uint32_t> Potential::GetInterfaceExclusions () const
+std::set<uint32_t>
+Potential::GetInterfaceExclusions () const
 {
   return m_interfaceExclusions;
 }
 
-void Potential::SetInterfaceExclusions (std::set<uint32_t> exceptions)
+void
+Potential::SetInterfaceExclusions (std::set<uint32_t> exceptions)
 {
   NS_LOG_FUNCTION (this);
 
   m_interfaceExclusions = exceptions;
 }
 
-uint8_t Potential::GetInterfaceMetric (uint32_t interface) const
+uint8_t
+Potential::GetInterfaceMetric (uint32_t interface) const
 {
   NS_LOG_FUNCTION (this << interface);
 
@@ -1234,7 +911,8 @@ uint8_t Potential::GetInterfaceMetric (uint32_t interface) const
   return 1;
 }
 
-void Potential::SetInterfaceMetric (uint32_t interface, uint8_t metric)
+void
+Potential::SetInterfaceMetric (uint32_t interface, uint8_t metric)
 {
   NS_LOG_FUNCTION (this << interface << int (metric));
 
@@ -1244,7 +922,8 @@ void Potential::SetInterfaceMetric (uint32_t interface, uint8_t metric)
     }
 }
 
-void Potential::SendRouteRequest ()
+void
+Potential::SendRouteRequest ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1256,13 +935,7 @@ void Potential::SendRouteRequest ()
 
   PotentialHeader hdr;
   hdr.SetCommand (PotentialHeader::REQUEST);
-
-  PotentialRte rte;
-  rte.SetPrefix (Ipv4Address::GetAny ());
-  rte.SetSubnetMask (Ipv4Mask::GetZero ());
-  rte.SetRouteMetric (m_linkDown);
-
-  hdr.AddRte (rte);
+  hdr.SetPotential (m_potential);
   p->AddHeader (hdr);
 
   for (SocketListI iter = m_sendSocketList.begin (); iter != m_sendSocketList.end (); iter++ )
@@ -1277,7 +950,8 @@ void Potential::SendRouteRequest ()
     }
 }
 
-void Potential::AddDefaultRouteTo (Ipv4Address nextHop, uint32_t interface)
+void
+Potential::AddDefaultRouteTo (Ipv4Address nextHop, uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
 
@@ -1290,19 +964,28 @@ void Potential::AddDefaultRouteTo (Ipv4Address nextHop, uint32_t interface)
  */
 
 PotentialRoutingTableEntry::PotentialRoutingTableEntry ()
-  : m_tag (0), m_metric (0), m_status (POTENTIAL_INVALID), m_changed (false)
+  : m_tag (0),
+    m_metric (0),
+    m_status (POTENTIAL_INVALID),
+    m_changed (false)
 {
 }
 
 PotentialRoutingTableEntry::PotentialRoutingTableEntry (Ipv4Address network, Ipv4Mask networkPrefix, Ipv4Address nextHop, uint32_t interface)
   : Ipv4RoutingTableEntry ( Ipv4RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface) ),
-    m_tag (0), m_metric (0), m_status (POTENTIAL_INVALID), m_changed (false)
+    m_tag (0),
+    m_metric (0),
+    m_status (POTENTIAL_INVALID),
+    m_changed (false)
 {
 }
 
 PotentialRoutingTableEntry::PotentialRoutingTableEntry (Ipv4Address network, Ipv4Mask networkPrefix, uint32_t interface)
   : Ipv4RoutingTableEntry ( Ipv4RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, interface) ),
-    m_tag (0), m_metric (0), m_status (POTENTIAL_INVALID), m_changed (false)
+    m_tag (0),
+    m_metric (0),
+    m_status (POTENTIAL_INVALID),
+    m_changed (false)
 {
 }
 
@@ -1311,7 +994,8 @@ PotentialRoutingTableEntry::~PotentialRoutingTableEntry ()
 }
 
 
-void PotentialRoutingTableEntry::SetRouteTag (uint16_t routeTag)
+void
+PotentialRoutingTableEntry::SetRouteTag (uint16_t routeTag)
 {
   if (m_tag != routeTag)
     {
@@ -1320,12 +1004,14 @@ void PotentialRoutingTableEntry::SetRouteTag (uint16_t routeTag)
     }
 }
 
-uint16_t PotentialRoutingTableEntry::GetRouteTag () const
+uint16_t
+PotentialRoutingTableEntry::GetRouteTag () const
 {
   return m_tag;
 }
 
-void PotentialRoutingTableEntry::SetRouteMetric (uint8_t routeMetric)
+void
+PotentialRoutingTableEntry::SetRouteMetric (uint8_t routeMetric)
 {
   if (m_metric != routeMetric)
     {
@@ -1334,12 +1020,14 @@ void PotentialRoutingTableEntry::SetRouteMetric (uint8_t routeMetric)
     }
 }
 
-uint8_t PotentialRoutingTableEntry::GetRouteMetric () const
+uint8_t
+PotentialRoutingTableEntry::GetRouteMetric () const
 {
   return m_metric;
 }
 
-void PotentialRoutingTableEntry::SetRouteStatus (Status_e status)
+void
+PotentialRoutingTableEntry::SetRouteStatus (Status_e status)
 {
   if (m_status != status)
     {
@@ -1348,17 +1036,20 @@ void PotentialRoutingTableEntry::SetRouteStatus (Status_e status)
     }
 }
 
-PotentialRoutingTableEntry::Status_e PotentialRoutingTableEntry::GetRouteStatus (void) const
+PotentialRoutingTableEntry::Status_e
+PotentialRoutingTableEntry::GetRouteStatus (void) const
 {
   return m_status;
 }
 
-void PotentialRoutingTableEntry::SetRouteChanged (bool changed)
+void
+PotentialRoutingTableEntry::SetRouteChanged (bool changed)
 {
   m_changed = changed;
 }
 
-bool PotentialRoutingTableEntry::IsRouteChanged (void) const
+bool
+PotentialRoutingTableEntry::IsRouteChanged (void) const
 {
   return m_changed;
 }

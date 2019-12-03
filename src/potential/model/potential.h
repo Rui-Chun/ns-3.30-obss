@@ -197,15 +197,6 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
   /**
-   * Split Horizon strategy type. See \RFC{2453}.
-   */
-  enum SplitHorizonType_e {
-    NO_SPLIT_HORIZON,//!< No Split Horizon
-    SPLIT_HORIZON,   //!< Split Horizon
-    POISON_REVERSE,  //!< Poison Reverse Split Horizon
-  };
-
-  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
    * have been assigned.
@@ -400,13 +391,12 @@ private:
   std::set<uint32_t> m_interfaceExclusions; //!< Set of excluded interfaces
   std::map<uint32_t, uint8_t> m_interfaceMetrics; //!< Map of interface metrics
 
-  SplitHorizonType_e m_splitHorizonStrategy; //!< Split Horizon strategy
-
   bool m_initialized; //!< flag to allow socket's late-creation.
   uint32_t m_linkDown; //!< Link down value.
 
   bool m_fixedPotential;
-  double m_potential;
+  uint32_t m_potential;
+  std::map<Ipv4Address, std::pair<uint32_t, Time>> m_neighbors;
 };
 
 } // namespace ns3
