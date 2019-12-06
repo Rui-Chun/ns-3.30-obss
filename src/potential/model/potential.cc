@@ -19,6 +19,9 @@
  */
 
 #include <iomanip>
+#include <algorithm>
+#include <functional>
+#include <map>
 #include "potential.h"
 #include "ns3/log.h"
 #include "ns3/abort.h"
@@ -34,7 +37,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/ipv4-packet-info-tag.h"
 #include "ns3/loopback-net-device.h"
-
 #include "ns3/double.h"
 #include "ns3/boolean.h"
 
@@ -49,9 +51,7 @@ NS_OBJECT_ENSURE_REGISTERED (Potential);
 
 Potential::Potential ()
   : m_ipv4 (0),
-    m_initialized (false),
-    m_fixedPotential (true),
-    m_potential (0)
+    m_initialized (false)
 {
   m_rng = CreateObject<UniformRandomVariable> ();
 }
@@ -100,9 +100,13 @@ Potential::GetTypeId (void)
                    MakeBooleanAccessor (&Potential::m_fixedPotential),
                    MakeBooleanChecker ())
     .AddAttribute ("Potential", "Initial potential value",
-                   DoubleValue (0),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&Potential::m_potential),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Conductivity", "Potential conductivity value",
+                   DoubleValue (0.25),
+                   MakeDoubleAccessor (&Potential::m_conductivity),
+                   MakeDoubleChecker<double> ())
     ;
   return tid;
 }
@@ -237,7 +241,9 @@ Potential::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const 
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
   Ipv4Address dst = header.GetDestination ();
 
-    if (m_ipv4->IsDestinationAddress (header.GetDestination (), iif))
+  AddNetworkRouteTo (header.GetSource (), Ipv4Mask::GetOnes (), iif);
+
+  if (m_ipv4->IsDestinationAddress (header.GetDestination (), iif))
     {
       if (!lcb.IsNull ())
         {
@@ -256,11 +262,11 @@ Potential::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const 
         }
     }
 
-    if (dst.IsMulticast ())
-      {
-        NS_LOG_LOGIC ("Multicast route not supported by POTENTIAL");
-        return false; // Let other routing protocols try to handle this
-      }
+  if (dst.IsMulticast ())
+    {
+      NS_LOG_LOGIC ("Multicast route not supported by POTENTIAL");
+      return false; // Let other routing protocols try to handle this
+    }
 
   if (header.GetDestination ().IsBroadcast ())
     {
@@ -786,7 +792,8 @@ Potential::Receive (Ptr<Socket> socket)
   return;
 }
 
-void Potential::HandleRequests (PotentialHeader requestHdr, Ipv4Address senderAddress, uint16_t senderPort, uint32_t incomingInterface, uint8_t hopLimit)
+void
+Potential::HandleRequests (PotentialHeader requestHdr, Ipv4Address senderAddress, uint16_t senderPort, uint32_t incomingInterface, uint8_t hopLimit)
 {
   NS_LOG_FUNCTION (this << senderAddress << int (senderPort) << incomingInterface << int (hopLimit) << requestHdr);
 
@@ -808,9 +815,12 @@ void Potential::HandleRequests (PotentialHeader requestHdr, Ipv4Address senderAd
   p->AddHeader (hdr);
   NS_LOG_DEBUG ("SendTo: " << *p);
   m_recvSocket->SendTo (p, 0, InetSocketAddress (senderAddress, senderPort));
+
+  UpdateNeighbor (senderAddress, requestHdr.GetPotential (), incomingInterface);
 }
 
-void Potential::HandleResponses (PotentialHeader hdr, Ipv4Address senderAddress, uint32_t incomingInterface, uint8_t hopLimit)
+void
+Potential::HandleResponses (PotentialHeader hdr, Ipv4Address senderAddress, uint32_t incomingInterface, uint8_t hopLimit)
 {
   NS_LOG_FUNCTION (this << senderAddress << incomingInterface << int (hopLimit) << hdr);
 
@@ -820,21 +830,65 @@ void Potential::HandleResponses (PotentialHeader hdr, Ipv4Address senderAddress,
       return;
     }
 
-  auto it = m_neighbors.find (senderAddress);
+  UpdateNeighbor (senderAddress, hdr.GetPotential (), incomingInterface);
+}
+
+void
+Potential::UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t incomingInterface)
+{
+  auto it = m_neighbors.find (neighbor);
   if (it == m_neighbors.end ())
     {
-      m_neighbors[senderAddress] = std::make_pair (hdr.GetPotential (), Simulator::Now ());
+      m_neighbors[neighbor] = std::make_tuple (potential, incomingInterface, Simulator::Now ());
+      UpdatePotential ();
     }
   else
     {
-      it->second.second = Simulator::Now ();
-      if (it->second.first != hdr.GetPotential ())
+      std::get<2> (it->second) = Simulator::Now ();
+      if (std::get<0> (it->second) != potential)
         {
-          it->second.first = hdr.GetPotential ();
+          std::get<0> (it->second) = potential;
+          UpdatePotential ();
         }      
     }
-  
+}
 
+void
+Potential::UpdatePotential ()
+{
+  if (m_fixedPotential)
+    {
+      return;
+    }
+
+  // delete outdated
+
+  NeighborCList clist;
+  for (auto it : m_neighbors)
+    {
+      clist.push_back (std::make_pair (std::get<0> (it.second), it.first));
+    }
+
+  NeighborListComparator cmp =
+    [](std::pair<uint32_t, Ipv4Address> a, std::pair<uint32_t, Ipv4Address> b)
+      {
+        return a.first <= b.first;
+      };
+
+  clist.sort (cmp);
+
+  double potential = 0;
+  for (auto it : clist)
+    {
+      if (potential >= (double) it.first)
+        {
+          break;
+        }
+      potential += ((double) it.first - potential) * m_conductivity;
+    }
+  m_potential = (uint32_t) potential;
+
+  AddDefaultRouteTo (m_neighbors.begin ()->first, std::get<1> (m_neighbors.begin ()->second));
 }
 
 void Potential::DoSendRouteUpdate (bool periodic)

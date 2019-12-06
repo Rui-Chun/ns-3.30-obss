@@ -124,13 +124,13 @@ PotentialHeader::GetCommand () const
 void
 PotentialHeader::SetPotential (uint32_t potential)
 {
-  m_potential = uint16_t (potential);
+  m_potential = potential;
 }
 
 uint32_t
 PotentialHeader::GetPotential (void)
 {
-  return uint16_t (m_potential);
+  return m_potential;
 }
 
 

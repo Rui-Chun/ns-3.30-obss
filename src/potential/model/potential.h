@@ -22,6 +22,8 @@
 #define POTENTIAL_H
 
 #include <list>
+#include <map>
+#include <functional>
 
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
@@ -362,6 +364,9 @@ private:
    */
   void DeleteRoute (PotentialRoutingTableEntry *route);
 
+  void UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t incomingInterface);
+  void UpdatePotential (void);
+
   Routes m_routes; //!<  the forwarding table for network.
   Ptr<Ipv4> m_ipv4; //!< IPv4 reference
   Time m_startupDelay; //!< Random delay before protocol startup.
@@ -396,7 +401,12 @@ private:
 
   bool m_fixedPotential;
   uint32_t m_potential;
-  std::map<Ipv4Address, std::pair<uint32_t, Time>> m_neighbors;
+  double m_conductivity;
+
+  typedef std::list<std::pair<uint32_t, Ipv4Address>> NeighborCList;
+  typedef std::function<bool(std::pair<uint32_t, Ipv4Address>, std::pair<uint32_t, Ipv4Address>)> NeighborListComparator;
+  typedef std::map<Ipv4Address, std::tuple<uint32_t, uint32_t, Time>> NeighborList;
+  NeighborList m_neighbors;
 };
 
 } // namespace ns3
