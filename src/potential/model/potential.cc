@@ -68,7 +68,7 @@ Potential::GetTypeId (void)
     .SetGroupName ("Internet")
     .AddConstructor<Potential> ()
     .AddAttribute ("UnsolicitedRoutingUpdate", "The time between two Unsolicited Routing Updates.",
-                   TimeValue (Seconds(3)),
+                   TimeValue (Seconds(5)),
                    MakeTimeAccessor (&Potential::m_unsolicitedUpdate),
                    MakeTimeChecker ())
     .AddAttribute ("StartupDelay", "Maximum random delay for protocol startup (send route requests).",
@@ -513,7 +513,15 @@ Potential::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
       << ", Time: " << Now().As (unit)
       << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
-      << ", IPv4 POTENTIAL table" << std::endl;
+      << ", Fixed: " << m_fixedPotential
+      << ", Potential: " << m_potential << std::endl;
+
+  for (auto it : m_neighbors)
+    {
+      *os << it.first << '-' << std::get<0> (it.second) << '\t';
+    }
+    
+  *os << ", IPv4 POTENTIAL table" << std::endl;
 
   if (!m_routes.empty ())
     {
@@ -858,6 +866,7 @@ Potential::HandleResponses (PotentialHeader hdr, Ipv4Address senderAddress, uint
 void
 Potential::UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t incomingInterface)
 {
+  NS_LOG_FUNCTION (this);
   auto it = m_neighbors.find (neighbor);
   if (it == m_neighbors.end ())
     {
@@ -902,7 +911,7 @@ Potential::UpdatePotential ()
   double potential = 0;
   for (auto it : clist)
     {
-      if (potential >= (double) std::get<0> (it))
+      if (potential > (double) std::get<0> (it))
         {
           break;
         }
@@ -913,7 +922,8 @@ Potential::UpdatePotential ()
   AddDefaultRouteTo (std::get<1> (clist.back ()), std::get<2> (clist.back ()));
 }
 
-void Potential::DoSendRouteUpdate (bool periodic)
+void
+Potential::DoSendRouteUpdate (bool periodic)
 {
   NS_LOG_FUNCTION (this << (periodic ? " periodic" : " triggered"));
 
@@ -927,11 +937,26 @@ void Potential::DoSendRouteUpdate (bool periodic)
   hdr.SetCommand (PotentialHeader::RESPONSE);
   hdr.SetPotential (m_potential);
   p->AddHeader (hdr);
-  NS_LOG_DEBUG ("SendTo: " << *p);
-  m_recvSocket->SendTo (p, 0, InetSocketAddress (POTENTIAL_ALL_NODE, POTENTIAL_PORT));
+  NS_LOG_DEBUG ("Potential: " << m_potential << ", SendTo: " << *p);
+
+  for (SocketListI iter = m_sendSocketList.begin (); iter != m_sendSocketList.end (); iter++ )
+    {
+      uint32_t interface = iter->second;
+
+      if (m_interfaceExclusions.find (interface) == m_interfaceExclusions.end ())
+        {
+          iter->first->SendTo (p, 0, InetSocketAddress (POTENTIAL_ALL_NODE, POTENTIAL_PORT));
+        }
+    }
+
+  for (RoutesI rtIter = m_routes.begin (); rtIter != m_routes.end (); rtIter++)
+    {
+      rtIter->first->SetRouteChanged (false);
+    }
 }
 
-void Potential::SendTriggeredRouteUpdate ()
+void
+Potential::SendTriggeredRouteUpdate ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -945,7 +970,8 @@ void Potential::SendTriggeredRouteUpdate ()
   m_nextTriggeredUpdate = Simulator::Schedule (delay, &Potential::DoSendRouteUpdate, this, false);
 }
 
-void Potential::SendUnsolicitedRouteUpdate ()
+void
+Potential::SendUnsolicitedRouteUpdate ()
 {
   NS_LOG_FUNCTION (this);
 

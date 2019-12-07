@@ -69,9 +69,14 @@ PrintThroughputTitle (uint32_t apNum)
 int main(int argc, char** argv)
 {
   std::cout << fixed << setprecision(3);
+  Config::SetDefault ("ns3::WifiMacQueue::MaxQueueSize", StringValue ("1000p"));
+  Config::SetDefault ("ns3::WifiMacQueue::MaxDelay", TimeValue (Seconds (0.2)));
+  // Config::SetDefault ("ns3::WifiMacQueue::DropPolicy", EnumValue (WifiMacQueue::DROP_OLDEST));
 
   uint32_t apNum = 2;
-  double apStep = 50;
+  double apXStep = 50;
+  double apYStep = 50;
+  uint32_t apXSize = 100;
   std::string route ("aodv");
   std::string gateways ("0");
   double datarate = 2e6;
@@ -82,7 +87,9 @@ int main(int argc, char** argv)
 
 	CommandLine cmd;
   cmd.AddValue ("apNum", "number of mesh nodes", apNum);
-  cmd.AddValue ("apStep", "distance between mesh neighbors", apStep);
+  cmd.AddValue ("apXStep", "X distance between mesh neighbors", apXStep);
+  cmd.AddValue ("apYStep", "Y distance between mesh neighbors", apYStep);
+  cmd.AddValue ("apXSize", "X size of mesh grid", apXSize);
   cmd.AddValue ("route", "routing protocol", route);
   cmd.AddValue ("gateways", "index of gateways in mesh", gateways);
   cmd.AddValue ("datarate", "tested application datarate", datarate);
@@ -134,17 +141,14 @@ int main(int argc, char** argv)
 	mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0),
                                  "MinY", DoubleValue (0),
-                                 "DeltaX", DoubleValue (apStep),
-                                 "DeltaY", DoubleValue (0),
-                                 "GridWidth", UintegerValue (1000));
+                                 "DeltaX", DoubleValue (apXStep),
+                                 "DeltaY", DoubleValue (apYStep),
+                                 "GridWidth", UintegerValue (apXSize));
 	mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 	mobility.Install (meshNodes);
 	mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0),
-                                 "MinY", DoubleValue (0),
-                                 "DeltaX", DoubleValue (10),
-                                 "DeltaY", DoubleValue (0),
-                                 "GridWidth", UintegerValue (1000));
+                                 "MinY", DoubleValue (0));
 	mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 	mobility.Install (serverNodes);
 
@@ -193,13 +197,13 @@ int main(int argc, char** argv)
     {
       PotentialHelper serverPotential;
       serverPotential.Set ("FixedPotential", BooleanValue (true));
-      serverPotential.Set ("Potential", UintegerValue (1001));
+      serverPotential.Set ("Potential", UintegerValue (65536));
       internet.SetRoutingHelper (serverPotential);
       internet.Install (serverNodes);
 
       PotentialHelper gatewayPotential;
       gatewayPotential.Set ("FixedPotential", BooleanValue (true));
-      gatewayPotential.Set ("Potential", UintegerValue (1000));
+      gatewayPotential.Set ("Potential", UintegerValue (65535));
       internet.SetRoutingHelper (gatewayPotential);
       internet.Install (meshGateways);
 
@@ -232,14 +236,14 @@ int main(int argc, char** argv)
   uint16_t port = 9999;
   UdpEchoServerHelper echoServer (port);
   ApplicationContainer echoS = echoServer.Install (serverNodes);
-  echoS.Start (Seconds (30));
+  echoS.Start (Seconds (startTime / 2));
   echoS.Stop (Seconds (totalTime + 1));
   UdpEchoClientHelper echoClient (csmaIfaces.GetAddress (0), port);
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (1)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (100));
   ApplicationContainer echoC = echoClient.Install (meshNodes);
-  echoC.Start (Seconds (30));
-  echoC.Stop (Seconds (startTime -1));
+  echoC.Start (Seconds (startTime / 2));
+  echoC.Stop (Seconds (startTime - 1));
 
   // test applications
   ApplicationContainer udpUS;
@@ -276,7 +280,7 @@ int main(int argc, char** argv)
   Simulator::Schedule (Seconds (startTime+monitorInterval), &CalculateThroughput, monitorInterval);
 
   // run
-	Simulator::Stop (Seconds (totalTime));
+	Simulator::Stop (Seconds (totalTime + 0.1));
 	Simulator::Run ();
 	Simulator::Destroy ();
 
