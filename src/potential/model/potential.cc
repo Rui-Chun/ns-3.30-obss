@@ -241,8 +241,6 @@ Potential::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const 
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
   Ipv4Address dst = header.GetDestination ();
 
-  AddNetworkRouteTo (header.GetSource (), Ipv4Mask::GetOnes (), iif);
-
   if (m_ipv4->IsDestinationAddress (header.GetDestination (), iif))
     {
       if (!lcb.IsNull ())
@@ -680,6 +678,18 @@ Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, Ipv4A
   route->SetRouteStatus (PotentialRoutingTableEntry::POTENTIAL_VALID);
   route->SetRouteChanged (true);
 
+  for (auto it = m_routes.begin (); it != m_routes.end (); )
+    {
+      if (it->first->GetDest () == network)
+        {
+          it = m_routes.erase (it);
+        }
+      else
+        {
+          it++;
+        }
+    }
+
   m_routes.push_back (std::make_pair (route, EventId ()));
 }
 
@@ -692,6 +702,18 @@ Potential::AddNetworkRouteTo (Ipv4Address network, Ipv4Mask networkPrefix, uint3
   route->SetRouteMetric (1);
   route->SetRouteStatus (PotentialRoutingTableEntry::POTENTIAL_VALID);
   route->SetRouteChanged (true);
+
+  for (auto it = m_routes.begin (); it != m_routes.end (); )
+    {
+      if (it->first->GetDest () == network)
+        {
+          it = m_routes.erase (it);
+        }
+      else
+        {
+          it++;
+        }
+    }
 
   m_routes.push_back (std::make_pair (route, EventId ()));
 }
@@ -866,13 +888,13 @@ Potential::UpdatePotential ()
   NeighborCList clist;
   for (auto it : m_neighbors)
     {
-      clist.push_back (std::make_pair (std::get<0> (it.second), it.first));
+      clist.push_back (std::make_tuple (std::get<0> (it.second), it.first, std::get<1> (it.second)));
     }
 
   NeighborListComparator cmp =
-    [](std::pair<uint32_t, Ipv4Address> a, std::pair<uint32_t, Ipv4Address> b)
+    [](std::tuple<uint32_t, Ipv4Address, uint32_t> a, std::tuple<uint32_t, Ipv4Address, uint32_t> b)
       {
-        return a.first <= b.first;
+        return std::get<0> (a) <= std::get<0> (b);
       };
 
   clist.sort (cmp);
@@ -880,15 +902,15 @@ Potential::UpdatePotential ()
   double potential = 0;
   for (auto it : clist)
     {
-      if (potential >= (double) it.first)
+      if (potential >= (double) std::get<0> (it))
         {
           break;
         }
-      potential += ((double) it.first - potential) * m_conductivity;
+      potential += ((double) std::get<0> (it) - potential) * m_conductivity;
     }
   m_potential = (uint32_t) potential;
 
-  AddDefaultRouteTo (m_neighbors.begin ()->first, std::get<1> (m_neighbors.begin ()->second));
+  AddDefaultRouteTo (std::get<1> (clist.back ()), std::get<2> (clist.back ()));
 }
 
 void Potential::DoSendRouteUpdate (bool periodic)

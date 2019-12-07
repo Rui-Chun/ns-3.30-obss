@@ -403,8 +403,8 @@ private:
   uint32_t m_potential;
   double m_conductivity;
 
-  typedef std::list<std::pair<uint32_t, Ipv4Address>> NeighborCList;
-  typedef std::function<bool(std::pair<uint32_t, Ipv4Address>, std::pair<uint32_t, Ipv4Address>)> NeighborListComparator;
+  typedef std::list<std::tuple<uint32_t, Ipv4Address, uint32_t>> NeighborCList;
+  typedef std::function<bool(std::tuple<uint32_t, Ipv4Address, uint32_t>, std::tuple<uint32_t, Ipv4Address, uint32_t>)> NeighborListComparator;
   typedef std::map<Ipv4Address, std::tuple<uint32_t, uint32_t, Time>> NeighborList;
   NeighborList m_neighbors;
 };

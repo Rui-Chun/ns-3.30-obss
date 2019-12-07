@@ -70,21 +70,26 @@ int main(int argc, char** argv)
 {
   std::cout << fixed << setprecision(3);
 
-  uint32_t apNum = 4;
+  uint32_t apNum = 2;
+  double apStep = 50;
   std::string route ("aodv");
   std::string gateways ("0");
-  uint64_t datarate = 1e6;
+  double datarate = 2e6;
   double startTime = 60;
   double totalTime = 120;
   double monitorInterval = 1;
+  bool printRoutes = false;
 
 	CommandLine cmd;
+  cmd.AddValue ("apNum", "number of mesh nodes", apNum);
+  cmd.AddValue ("apStep", "distance between mesh neighbors", apStep);
   cmd.AddValue ("route", "routing protocol", route);
   cmd.AddValue ("gateways", "index of gateways in mesh", gateways);
   cmd.AddValue ("datarate", "tested application datarate", datarate);
   cmd.AddValue ("startTime", "tested application start time, s", startTime);
   cmd.AddValue ("totalTime", "simulation time, s", totalTime);
   cmd.AddValue ("monitorInterval", "monitor interval, s", monitorInterval);
+  cmd.AddValue ("printRoutes", "print routing table of all nodes", printRoutes);
 	cmd.Parse (argc, argv);
 
   lastTotalRx = std::vector<uint64_t> (apNum, 0);
@@ -129,7 +134,7 @@ int main(int argc, char** argv)
 	mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0),
                                  "MinY", DoubleValue (0),
-                                 "DeltaX", DoubleValue (10),
+                                 "DeltaX", DoubleValue (apStep),
                                  "DeltaY", DoubleValue (0),
                                  "GridWidth", UintegerValue (1000));
 	mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -203,6 +208,12 @@ int main(int argc, char** argv)
       relayPotential.Set ("Potential", UintegerValue (0));
       internet.SetRoutingHelper (relayPotential);
       internet.Install (meshRelays);
+
+      if (printRoutes)
+        {
+          Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> (&std::cout);
+          serverPotential.PrintRoutingTableAllEvery (Seconds (60), routingStream);
+        }
     }
   else
     {
