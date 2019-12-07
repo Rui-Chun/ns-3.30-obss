@@ -194,6 +194,8 @@ Potential::DoInitialize ()
   delay = Seconds (m_rng->GetValue (0.01, m_startupDelay.GetSeconds ()));
   m_nextTriggeredUpdate = Simulator::Schedule (delay, &Potential::SendRouteRequest, this);
 
+  Simulator::Schedule (Seconds (m_unsolicitedUpdate), &Potential::UpdatePotential, this);
+
   Ipv4RoutingProtocol::DoInitialize ();
 }
 
@@ -871,7 +873,7 @@ Potential::UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t in
   if (it == m_neighbors.end ())
     {
       m_neighbors[neighbor] = std::make_tuple (potential, incomingInterface, Simulator::Now ());
-      UpdatePotential ();
+      // UpdatePotential ();
     }
   else
     {
@@ -879,7 +881,7 @@ Potential::UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t in
       if (std::get<0> (it->second) != potential)
         {
           std::get<0> (it->second) = potential;
-          UpdatePotential ();
+          // UpdatePotential ();
         }      
     }
 }
@@ -903,7 +905,7 @@ Potential::UpdatePotential ()
   NeighborListComparator cmp =
     [](std::tuple<uint32_t, Ipv4Address, uint32_t> a, std::tuple<uint32_t, Ipv4Address, uint32_t> b)
       {
-        return std::get<0> (a) <= std::get<0> (b);
+        return std::get<0> (a) > std::get<0> (b);
       };
 
   clist.sort (cmp);
@@ -920,6 +922,7 @@ Potential::UpdatePotential ()
   m_potential = (uint32_t) potential;
 
   AddDefaultRouteTo (std::get<1> (clist.back ()), std::get<2> (clist.back ()));
+    Simulator::Schedule (Seconds (m_unsolicitedUpdate), &Potential::UpdatePotential, this);
 }
 
 void
