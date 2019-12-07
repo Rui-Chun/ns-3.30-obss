@@ -7,7 +7,7 @@ for ((cnt=$1;cnt<=$2;cnt++))
 do
   for ((pow=3;pow<=5;pow=pow+1))
   do
-    filename="./ece598hpn/${route}-${pow}-1-${cnt}.txt"
+    filename="./ece598hpn/size/${route}-${pow}-1-${cnt}.txt"
     if [ -f ${filename} ]; then
         echo exist
     else
