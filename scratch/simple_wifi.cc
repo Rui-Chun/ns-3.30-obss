@@ -79,7 +79,7 @@ int main(int argc, char** argv)
   uint32_t apXSize = 100;
   std::string route ("aodv");
   std::string gateways ("0");
-  double datarate = 2e6;
+  double datarate = 1e6;
   double startTime = 60;
   double totalTime = 120;
   double monitorInterval = 1;
