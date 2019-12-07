@@ -131,8 +131,7 @@ Potential::DoInitialize ()
 
   Time delay = m_unsolicitedUpdate + Seconds (m_rng->GetValue (0, 0.5*m_unsolicitedUpdate.GetSeconds ()) );
   m_nextUnsolicitedUpdate = Simulator::Schedule (delay, &Potential::SendUnsolicitedRouteUpdate, this);
-
-
+  
   for (uint32_t i = 0 ; i < m_ipv4->GetNInterfaces (); i++)
     {
       Ptr<LoopbackNetDevice> check = DynamicCast<LoopbackNetDevice> (m_ipv4->GetNetDevice (i));
@@ -193,8 +192,6 @@ Potential::DoInitialize ()
 
   delay = Seconds (m_rng->GetValue (0.01, m_startupDelay.GetSeconds ()));
   m_nextTriggeredUpdate = Simulator::Schedule (delay, &Potential::SendRouteRequest, this);
-
-  Simulator::Schedule (Seconds (m_unsolicitedUpdate), &Potential::UpdatePotential, this);
 
   Ipv4RoutingProtocol::DoInitialize ();
 }
@@ -889,6 +886,7 @@ Potential::UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t in
 void
 Potential::UpdatePotential ()
 {
+  NS_LOG_FUNCTION (this);
   if (m_fixedPotential)
     {
       return;
@@ -921,14 +919,15 @@ Potential::UpdatePotential ()
     }
   m_potential = (uint32_t) potential;
 
-  AddDefaultRouteTo (std::get<1> (clist.back ()), std::get<2> (clist.back ()));
-    Simulator::Schedule (Seconds (m_unsolicitedUpdate), &Potential::UpdatePotential, this);
+  AddDefaultRouteTo (std::get<1> (clist.front ()), std::get<2> (clist.front ()));
 }
 
 void
 Potential::DoSendRouteUpdate (bool periodic)
 {
   NS_LOG_FUNCTION (this << (periodic ? " periodic" : " triggered"));
+
+  UpdatePotential ();
 
   Ptr<Packet> p = Create<Packet> ();
   SocketIpTtlTag tag;
