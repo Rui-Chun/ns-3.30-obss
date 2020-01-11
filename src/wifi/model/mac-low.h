@@ -865,20 +865,6 @@ private:
    */
   void RemovePhyMacLowListener (Ptr<WifiPhy> phy);
 
-  // OFDMA DL
-  void SendMuRts (void);
-  void SendMuCtsAfterMuRts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr) {};
-  void SendDataAfterMuCts () {};
-  void SendMuBarAfterData () {};
-  void SendMuBaAfterMuBar () {};
-  // OFDMA UL
-  void SendBsrp () {};
-  void SendMuBsrAfterBsrp () {};
-  /* RTS/CTS */
-  void SendTfAfterMuCts () {};
-  void SendDataAfterTf () {};
-  void SendMuBaAfterData () {};
-
   Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
   Ptr<WifiMac> m_mac; //!< Pointer to WifiMac (to fetch configuration)
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)
@@ -970,6 +956,30 @@ private:
   WifiTxVector m_currentTxVector;        //!< TXVECTOR used for the current packet transmission
 
   CfAckInfo m_cfAckInfo; //!< Info about piggyback ACKs used in PCF
+
+  /* OFDMA
+   * Author: Jiaming
+   */
+private:
+  // OFDMA DL
+  void SendDlMuRts (void);
+  void SendDlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
+  void SendDlMuData (void);
+  void SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
+  // OFDMA UL
+  void SendUlMuBsrp () {};
+  void SendUlMuBsr () {};
+  void SendUlMuRts (void);
+  void SendUlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
+  void SendUlMuTf (Mac48Address source, Time duration, WifiTxVector ctsTxVector, double ctsSnr);
+  void SendUlMuData (Mac48Address source, Time duration, WifiTxVector tfTxVector, double tfSnr);
+  void SendUlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
+
+  uint32_t m_defaultOfdmaSize;
+  std::list<Ptr<WifiPsdu>> m_currentPacketList;
+  std::list<WifiTxVector> m_currentTxVectorList;
+  std::map<Mac48Address, uint32_t> m_potentialRxList;
+  std::map<Mac48Address, WifiTxVector> m_currentRxList;
 };
 
 } //namespace ns3
