@@ -40,6 +40,8 @@
 #include "ns3/double.h"
 #include "ns3/boolean.h"
 
+#include "ns3/wifi-module.h"
+
 #define POTENTIAL_ALL_NODE "224.0.0.19"
 #define POTENTIAL_PORT 1520
 
@@ -515,12 +517,19 @@ Potential::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) 
       << ", Fixed: " << m_fixedPotential
       << ", Potential: " << m_potential << std::endl;
 
-  for (auto it : m_neighbors)
+  Ptr<WifiMacQueue> q = m_ipv4->GetNetDevice (0)->GetObject<WifiMacQueue> ();
+  if (q)
     {
-      *os << it.first << '-' << std::get<0> (it.second) << '\t';
+      *os << "Queue: " << q->GetNPackets ()
+          << "/" << q->GetMaxQueueSize ();
     }
+
+  // for (auto it : m_neighbors)
+  //   {
+  //     *os << it.first << '-' << std::get<0> (it.second) << '\t';
+  //   }
     
-  *os << ", IPv4 POTENTIAL table" << std::endl;
+  *os << "IPv4 POTENTIAL table" << std::endl;
 
   if (!m_routes.empty ())
     {
@@ -870,7 +879,6 @@ Potential::UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t in
   if (it == m_neighbors.end ())
     {
       m_neighbors[neighbor] = std::make_tuple (potential, incomingInterface, Simulator::Now ());
-      // UpdatePotential ();
     }
   else
     {
@@ -878,7 +886,6 @@ Potential::UpdateNeighbor (Ipv4Address neighbor, uint32_t potential, uint32_t in
       if (std::get<0> (it->second) != potential)
         {
           std::get<0> (it->second) = potential;
-          // UpdatePotential ();
         }      
     }
 }
@@ -890,6 +897,14 @@ Potential::UpdatePotential ()
   if (m_fixedPotential)
     {
       return;
+    }
+
+  // queue
+  Ptr<WifiMacQueue> q = GetObject<WifiMacQueue> ();
+  if (q)
+    {
+      q->GetNPackets ();
+      q->GetMaxQueueSize ();
     }
 
   // delete outdated
