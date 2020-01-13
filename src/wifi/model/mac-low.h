@@ -960,6 +960,9 @@ private:
   /* OFDMA
    * Author: Jiaming
    */
+public:
+  void StartTransmissionOfdma (Ptr<WifiMacQueueItem> mpdu, MacLowTransmissionParameters params, Ptr<Txop> txop);
+  
 private:
   // OFDMA DL
   void SendDlMuRts (void);
@@ -975,7 +978,8 @@ private:
   void SendUlMuData (Mac48Address source, Time duration, WifiTxVector tfTxVector, double tfSnr);
   void SendUlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
 
-  uint32_t m_defaultOfdmaSize;
+  bool m_ofdmaEnabled = false;
+  uint32_t m_defaultOfdmaSize = 4;
   std::list<Ptr<WifiPsdu>> m_currentPacketList;
   std::list<WifiTxVector> m_currentTxVectorList;
   std::map<Mac48Address, uint32_t> m_potentialRxList;

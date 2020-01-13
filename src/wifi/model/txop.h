@@ -353,6 +353,7 @@ public:
 protected:
   ///< ChannelAccessManager associated class
   friend class ChannelAccessManager;
+  friend class MacLow;
 
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
@@ -496,6 +497,9 @@ protected:
    * \param item the wifi MAC queue item.
    */
   void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
+
+  void NotifyAccessRequestedOfdma (void);
+  bool NotifyAccessGrantedOfdma (void);
 
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
   TxOk m_txOkCallback; //!< the transmit OK callback
