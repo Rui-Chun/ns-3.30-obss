@@ -97,6 +97,7 @@ public:
    */
   static bool Overlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v);
   static bool IsValid (uint8_t bw, RuSpec ru);
+  static bool IsSame (RuSpec ru1, RuSpec ru2);
 
   /// (bandwidth, number of tones) pair
   typedef std::pair<uint8_t, RuType> BwTonesPair;

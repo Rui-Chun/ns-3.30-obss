@@ -236,4 +236,10 @@ HeRu::IsValid (uint8_t bw, RuSpec ru)
     }
 }
 
+bool
+HeRu::IsSame (RuSpec ru1, RuSpec ru2)
+{
+  return (ru1.primary80MHz == ru2.primary80MHz) && (ru1.ruType == ru2.ruType) && (ru1.index == ru2.index);
+}
+
 } //namespace ns3

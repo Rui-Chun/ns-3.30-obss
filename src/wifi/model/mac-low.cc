@@ -862,7 +862,20 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       NotifyCtsTimeoutResetNow ();
       NS_ASSERT (m_sendDataEvent.IsExpired ());
       if (txVector.IsRu ())
-        ;
+        {
+          auto it = m_currentTxVectorList.begin ();
+          auto it2 = m_receivedCtsList.begin ();
+          while (it != m_currentTxVectorList.end())
+            {
+              if (HeRu::IsSame (it->GetRu (), txVector.GetRu ()))
+                {
+                  (*it2) = true;
+                  break;
+                }
+              it++;
+              it2++;
+            }
+        }
       else
         m_sendDataEvent = Simulator::Schedule (GetSifs (),
                                                &MacLow::SendDataAfterCts, this,
@@ -2811,7 +2824,11 @@ SendDlMuRts (void)
       itDuration = m_phy->CalculateTxDuration ((*it)->GetSize (),
                                                *it2, m_phy->GetFrequency ());
       if (dataDuration < itDuration)
-        dataDuration = itDuration;
+        {
+          dataDuration = itDuration;
+          m_currentPacket = (*it);
+          m_currentTxVector = (*it2);
+        }
 
       if (m_txParams.MustWaitBlockAck ())
         {
@@ -2839,6 +2856,11 @@ SendDlMuRts (void)
       it3->SetDuration (3*GetSifs () + ctsDuration + dataDuration + ackDuration);
       it3++;
     }
+
+  Time ctsTimer = rtsDuration + GetCtsTimeout ();
+  NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
+  NotifyCtsTimeoutStartNow (ctsTimer);
+  m_ctsTimeoutEvent = Simulator::Schedule (ctsTimer, &MacLow::CtsTimeout, this);
 
   auto it4 = rtsList.begin ();
   auto it5 = rtsTxVectorList.begin ();
@@ -2889,8 +2911,7 @@ MacLow::SendDlMuData (Time dataDuration, Time ackDuration)
 {
   NS_LOG_FUNCTION (this);
   /* send this packet directly. No RTS is needed. */
-  // TODO: MU DataTxTimers
-  // StartDataTxTimers (m_currentTxVectorList);
+  StartDataTxTimers (m_currentTxVector);
 
   auto it = m_currentPacketList.begin ();
   auto it2 = m_currentTxVectorList.begin ();
