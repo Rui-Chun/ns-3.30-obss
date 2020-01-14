@@ -25,6 +25,8 @@
 
 namespace ns3 {
 
+class HeRu;
+
 /**
  * \ingroup wifi
  *
@@ -427,17 +429,6 @@ public:
    */
   uint8_t GetNStreams (void) const;
 
-
-  void SetDst(uint8_t dst);
-  uint8_t GetDst(void) const;
-  void SetSrc(uint8_t src);
-  uint8_t GetSrc(void) const;
-  void SetTime(uint8_t time) ;
-  uint8_t GetTime(void) const;
-  void SetTxPower(uint8_t power);
-  uint8_t GetTxPower(void) const;
-
-
 private:
   //HE-SIG-A1 fields
   uint8_t m_format;       ///< Format bit
@@ -451,10 +442,36 @@ private:
 
   // #####
   // for obss pd
+public:
+  void SetDst(uint8_t dst);
+  uint8_t GetDst(void) const;
+  void SetSrc(uint8_t src);
+  uint8_t GetSrc(void) const;
+  void SetTime(uint8_t time) ;
+  uint8_t GetTime(void) const;
+  void SetTxPower(uint8_t power);
+  uint8_t GetTxPower(void) const;
+
+private:
   uint8_t m_dst;
   uint8_t m_src;
   uint8_t m_txpower;
   uint8_t m_time;
+
+  // Jiaming
+  // for ofdma
+public:
+  void SetRuPrimary80MHz (uint8_t primary80MHz);
+  uint8_t GetRuPrimary80MHz (void);
+  void SetRuType (uint8_t type);
+  uint8_t GetRuType (void);
+  void SetRuIndex (uint8_t index);
+  uint8_t GetRuIndex (void);
+
+private:
+  uint8_t m_primary80MHz;
+  uint8_t m_ruType;
+  uint8_t m_ruIndex;
 
   /// This is used to decide whether MU SIG-B should be added or not
   bool m_mu;

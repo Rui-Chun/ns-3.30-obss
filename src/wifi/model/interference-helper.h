@@ -284,6 +284,7 @@ private:
    * \return noise and interference power
    */
   double CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const;
+  bool JudgeEventInterference (Ptr<Event> event1, Ptr<Event> event2) const;
   /**
    * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
    *

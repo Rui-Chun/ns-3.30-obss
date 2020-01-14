@@ -62,7 +62,6 @@ public:
     std::size_t index;   //!< index (starting at 1)
   } RuSpec;
 
-
   /**
    * Get the number of distinct RUs of the given type (number of tones)
    * available in a HE PPDU of the given bandwidth.

@@ -689,6 +689,7 @@ HeSigHeader::HeSigHeader ()
     m_bandwidth (0),
     m_gi_ltf_size (0),
     m_nsts (0),
+    m_ruIndex (0),
     m_mu (false)
 {
 }
@@ -733,6 +734,7 @@ HeSigHeader::GetSerializedSize (void) const
   size += 4; //HE-SIG-A2
   // #####
   size += 4; //Obss pd Info
+  size += 2;
 
   if (m_mu)
     {
@@ -916,6 +918,42 @@ HeSigHeader::GetTxPower(void) const
 }
 
 void
+HeSigHeader::SetRuPrimary80MHz (uint8_t primary80MHz)
+{
+  m_primary80MHz = primary80MHz;
+}
+
+uint8_t
+HeSigHeader::GetRuPrimary80MHz (void)
+{
+  return m_primary80MHz;
+}
+
+void
+HeSigHeader::SetRuType (uint8_t type)
+{
+  m_ruType = (uint8_t) type;
+}
+
+uint8_t
+HeSigHeader::GetRuType (void)
+{
+  return m_ruType;
+}
+
+void
+HeSigHeader::SetRuIndex (uint8_t index)
+{
+  m_ruIndex = index;
+}
+
+uint8_t
+HeSigHeader::GetRuIndex (void)
+{
+  return m_ruIndex;
+}
+
+void
 HeSigHeader::Serialize (Buffer::Iterator start) const
 {
   //HE-SIG-A1
@@ -943,6 +981,11 @@ HeSigHeader::Serialize (Buffer::Iterator start) const
   start.WriteU8(m_src);
   start.WriteU8(m_txpower);
   start.WriteU8(m_time);
+
+  uint8_t type = m_ruType & 0x7f;
+  type |= ((m_primary80MHz & 0x01) << 7);
+  start.WriteU8 (type);
+  start.WriteU8 (m_ruIndex);
 
   if (m_mu)
     {
@@ -979,6 +1022,11 @@ HeSigHeader::Deserialize (Buffer::Iterator start)
   m_src = i.ReadU8();
   m_txpower = i.ReadU8();
   m_time = i.ReadU8();
+
+  uint8_t type = i.ReadU8 ();
+  m_ruType = (type & 0x7f);
+  m_primary80MHz = ((type >> 7) & 0x01);
+  m_ruIndex = i.ReadU8 ();
 
   if (m_mu)
     {

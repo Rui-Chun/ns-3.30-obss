@@ -302,7 +302,10 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 void
 WifiTxVector::SetRu (HeRu::RuSpec ru)
 {
-  m_isRu = true;
+  if (ru.index != 0)
+    m_isRu = true;
+  else
+    m_isRu = false;  
   m_ru = ru;
 }
 

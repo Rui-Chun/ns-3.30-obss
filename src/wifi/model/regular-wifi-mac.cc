@@ -47,7 +47,8 @@ NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 RegularWifiMac::RegularWifiMac ()
   : m_qosSupported (0),
     m_erpSupported (0),
-    m_dsssSupported (0)
+    m_dsssSupported (0),
+    m_ofdmaSupported (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = Create<MacRxMiddle> ();
@@ -58,6 +59,7 @@ RegularWifiMac::RegularWifiMac ()
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
   m_low->SetMac (this);
+  m_low->SetOfdmaEnable (m_ofdmaSupported);
 
   m_channelAccessManager = CreateObject<ChannelAccessManager> ();
   m_channelAccessManager->SetupLow (m_low);
@@ -1228,6 +1230,12 @@ RegularWifiMac::GetTypeId (void)
                      "The header of unsuccessfully transmitted packet.",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
                      "ns3::WifiMacHeader::TracedCallback")
+    .AddAttribute ("OfdmaSupported",
+                   "This Boolean attribute is set to enable 802.11ax ofdma support at this STA.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RegularWifiMac::SetOfdmaSupported,
+                                        &RegularWifiMac::GetOfdmaSupported),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -1338,6 +1346,19 @@ RegularWifiMac::DisableAggregation (void)
   NS_LOG_FUNCTION (this);
   m_low->SetMsduAggregator (0);
   m_low->SetMpduAggregator (0);
+}
+
+void
+RegularWifiMac::SetOfdmaSupported (bool enable)
+{
+  m_ofdmaSupported = enable;
+  m_low->SetOfdmaEnable (enable);
+}
+
+bool
+RegularWifiMac::GetOfdmaSupported () const
+{
+  return m_ofdmaSupported;
 }
 
 } //namespace ns3

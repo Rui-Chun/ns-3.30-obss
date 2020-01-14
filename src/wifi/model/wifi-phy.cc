@@ -1528,6 +1528,7 @@ WifiPhy::DoChannelSwitch (uint8_t nch)
   switch (m_state->GetState ())
     {
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       NS_LOG_DEBUG ("drop packet because of channel switching while reception");
       m_endPlcpRxEvent.Cancel ();
       m_endRxEvent.Cancel ();
@@ -1535,6 +1536,7 @@ WifiPhy::DoChannelSwitch (uint8_t nch)
       goto switchChannel;
       break;
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
       NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetChannelNumber, this, nch);
       break;
@@ -1588,6 +1590,7 @@ WifiPhy::DoFrequencySwitch (uint16_t frequency)
   switch (m_state->GetState ())
     {
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       NS_LOG_DEBUG ("drop packet because of channel/frequency switching while reception");
       m_endPlcpRxEvent.Cancel ();
       m_endRxEvent.Cancel ();
@@ -1595,6 +1598,7 @@ WifiPhy::DoFrequencySwitch (uint16_t frequency)
       goto switchFrequency;
       break;
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
       NS_LOG_DEBUG ("channel/frequency switching postponed until end of current transmission");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetFrequency, this, frequency);
       break;
@@ -1641,10 +1645,12 @@ WifiPhy::SetSleepMode (void)
   switch (m_state->GetState ())
     {
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
       NS_LOG_DEBUG ("setting sleep mode postponed until end of current transmission");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetSleepMode, this);
       break;
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       NS_LOG_DEBUG ("setting sleep mode postponed until end of current reception");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetSleepMode, this);
       break;
@@ -1685,7 +1691,9 @@ WifiPhy::ResumeFromSleep (void)
   switch (m_state->GetState ())
     {
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
     case WifiPhyState::IDLE:
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::SWITCHING:
@@ -1715,7 +1723,9 @@ WifiPhy::ResumeFromOff (void)
   switch (m_state->GetState ())
     {
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
     case WifiPhyState::IDLE:
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::SWITCHING:
@@ -2610,6 +2620,9 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       heSig.SetChannelWidth (txVector.GetChannelWidth ());
       heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
       heSig.SetNStreams (txVector.GetNss ());
+      heSig.SetRuPrimary80MHz ((uint8_t) txVector.GetRu ().primary80MHz);
+      heSig.SetRuType ((uint8_t) txVector.GetRu ().ruType);
+      heSig.SetRuIndex ((uint8_t) txVector.GetRu ().index);
       newPacket->AddHeader (heSig);
     }
   if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
@@ -2878,6 +2891,9 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       txVector.SetObssSrc(heSigHdr.GetSrc());
       txVector.SetObssTime(heSigHdr.GetTime());
       txVector.SetObssPower(heSigHdr.GetTxPower());
+      txVector.SetRu ({(bool) heSigHdr.GetRuPrimary80MHz (),
+                       (HeRu::RuType) heSigHdr.GetRuType (),
+                       (size_t) heSigHdr.GetRuIndex ()});
 
       if (IsAmpdu (packet))
         {
@@ -2955,7 +2971,13 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
             }
         }
       break;
+    case WifiPhyState::RX_RU:
+      NS_ASSERT (m_currentEvent != 0);
+      if (txVector.IsRu ())
+        StartRx (event, rxPowerW, rxDuration);
+      break;
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
       NS_LOG_DEBUG ("Drop packet because already in Tx (power=" <<
                     rxPowerW << "W)");
       NotifyRxDrop (packet, NOT_ALLOWED);
@@ -4286,8 +4308,12 @@ std::ostream& operator<< (std::ostream& os, WifiPhyState state)
       return (os << "CCA_BUSY");
     case WifiPhyState::TX:
       return (os << "TX");
+    case WifiPhyState::TX_RU:
+      return (os << "TX_RU");
     case WifiPhyState::RX:
       return (os << "RX");
+    case WifiPhyState::RX_RU:
+      return (os << "RX_RU");
     case WifiPhyState::SWITCHING:
       return (os << "SWITCHING");
     case WifiPhyState::SLEEP:

@@ -241,18 +241,36 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni
   auto it = m_niChanges.find (event->GetStartTime ());
   for (; it != m_niChanges.end () && it->first < Simulator::Now (); ++it)
     {
-      noiseInterferenceW = it->second.GetPower () - event->GetRxPowerW ();
+      if (JudgeEventInterference (event, it->second.GetEvent ()))
+        noiseInterferenceW = it->second.GetPower () - event->GetRxPowerW ();
     }
   it = m_niChanges.find (event->GetStartTime ());
   for (; it != m_niChanges.end () && it->second.GetEvent () != event; ++it);
   ni->emplace (event->GetStartTime (), NiChange (0, event));
   while (++it != m_niChanges.end () && it->second.GetEvent () != event)
     {
-      ni->insert (*it);
+      if (JudgeEventInterference (event, it->second.GetEvent ()))
+        ni->insert (*it);
     }
   ni->emplace (event->GetEndTime (), NiChange (0, event));
   NS_ASSERT_MSG (noiseInterferenceW >= 0, "CalculateNoiseInterferenceW returns negative value " << noiseInterferenceW);
   return noiseInterferenceW;
+}
+
+bool
+InterferenceHelper::JudgeEventInterference (Ptr<Event> event1, Ptr<Event> event2) const
+{
+  if ((!event1->GetTxVector ().IsRu ()) || (!event2->GetTxVector ().IsRu ()))
+    return true;
+
+  std::vector<HeRu::RuSpec> preRu;
+  preRu.push_back (event2->GetTxVector ().GetRu ());
+  if (HeRu::Overlap ((uint8_t) event1->GetTxVector ().GetChannelWidth (),
+                      event1->GetTxVector ().GetRu (),
+                      preRu))
+    return true;
+  
+  return false;  
 }
 
 double

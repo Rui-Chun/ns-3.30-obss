@@ -40,10 +40,12 @@ enum WifiPhyState
     * The PHY layer is sending a packet.
     */
   TX,
+  TX_RU,
   /**
     * The PHY layer is receiving a packet.
     */
   RX,
+  RX_RU,
   /**
     * The PHY layer is switching to other channel.
     */
