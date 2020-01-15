@@ -354,6 +354,7 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, doubl
   switch (GetState ())
     {
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       /* The packet which is being received as well
        * as its endRx event are cancelled by the caller.
        */
@@ -370,10 +371,34 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, doubl
     case WifiPhyState::IDLE:
       LogPreviousIdleAndCcaBusyStates ();
       break;
+    case WifiPhyState::TX_RU:
+      if (!txVector.IsRu ())
+        {
+          NS_FATAL_ERROR ("Invalid WifiPhy state.");
+        }
+      break;
     default:
       NS_FATAL_ERROR ("Invalid WifiPhy state.");
       break;
     }
+
+  if (txVector.IsRu ())
+    {
+      m_stateLogger (now, txDuration, WifiPhyState::TX_RU);
+      if (GetState () != WifiPhyState::TX_RU)
+        {
+          m_previousStateChangeTime = now;
+          m_endTx = now + txDuration;
+          m_startTx = now;
+        }
+      else if (m_endTx < now + txDuration)
+        {
+          m_endTx = now + txDuration;
+        }
+      NotifyTxStart (txDuration, txPowerDbm);
+      return;
+    }
+  
   m_stateLogger (now, txDuration, WifiPhyState::TX);
   m_previousStateChangeTime = now;
   m_endTx = now + txDuration;
@@ -422,6 +447,10 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
        * as its endRx event are cancelled by the caller.
        */
       m_stateLogger (m_startRx, now - m_startRx, WifiPhyState::RX);
+      m_endRx = now;
+      break;
+    case WifiPhyState::RX_RU:
+      m_stateLogger (m_startRx, now - m_startRx, WifiPhyState::RX_RU);
       m_endRx = now;
       break;
     case WifiPhyState::CCA_BUSY:
