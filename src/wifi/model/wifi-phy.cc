@@ -2562,7 +2562,8 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
     {
       m_endRxEvent.Cancel ();
     }
-  if (m_state->IsStateRx ())
+  ClearEventList ();
+  if (m_state->IsStateRx () || m_state->IsStateMuRx ())
     {
       m_interference.NotifyRxEnd ();
     }
@@ -2682,8 +2683,17 @@ void
 WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
 {
   NS_LOG_FUNCTION (this << event->GetPacket () << event->GetTxVector () << event << rxDuration);
-  NS_ASSERT (!IsStateRx ());
-  NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+  bool isRu = event->GetTxVector ().IsRu ();
+  if (!isRu)
+    {
+      NS_ASSERT (!IsStateRx ());
+      NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+    }
+  else
+    {
+      FetchEventItem (event);
+      NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+    }
 
   InterferenceHelper::SnrPer snrPer = m_interference.CalculateLegacyPhyHeaderSnrPer (event);
   double snr = snrPer.snr;
@@ -2691,7 +2701,11 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
 
   if (!m_preambleDetectionModel || (m_preambleDetectionModel->IsPreambleDetected (event->GetRxPowerW (), snr, m_channelWidth)))
     {
-      m_state->SwitchToRx (rxDuration);
+      if (!isRu)
+        m_state->SwitchToRx (rxDuration);
+      else
+        m_state->SwitchToMuRx (rxDuration);
+      
       NotifyRxBegin (event->GetPacket ());
 
       m_timeLastPreambleDetected = Simulator::Now ();
@@ -2701,6 +2715,7 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
       if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
         {
           NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
+          PopEventItem (event);
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
           MaybeCcaBusyDuration ();
           return;
@@ -2717,13 +2732,18 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
           //Schedule end of legacy PHY header
           Time remainingPreambleAndLegacyHeaderDuration = GetPlcpPreambleDuration (txVector) + GetPlcpHeaderDuration (txVector) - GetPreambleDetectionDuration ();
           m_endPlcpRxEvent = Simulator::Schedule (remainingPreambleAndLegacyHeaderDuration, &WifiPhy::ContinueReceiveHeader, this, event);
+          UpdateEventItem (event);
         }
     }
   else
     {
       NS_LOG_DEBUG ("Drop packet because PHY preamble detection failed");
+      PopEventItem (event);
       NotifyRxDrop (event->GetPacket (), PREAMBLE_DETECT_FAILURE);
-      m_interference.NotifyRxEnd ();
+      if (!isRu || m_currentEventList.empty ())
+        {
+          m_interference.NotifyRxEnd ();
+        }
     }
   // Like CCA-SD, CCA-ED is governed by the 4μs CCA window to flag CCA-BUSY
   // for any received signal greater than the CCA-ED threshold.
@@ -2734,8 +2754,18 @@ void
 WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << event->GetPacket () << event->GetTxVector () << event);
-  NS_ASSERT (IsStateRx ());
-  NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+  bool isRu = event->GetTxVector ().IsRu ();
+  if (!isRu)
+    {
+      NS_ASSERT (IsStateRx ());
+      NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+    }
+  else
+    {
+      NS_ASSERT (IsStateMuRx ());
+      FetchEventItem (event);
+      NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+    }
 
   InterferenceHelper::SnrPer snrPer;
   snrPer = m_interference.CalculateLegacyPhyHeaderSnrPer (event);
@@ -2746,6 +2776,7 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
       WifiTxVector txVector = event->GetTxVector ();
       Time remainingPreambleHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector) - GetPlcpPreambleDuration (txVector) - GetPlcpHeaderDuration (txVector);
       m_endPlcpRxEvent = Simulator::Schedule (remainingPreambleHeaderDuration, &WifiPhy::StartReceivePayload, this, event);
+      UpdateEventItem (event);
     }
   else //legacy PHY header reception failed
     {
@@ -2927,6 +2958,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       return;
     }
 
+  auto it = m_currentEventList.begin ();
   Time endRx = Simulator::Now () + rxDuration;
   switch (m_state->GetState ())
     {
@@ -2949,6 +2981,12 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
         }
       break;
     case WifiPhyState::RX:
+      if (txVector.IsRu ())
+        {
+          NS_LOG_DEBUG ("Drop ofdma packet because in non-ofdma mode");
+          NotifyRxDrop (packet, NOT_ALLOWED);
+          return;
+        }
       NS_ASSERT (m_currentEvent != 0);
       if (m_frameCaptureModel != 0
           && m_frameCaptureModel->IsInCaptureWindow (m_timeLastPreambleDetected)
@@ -2972,9 +3010,47 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
         }
       break;
     case WifiPhyState::RX_RU:
-      NS_ASSERT (m_currentEvent != 0);
-      if (txVector.IsRu ())
-        StartRx (event, rxPowerW, rxDuration);
+      if (!txVector.IsRu ())
+        {
+          NS_LOG_DEBUG ("Drop non-ofdma packet because in ofdma mode");
+          NotifyRxDrop (packet, NOT_ALLOWED);
+          return;
+        }
+      while (it != m_currentEventList.end())
+        {
+          if (HeRu::IsSame (event->GetTxVector ().GetRu (), (*it).currentEvent->GetTxVector ().GetRu ()))
+            {
+              FetchEventItem (it);
+            }
+          it++;
+        }
+      if (it == m_currentEventList.end ())
+        {
+          StartRx (event, rxPowerW, rxDuration);
+        }
+      else
+        {
+          if (m_frameCaptureModel != 0
+              && m_frameCaptureModel->IsInCaptureWindow (m_timeLastPreambleDetected)
+              && m_frameCaptureModel->CaptureNewFrame (m_currentEvent, event))
+            {
+              AbortCurrentReception (FRAME_CAPTURE_PACKET_SWITCH);
+              NS_LOG_DEBUG ("Switch to new packet");
+              StartRx (event, rxPowerW, rxDuration);
+            }
+          else
+            {
+              NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
+                            rxPowerW << "W)");
+              NotifyRxDrop (packet, NOT_ALLOWED);
+              if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+                {
+                  //that packet will be noise _after_ the reception of the currently-received packet.
+                  MaybeCcaBusyDuration ();
+                  return;
+                }
+            }
+        }      
       break;
     case WifiPhyState::TX:
     case WifiPhyState::TX_RU:
@@ -3021,9 +3097,21 @@ void
 WifiPhy::StartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << event->GetPacket () << event->GetTxVector ());
-  NS_ASSERT (IsStateRx ());
-  NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
-  NS_ASSERT (m_endRxEvent.IsExpired ());
+  bool isRu = event->GetTxVector ().IsRu ();
+  if (!isRu)
+    {
+      NS_ASSERT (IsStateRx ());
+      NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+      NS_ASSERT (m_endRxEvent.IsExpired ());
+    }
+  else
+    {
+      NS_ASSERT (IsStateMuRx ());
+      FetchEventItem (event);
+      NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+      NS_ASSERT (m_endRxEvent.IsExpired ());
+    }
+
   WifiTxVector txVector = event->GetTxVector ();
   WifiMode txMode = txVector.GetMode ();
   bool canReceivePayload;
@@ -3044,6 +3132,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
         {
           Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePlcpPreambleAndHeaderDuration (txVector);
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
+          UpdateEventItem (event);
           NS_LOG_DEBUG ("Receiving payload");
           if (txMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
             {
@@ -3061,6 +3150,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       else //mode is not allowed
         {
           NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txMode << ")");
+          PopEventItem (event);
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
         }
     }
@@ -3076,6 +3166,11 @@ WifiPhy::EndReceive (Ptr<Event> event)
 {
   Time psduDuration = event->GetEndTime () - event->GetStartTime ();
   NS_LOG_FUNCTION (this << event->GetPacket () << event->GetTxVector () << event << psduDuration);
+  bool isRu = event->GetTxVector ().IsRu ();
+  if (isRu)
+    {
+      FetchEventItem (event);
+    }
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
   double snr = m_interference.CalculateSnr (event);
@@ -3122,6 +3217,30 @@ WifiPhy::EndReceive (Ptr<Event> event)
       signalNoise = rxInfo.second; //same information for all MPDUs
       statusPerMpdu.push_back (rxInfo.first);
       receptionOkAtLeastForOneMpdu = rxInfo.first;
+    }
+
+  if (isRu)
+    {
+      if (receptionOkAtLeastForOneMpdu)
+        {
+          NotifyMonitorSniffRx (packet, GetFrequency (), txVector, signalNoise, statusPerMpdu);
+          m_state->NotifyMuRxEndOk (packet->Copy (), snr, txVector, statusPerMpdu);
+        }
+      else
+        {
+          m_state->NotifyMuRxEndError (packet->Copy (), snr);
+        }
+
+      m_currentEvent = 0;
+      PopEventItem (event);
+
+      if (m_currentEventList.empty ())
+        {
+          m_state->SwitchFromMuRxEnd ();
+          m_interference.NotifyRxEnd ();
+        }
+
+      return;
     }
 
   if (receptionOkAtLeastForOneMpdu)
@@ -4146,9 +4265,21 @@ WifiPhy::IsStateRx (void) const
 }
 
 bool
+WifiPhy::IsStateMuRx (void) const
+{
+  return m_state->IsStateMuRx ();
+}
+
+bool
 WifiPhy::IsStateTx (void) const
 {
   return m_state->IsStateTx ();
+}
+
+bool
+WifiPhy::IsStateMuTx (void) const
+{
+  return m_state->IsStateMuTx ();
 }
 
 bool
@@ -4202,6 +4333,8 @@ void
 WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
 {
   NS_LOG_FUNCTION (this << reason);
+  bool isRu = m_currentEvent->GetTxVector ().IsRu ();
+
   if (m_endPreambleDetectionEvent.IsRunning ())
     {
       m_endPreambleDetectionEvent.Cancel ();
@@ -4214,6 +4347,21 @@ WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
     {
       m_endRxEvent.Cancel ();
     }
+  
+  if (isRu)
+    {
+      PopEventItem (m_currentEvent);
+      NotifyRxDrop (m_currentEvent->GetPacket (), reason);
+      if (m_currentEventList.empty ())
+        {
+          m_interference.NotifyRxEnd ();
+          bool is_failure = (reason != OBSS_PD_CCA_RESET);
+          m_state->SwitchFromRxAbort (is_failure);
+        }
+      m_currentEvent = 0;
+      return;
+    }
+
   NotifyRxDrop (m_currentEvent->GetPacket (), reason);
   m_interference.NotifyRxEnd ();
   bool is_failure = (reason != OBSS_PD_CCA_RESET);
@@ -4271,6 +4419,7 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration)
     }
   else if ((m_frameCaptureModel != 0) && (rxPowerW > m_currentEvent->GetRxPowerW ()))
     {
+      PopEventItem (m_currentEvent);
       NS_LOG_DEBUG ("Received a stronger signal during preamble detection: drop current packet and switch to new packet");
       NotifyRxDrop (m_currentEvent->GetPacket (), PREAMBLE_DETECTION_PACKET_SWITCH);
       m_interference.NotifyRxEnd ();
@@ -4288,6 +4437,109 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration)
       return;
     }
   m_currentEvent = event;
+  PushEventItem ();
+}
+
+void
+WifiPhy::ClearEventList (void)
+{
+  auto it = m_currentEventList.begin ();
+  while (it != m_currentEventList.end ())
+    {
+      it->currentEvent = 0;
+      it->endPreambleDetectionEvent.Cancel ();
+      it->endPlcpRxEvent.Cancel ();
+      it->endRxEvent.Cancel ();
+      it++;
+    }
+  m_currentEventList.clear ();
+}
+
+void
+WifiPhy::PushEventItem (void)
+{
+  EventListItem it;
+  it.currentEvent = m_currentEvent;
+  it.endPreambleDetectionEvent = m_endPreambleDetectionEvent;
+  it.endPlcpRxEvent = m_endPreambleDetectionEvent;
+  it.endRxEvent = m_endPreambleDetectionEvent;
+  m_currentEventList.push_back (it);
+}
+
+void
+WifiPhy::UpdateEventItem (std::list<EventListItem>::iterator it)
+{
+  it->currentEvent = m_currentEvent;
+  it->endPreambleDetectionEvent = m_endPreambleDetectionEvent;
+  it->endPlcpRxEvent = m_endPreambleDetectionEvent;
+  it->endRxEvent = m_endPreambleDetectionEvent;
+}
+
+void
+WifiPhy::UpdateEventItem (Ptr<Event> event)
+{
+  NS_ASSERT (event->GetTxVector ().IsRu ());
+  auto it = m_currentEventList.begin ();
+  while (it != m_currentEventList.end ())
+    {
+      if (it->currentEvent == event)
+        {
+          UpdateEventItem (it);
+          break;
+        }
+      it++;
+    }
+}
+
+void
+WifiPhy::FetchEventItem (std::list<EventListItem>::iterator it)
+{
+  m_currentEvent = it->currentEvent;
+  m_endPreambleDetectionEvent = it->endPreambleDetectionEvent;
+  m_endPlcpRxEvent = it->endPreambleDetectionEvent;
+  m_endRxEvent = it->endPreambleDetectionEvent;
+}
+
+void
+WifiPhy::FetchEventItem (Ptr<Event> event)
+{
+  NS_ASSERT (event->GetTxVector ().IsRu ());
+  auto it = m_currentEventList.begin ();
+  while (it != m_currentEventList.end ())
+    {
+      if (it->currentEvent == event)
+        {
+          FetchEventItem (it);
+          break;
+        }
+      it++;
+    }
+}
+
+void
+WifiPhy::PopEventItem (std::list<EventListItem>::iterator it)
+{
+  it->currentEvent = 0;
+  it->endPreambleDetectionEvent.Cancel ();
+  it->endPlcpRxEvent.Cancel ();
+  it->endRxEvent.Cancel ();
+  m_currentEventList.erase (it);
+}
+
+void
+WifiPhy::PopEventItem (Ptr<Event> event)
+{
+  NS_ASSERT (event->GetTxVector ().IsRu ());
+  auto it = m_currentEventList.begin ();
+  while (it != m_currentEventList.end ())
+    {
+      if (it->currentEvent == event)
+        {
+          PopEventItem (it);
+          break;
+        }
+      it++;
+    }
 }
 
 int64_t

@@ -231,10 +231,12 @@ public:
    * \return true of the current state of the PHY layer is WifiPhy::RX, false otherwise.
    */
   bool IsStateRx (void) const;
+  bool IsStateMuRx (void) const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::TX, false otherwise.
    */
   bool IsStateTx (void) const;
+  bool IsStateMuTx (void) const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::SWITCHING, false otherwise.
    */
@@ -1929,6 +1931,25 @@ private:
   Time m_timeLastPreambleDetected; //!< Record the time the last preamble was detected
 
   Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
+
+
+  typedef struct {
+    Ptr<Event> currentEvent;
+    EventId endPreambleDetectionEvent;
+    EventId endPlcpRxEvent;
+    EventId endRxEvent;
+  } EventListItem;
+
+  void ClearEventList (void);
+  void PushEventItem (void);
+  void UpdateEventItem (std::list<EventListItem>::iterator it);
+  void UpdateEventItem (Ptr<Event> event);
+  void FetchEventItem (std::list<EventListItem>::iterator it);
+  void FetchEventItem (Ptr<Event> event);
+  void PopEventItem (std::list<EventListItem>::iterator it);
+  void PopEventItem (Ptr<Event> event);
+
+  std::list<EventListItem> m_currentEventList;
 };
 
 /**
