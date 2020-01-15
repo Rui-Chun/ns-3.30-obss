@@ -968,9 +968,13 @@ public:
 private:
   // OFDMA DL
   void SendDlMuRts (void);
+  void MuCtsTimeout (void);
   void SendDlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
   void SendDlMuData (Time dataDuration, Time ackDuration);
+  void MuNormalAckTimeout (void);
+  void MuBlockAckTimeout (void);
   void SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
+  void MuPacketsClear (void);
   // OFDMA UL
   void SendUlMuBsrp () {};
   void SendUlMuBsr () {};
@@ -985,6 +989,7 @@ private:
   std::list<Ptr<WifiPsdu>> m_currentPacketList;
   std::list<WifiTxVector> m_currentTxVectorList;
   std::list<bool> m_receivedCtsList;
+  std::list<bool> m_receivedAckList;
   std::map<Mac48Address, uint32_t> m_potentialRxList;
   std::map<Mac48Address, WifiTxVector> m_currentRxList;
 };

@@ -662,6 +662,24 @@ Txop::GotAck (void)
 }
 
 void
+Txop::GotMuAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (!NeedFragmentation ())
+    {
+      NS_LOG_DEBUG ("got ack. tx done.");
+      if (!m_txOkCallback.IsNull ())
+        {
+          m_txOkCallback (m_currentHdr);
+        }
+    }
+  else
+    {
+      NS_LOG_WARN ("fragmentation is not currently compatible with ofdma");
+    }
+}
+
+void
 Txop::MissedAck (void)
 {
   NS_LOG_FUNCTION (this);
@@ -689,6 +707,39 @@ Txop::MissedAck (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
+  RestartAccessIfNeeded ();
+}
+
+void
+Txop::MissedMuAck (void)
+{
+  // TODO: different cw for different ru
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("missed mu ack");
+
+  if (1)
+    {
+      NS_LOG_DEBUG ("Ack Fail");
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                               m_currentPacket->GetSize ());
+      if (!m_txFailedCallback.IsNull ())
+        {
+          m_txFailedCallback (m_currentHdr);
+        }
+    }
+}
+
+void
+Txop::DoneMuAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("done mu ack");
+  m_currentPacket = 0;
+  ResetCw ();
+  m_cwTrace = GetCw ();
   m_backoff = m_rng->GetInteger (0, GetCw ());
   m_backoffTrace (m_backoff);
   StartBackoffNow (m_backoff);
@@ -879,9 +930,27 @@ Txop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipien
 }
 
 void
+Txop::GotMuBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
+{
+  NS_LOG_WARN ("GotMuBlockAck should not be called for non QoS!");
+}
+
+void
 Txop::MissedBlockAck (uint8_t nMpdus)
 {
   NS_LOG_WARN ("MissedBlockAck should not be called for non QoS!");
+}
+
+void
+Txop::MissedMuBlockAck (uint8_t nMpdus)
+{
+  NS_LOG_WARN ("MissedMuBlockAck should not be called for non QoS!");
+}
+
+void
+Txop::DoneMuBlockAck (void)
+{
+  NS_LOG_WARN ("DoneMuBlockAck should not be called for non QoS!");
 }
 
 Time

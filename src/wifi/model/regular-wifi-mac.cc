@@ -1352,7 +1352,7 @@ void
 RegularWifiMac::SetOfdmaSupported (bool enable)
 {
   m_ofdmaSupported = enable;
-  m_low->SetOfdmaEnable (enable);
+  m_low->SetOfdmaEnable (enable);  
 }
 
 bool
