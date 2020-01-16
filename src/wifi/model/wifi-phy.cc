@@ -2621,9 +2621,9 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       heSig.SetChannelWidth (txVector.GetChannelWidth ());
       heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
       heSig.SetNStreams (txVector.GetNss ());
-      heSig.SetRuPrimary80MHz ((uint8_t) txVector.GetRu ().primary80MHz);
-      heSig.SetRuType ((uint8_t) txVector.GetRu ().ruType);
-      heSig.SetRuIndex ((uint8_t) txVector.GetRu ().index);
+      heSig.SetRuPrimary80MHz (static_cast<uint8_t> (txVector.GetRu ().primary80MHz));
+      heSig.SetRuType (static_cast<uint8_t> (txVector.GetRu ().ruType));
+      heSig.SetRuIndex (static_cast<uint8_t> (txVector.GetRu ().index));
       newPacket->AddHeader (heSig);
     }
   if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
@@ -2922,9 +2922,9 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       txVector.SetObssSrc(heSigHdr.GetSrc());
       txVector.SetObssTime(heSigHdr.GetTime());
       txVector.SetObssPower(heSigHdr.GetTxPower());
-      txVector.SetRu ({(bool) heSigHdr.GetRuPrimary80MHz (),
-                       (HeRu::RuType) heSigHdr.GetRuType (),
-                       (size_t) heSigHdr.GetRuIndex ()});
+      txVector.SetRu ({static_cast<bool> (heSigHdr.GetRuPrimary80MHz ()),
+                       static_cast<HeRu::RuType> (heSigHdr.GetRuType ()),
+                       static_cast<size_t> (heSigHdr.GetRuIndex ())});
 
       if (IsAmpdu (packet))
         {
@@ -4478,7 +4478,11 @@ WifiPhy::UpdateEventItem (std::list<EventListItem>::iterator it)
 void
 WifiPhy::UpdateEventItem (Ptr<Event> event)
 {
-  NS_ASSERT (event->GetTxVector ().IsRu ());
+  if (!event->GetTxVector ().IsRu ())
+    {
+      return;
+    }
+
   auto it = m_currentEventList.begin ();
   while (it != m_currentEventList.end ())
     {
@@ -4503,7 +4507,11 @@ WifiPhy::FetchEventItem (std::list<EventListItem>::iterator it)
 void
 WifiPhy::FetchEventItem (Ptr<Event> event)
 {
-  NS_ASSERT (event->GetTxVector ().IsRu ());
+  if (!event->GetTxVector ().IsRu ())
+    {
+      return;
+    }
+
   auto it = m_currentEventList.begin ();
   while (it != m_currentEventList.end ())
     {
@@ -4529,7 +4537,11 @@ WifiPhy::PopEventItem (std::list<EventListItem>::iterator it)
 void
 WifiPhy::PopEventItem (Ptr<Event> event)
 {
-  NS_ASSERT (event->GetTxVector ().IsRu ());
+  if (!event->GetTxVector ().IsRu ())
+    {
+      return;
+    }
+    
   auto it = m_currentEventList.begin ();
   while (it != m_currentEventList.end ())
     {

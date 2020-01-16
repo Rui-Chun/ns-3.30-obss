@@ -34,7 +34,8 @@ WifiTxVector::WifiTxVector ()
     m_stbc (false),
     m_bssColor (0),
     m_modeInitialized (false),
-    m_isRu (false)
+    m_isRu (false),
+    m_ru ({true, HeRu::RU_26_TONE, 0})
 {
 }
 
@@ -61,7 +62,8 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_stbc (stbc),
     m_bssColor (bssColor),
     m_modeInitialized (true),
-    m_isRu (false)
+    m_isRu (false),
+    m_ru ({true, HeRu::RU_26_TONE, 0})
 {
 }
 
