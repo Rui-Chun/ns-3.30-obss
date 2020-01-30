@@ -166,9 +166,11 @@ WifiPhyStateHelper::GetDelayUntilIdle (void) const
   switch (GetState ())
     {
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       retval = m_endRx - Simulator::Now ();
       break;
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
       retval = m_endTx - Simulator::Now ();
       break;
     case WifiPhyState::CCA_BUSY:
@@ -479,7 +481,7 @@ WifiPhyStateHelper::SwitchToMuRx (Time rxDuration)
           m_endRx = now + rxDuration;
         }
       NotifyRxStart (rxDuration);
-      NS_ASSERT (IsStateRx ());
+      NS_ASSERT (IsStateMuRx ());
       return;
     case WifiPhyState::IDLE:
       LogPreviousIdleAndCcaBusyStates ();
@@ -500,7 +502,7 @@ WifiPhyStateHelper::SwitchToMuRx (Time rxDuration)
   m_endRx = now + rxDuration;
   m_ru = true;
   NotifyRxStart (rxDuration);
-  NS_ASSERT (IsStateRx ());
+  NS_ASSERT (IsStateMuRx ());
 }
 
 void
@@ -651,6 +653,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
       LogPreviousIdleAndCcaBusyStates ();
       break;
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       return;
     default:
       break;
@@ -733,6 +736,7 @@ WifiPhyStateHelper::SwitchToOff (void)
   switch (GetState ())
     {
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       /* The packet which is being received as well
        * as its endRx event are cancelled by the caller.
        */
@@ -740,6 +744,7 @@ WifiPhyStateHelper::SwitchToOff (void)
       m_endRx = now;
       break;
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
       /* The packet which is being transmitted as well
        * as its endTx event are cancelled by the caller.
        */

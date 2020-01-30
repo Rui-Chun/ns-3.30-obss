@@ -2064,6 +2064,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
 {
   WifiMode payloadMode = txVector.GetMode ();
   NS_LOG_FUNCTION (size << payloadMode);
+  NS_LOG_FUNCTION (txVector.GetRu ().ruType << txVector.GetRu ().index);
 
   double stbc = 1;
   if (txVector.IsStbc ()
@@ -2621,9 +2622,10 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       heSig.SetChannelWidth (txVector.GetChannelWidth ());
       heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
       heSig.SetNStreams (txVector.GetNss ());
-      heSig.SetRuPrimary80MHz (static_cast<uint8_t> (txVector.GetRu ().primary80MHz));
-      heSig.SetRuType (static_cast<uint8_t> (txVector.GetRu ().ruType));
-      heSig.SetRuIndex (static_cast<uint8_t> (txVector.GetRu ().index));
+      heSig.SetRuPrimary80MHz (txVector.GetRu ().primary80MHz);
+      heSig.SetRuType (txVector.GetRu ().ruType);
+      heSig.SetRuIndex (txVector.GetRu ().index);
+      heSig.SetOfdmaDelay (txVector.GetOfdmaDelay ());
       newPacket->AddHeader (heSig);
     }
   if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
@@ -2683,6 +2685,7 @@ void
 WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
 {
   NS_LOG_FUNCTION (this << event->GetPacket () << event->GetTxVector () << event << rxDuration);
+  NS_LOG_FUNCTION (event->GetTxVector ().GetRu ().ruType << event->GetTxVector ().GetRu ().index);
   bool isRu = event->GetTxVector ().IsRu ();
   if (!isRu)
     {
@@ -2922,9 +2925,10 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       txVector.SetObssSrc(heSigHdr.GetSrc());
       txVector.SetObssTime(heSigHdr.GetTime());
       txVector.SetObssPower(heSigHdr.GetTxPower());
-      txVector.SetRu ({static_cast<bool> (heSigHdr.GetRuPrimary80MHz ()),
-                       static_cast<HeRu::RuType> (heSigHdr.GetRuType ()),
-                       static_cast<size_t> (heSigHdr.GetRuIndex ())});
+      txVector.SetRu ({heSigHdr.GetRuPrimary80MHz (),
+                       heSigHdr.GetRuType (),
+                       heSigHdr.GetRuIndex ()});
+      txVector.SetOfdmaDelay (heSigHdr.GetOfdmaDelay ());
 
       if (IsAmpdu (packet))
         {
@@ -2982,6 +2986,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       break;
     case WifiPhyState::RX:
       if (txVector.IsRu ())
+
         {
           NS_LOG_DEBUG ("Drop ofdma packet because in non-ofdma mode");
           NotifyRxDrop (packet, NOT_ALLOWED);
@@ -3131,6 +3136,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       if (IsModeSupported (txMode) || IsMcsSupported (txMode))
         {
           Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePlcpPreambleAndHeaderDuration (txVector);
+          payloadDuration += txVector.GetOfdmaDelay ();
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
           UpdateEventItem (event);
           NS_LOG_DEBUG ("Receiving payload");
@@ -3233,7 +3239,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
 
       m_currentEvent = 0;
       PopEventItem (event);
-
+      
       if (m_currentEventList.empty ())
         {
           m_state->SwitchFromMuRxEnd ();
@@ -4410,7 +4416,8 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration)
   NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
   m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
 
-  if (!m_endPreambleDetectionEvent.IsRunning ())
+  if (!m_endPreambleDetectionEvent.IsRunning () ||
+      !HeRu::IsSame (m_currentEvent->GetTxVector ().GetRu (), event->GetTxVector ().GetRu ()))
     {
       Time startOfPreambleDuration = GetPreambleDetectionDuration ();
       Time remainingRxDuration = rxDuration - startOfPreambleDuration;

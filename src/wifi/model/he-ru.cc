@@ -219,6 +219,14 @@ HeRu::Overlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v)
 }
 
 bool
+HeRu::Overlap (uint8_t bw, RuSpec ru, RuSpec v)
+{
+  std::vector<RuSpec> preRu;
+  preRu.push_back (v);
+  return Overlap (bw, ru, preRu);
+}
+
+bool
 HeRu::IsValid (uint8_t bw, RuSpec ru)
 {
   if (ru.index < 1)
@@ -239,6 +247,11 @@ HeRu::IsValid (uint8_t bw, RuSpec ru)
 bool
 HeRu::IsSame (RuSpec ru1, RuSpec ru2)
 {
+  if ((ru1.index == 0) && (ru2.index == 0))
+    {
+      return true;
+    }
+    
   return (ru1.primary80MHz == ru2.primary80MHz) && (ru1.ruType == ru2.ruType) && (ru1.index == ru2.index);
 }
 

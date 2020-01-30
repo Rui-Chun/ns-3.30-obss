@@ -190,6 +190,7 @@ public:
    * Event handler when an ACK is received.
    */
   void GotAck (void);
+  void GotMuAck (void);
   /**
    * Event handler when a Block ACK is received.
    *
@@ -223,6 +224,7 @@ public:
    * Event handler when an ACK is missed.
    */
   void MissedAck (void);
+  void MissedMuAck (void);
 
   /**
    * Start transmission for the next packet if allowed by the TxopLimit.

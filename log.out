@@ -1,103 +1,187 @@
-Waf: Entering directory `/home/jw27/Documents/ns-3.30-obss/build'
-[1857/1906] Compiling scratch/simple-ofdma.cc
-[1866/1906] Linking build/scratch/simple-ofdma
-Waf: Leaving directory `/home/jw27/Documents/ns-3.30-obss/build'
+Waf: Entering directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
+Waf: Leaving directory `/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build'
 Build commands will be stored in build/compile_commands.json
-'build' finished successfully (2.990s)
-+0.000000000s -1 [mac=00:00:00:00:00:00] MacLow:MacLow(0x56128457ff10)
-+0.000000000s -1 WifiPhy:WifiPhy(0x5612845c45b0)
-+0.000000000s -1 WifiPhy:SetFrequency(0x5612845c45b0, 0)
-+0.000000000s -1 WifiPhy:SetFrequency(): Saving frequency configuration for initialization
-+0.000000000s -1 WifiPhy:SetChannelWidth(0x5612845c45b0, 20)
-+0.000000000s -1 WifiPhy:AddSupportedChannelWidth(0x5612845c45b0, 20)
-+0.000000000s -1 WifiPhy:AddSupportedChannelWidth("Adding ", 20, " to supported channel width set")
-+0.000000000s -1 WifiPhy:SetChannelNumber(0x5612845c45b0, 36)
-+0.000000000s -1 WifiPhy:SetChannelNumber(): Saving channel number configuration for initialization
-+0.000000000s -1 WifiPhy:SetRxSensitivity(0x5612845c45b0, -101)
-+0.000000000s -1 WifiPhy:SetRxSensitivity(0x5612845c45b0, -101)
-+0.000000000s -1 WifiPhy:SetCcaEdThreshold(0x5612845c45b0, -62)
-+0.000000000s -1 WifiPhy:SetTxGain(0x5612845c45b0, 0)
-+0.000000000s -1 WifiPhy:SetRxGain(0x5612845c45b0, 0)
-+0.000000000s -1 WifiPhy:SetTxPowerEnd(0x5612845c45b0, 16.0206)
-+0.000000000s -1 WifiPhy:SetTxPowerStart(0x5612845c45b0, 16.0206)
-+0.000000000s -1 WifiPhy:SetRxNoiseFigure(0x5612845c45b0, 7)
-+0.000000000s -1 WifiPhy:ConfigureHtDeviceMcsSet(0x5612845c45b0)
-+0.000000000s -1 WifiPhy:SetShortGuardInterval(0x5612845c45b0, 0)
-+0.000000000s -1 WifiPhy:SetGuardInterval(0x5612845c45b0, +3200.0ns)
-+0.000000000s -1 WifiPhy:SetGreenfield(0x5612845c45b0, 0)
-+0.000000000s -1 WifiPhy:SetShortPlcpPreambleSupported(0x5612845c45b0, 0)
-+0.000000000s -1 [mac=00:00:00:00:00:01] MacLow:SetMsduAggregator(0x56128457ff10, 0x56128457d710)
-+0.000000000s -1 [mac=00:00:00:00:00:01] MacLow:SetMpduAggregator(0x56128457ff10, 0x5612845a6810)
-+0.000000000s -1 WifiPhy:ConfigureStandard(0x5612845c45b0, 10)
-+0.000000000s -1 WifiPhy:InitializeFrequencyChannelNumber(0x5612845c45b0)
-+0.000000000s -1 WifiPhy:SetChannelNumber(0x5612845c45b0, 36)
-+0.000000000s -1 WifiPhy:DoChannelSwitch(): initialize to channel 36
-+0.000000000s -1 WifiPhy:SetChannelNumber(): Setting frequency to 5180; width to 20
-+0.000000000s -1 WifiPhy:SetChannelWidth(0x5612845c45b0, 20)
-+0.000000000s -1 WifiPhy:AddSupportedChannelWidth(0x5612845c45b0, 20)
-+0.000000000s -1 WifiPhy:ConfigureChannelForStandard(0x5612845c45b0, 10)
-+0.000000000s -1 WifiPhy:ConfigureChannelForStandard(): Frequency set; checking whether a channel number corresponds
-+0.000000000s -1 WifiPhy:FindChannelNumberForFrequencyWidth(0x5612845c45b0, 5180, 20)
-+0.000000000s -1 WifiPhy:FindChannelNumberForFrequencyWidth(): Found, returning 36
-+0.000000000s -1 WifiPhy:ConfigureChannelForStandard(): Channel number found; setting to 36
-+0.000000000s -1 WifiPhy:SetChannelNumber(0x5612845c45b0, 36)
-+0.000000000s -1 WifiPhy:SetChannelNumber(): No channel change requested
-+0.000000000s -1 WifiPhy:Configure80211ax(0x5612845c45b0)
-+0.000000000s -1 WifiPhy:Configure80211ac(0x5612845c45b0)
-+0.000000000s -1 WifiPhy:Configure80211n(0x5612845c45b0)
-+0.000000000s -1 WifiPhy:Configure80211a(0x5612845c45b0)
-+0.000000000s -1 WifiPhy:ConfigureHtDeviceMcsSet(0x5612845c45b0)
-+0.000000000s -1 [mac=00:00:00:00:00:00] MacLow:MacLow(0x561284585040)
-+0.000000000s -1 WifiPhy:WifiPhy(0x561284588c70)
-+0.000000000s -1 WifiPhy:SetFrequency(0x561284588c70, 0)
-+0.000000000s -1 WifiPhy:SetFrequency(): Saving frequency configuration for initialization
-+0.000000000s -1 WifiPhy:SetChannelWidth(0x561284588c70, 20)
-+0.000000000s -1 WifiPhy:AddSupportedChannelWidth(0x561284588c70, 20)
-+0.000000000s -1 WifiPhy:AddSupportedChannelWidth("Adding ", 20, " to supported channel width set")
-+0.000000000s -1 WifiPhy:SetChannelNumber(0x561284588c70, 36)
-+0.000000000s -1 WifiPhy:SetChannelNumber(): Saving channel number configuration for initialization
-+0.000000000s -1 WifiPhy:SetRxSensitivity(0x561284588c70, -101)
-+0.000000000s -1 WifiPhy:SetRxSensitivity(0x561284588c70, -101)
-+0.000000000s -1 WifiPhy:SetCcaEdThreshold(0x561284588c70, -62)
-+0.000000000s -1 WifiPhy:SetTxGain(0x561284588c70, 0)
-+0.000000000s -1 WifiPhy:SetRxGain(0x561284588c70, 0)
-+0.000000000s -1 WifiPhy:SetTxPowerEnd(0x561284588c70, 16.0206)
-+0.000000000s -1 WifiPhy:SetTxPowerStart(0x561284588c70, 16.0206)
-+0.000000000s -1 WifiPhy:SetRxNoiseFigure(0x561284588c70, 7)
-+0.000000000s -1 WifiPhy:ConfigureHtDeviceMcsSet(0x561284588c70)
-+0.000000000s -1 WifiPhy:SetShortGuardInterval(0x561284588c70, 0)
-+0.000000000s -1 WifiPhy:SetGuardInterval(0x561284588c70, +3200.0ns)
-+0.000000000s -1 WifiPhy:SetGreenfield(0x561284588c70, 0)
-+0.000000000s -1 WifiPhy:SetShortPlcpPreambleSupported(0x561284588c70, 0)
-+0.000000000s -1 [mac=00:00:00:00:00:02] MacLow:SetMsduAggregator(0x561284585040, 0x56128457c230)
-+0.000000000s -1 [mac=00:00:00:00:00:02] MacLow:SetMpduAggregator(0x561284585040, 0x561284584b50)
-+0.000000000s -1 WifiPhy:ConfigureStandard(0x561284588c70, 10)
-+0.000000000s -1 WifiPhy:InitializeFrequencyChannelNumber(0x561284588c70)
-+0.000000000s -1 WifiPhy:SetChannelNumber(0x561284588c70, 36)
-+0.000000000s -1 WifiPhy:DoChannelSwitch(): initialize to channel 36
-+0.000000000s -1 WifiPhy:SetChannelNumber(): Setting frequency to 5180; width to 20
-+0.000000000s -1 WifiPhy:SetChannelWidth(0x561284588c70, 20)
-+0.000000000s -1 WifiPhy:AddSupportedChannelWidth(0x561284588c70, 20)
-+0.000000000s -1 WifiPhy:ConfigureChannelForStandard(0x561284588c70, 10)
-+0.000000000s -1 WifiPhy:ConfigureChannelForStandard(): Frequency set; checking whether a channel number corresponds
-+0.000000000s -1 WifiPhy:FindChannelNumberForFrequencyWidth(0x561284588c70, 5180, 20)
-+0.000000000s -1 WifiPhy:FindChannelNumberForFrequencyWidth(): Found, returning 36
-+0.000000000s -1 WifiPhy:ConfigureChannelForStandard(): Channel number found; setting to 36
-+0.000000000s -1 WifiPhy:SetChannelNumber(0x561284588c70, 36)
-+0.000000000s -1 WifiPhy:SetChannelNumber(): No channel change requested
-+0.000000000s -1 WifiPhy:Configure80211ax(0x561284588c70)
-+0.000000000s -1 WifiPhy:Configure80211ac(0x561284588c70)
-+0.000000000s -1 WifiPhy:Configure80211n(0x561284588c70)
-+0.000000000s -1 WifiPhy:Configure80211a(0x561284588c70)
-+0.000000000s -1 WifiPhy:ConfigureHtDeviceMcsSet(0x561284588c70)
-+0.000000000s 0 WifiPhy:DoInitialize(0x5612845c45b0)
-+0.000000000s 0 WifiPhy:DoInitialize(): Frequency already initialized
-+0.000000000s 1 WifiPhy:DoInitialize(0x561284588c70)
-+0.000000000s 1 WifiPhy:DoInitialize(): Frequency already initialized
-+0.004929000s 0 WifiPhy:NotifyChannelAccessRequested(0x5612845c45b0)
-+0.004929000s 0 [mac=00:00:00:00:00:01] MacLow:StartTransmission(0x56128457ff10, size=165, to=ff:ff:ff:ff:ff:ff, seqN=0, lifetime=0us, [send rts=0, next size=0, ack=none], 0x5612845832a0)
-+0.004929000s 0 [mac=00:00:00:00:00:01] MacLow:CancelAllEvents(0x56128457ff10)
-+0.004929000s 0 [mac=00:00:00:00:00:01] MacLow:SendDlMuRts(0x56128457ff10)
-msg="WifiTxVector mode must be set before using", file=../src/wifi/model/wifi-tx-vector.cc, line=81
-terminate called without an active exception
-Command ['/home/jw27/Documents/ns-3.30-obss/build/scratch/simple-ofdma', '--ofdmaEnabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
+'build' finished successfully (0.445s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-0	cl-1	cl-2	cl-3
+61	111	110.2	109.6	110.2
+62	96	96	96	96
+63	104	104	104	104
+64	96	96	96	96
+65	104	104	104	104
+66	96	96	96	96
+67	104	104	104	104
+68	96	96	96	96
+69	104	104	104	104
+70	96	96	96	96
+71	104	104	104	104
+72	96	96	96	96
+73	104	104	104	104
+74	96	96	96	96
+75	104	104	104	104
+76	96	96	96	96
+77	104	104	104	104
+78	96	96	96	96
+79	104	104	104	104
+80	96	96	96	96
+81	104	104	104	104
+82	96	96	96	96
+83	104	104	104	104
+84	96	96	96	96
+85	104	104	104	104
+86	96	96	96	96
+87	104	104	104	104
+88	96	96	96	96
+89	104	104	104	104
+90	96	96	96	96
+91	104	104	104	104
+92	96	96	96	96
+93	104	104	104	104
+94	96	96	96	96
+95	104	104	104	104
+96	96	96	96	96
+97	104	104	104	104
+98	96	96	96	96
+99	104	104	104	104
+100	96	96	96	96
+101	104	104	104	104
+102	96	96	96	96
+103	104	104	104	104
+104	96	96	96	96
+105	104	104	104	104
+106	96	96	96	96
+107	104	104	104	104
+108	96	96	96	96
+109	104	104	104	104
+110	96	96	96	96
+111	104	104	104	104
+112	96	96	96	96
+113	104	104	104	104
+114	96	96	96	96
+115	104	104	104	104
+116	96	96	96	96
+117	104	104	104	104
+118	96	96	96	96
+119	104	104	104	104
+120	96	96	96	96
+121	104	104	104	104
+122	96	96	96	96
+123	104	104	104	104
+124	96	96	96	96
+125	104	104	104	104
+126	96	96	96	96
+127	104	104	104	104
+128	96	96	96	96
+129	104	104	104	104
+130	96	96	96	96
+131	104	104	104	104
+132	96	96	96	96
+133	104	104	104	104
+134	96	96	96	96
+135	104	104	104	104
+136	96	96	96	96
+137	104	104	104	104
+138	96	96	96	96
+139	104	104	104	104
+140	96	96	96	96
+141	104	104	104	104
+142	96	96	96	96
+143	104	104	104	104
+144	96	96	96	96
+145	104	104	104	104
+146	96	96	96	96
+147	104	104	104	104
+148	96	96	96	96
+149	104	104	104	104
+150	96	96	96	96
+151	104	104	104	104
+152	96	96	96	96
+153	104	104	104	104
+154	96	96	96	96
+155	104	104	104	104
+156	96	96	96	96
+157	104	104	104	104
+158	96	96	96	96
+159	104	104	104	104
+160	96	96	96	96
+161	104	104	104	104
+162	96	96	96	96
+163	104	104	104	104
+164	96	96	96	96
+165	104	104	104	104
+166	96	96	96	96
+167	104	104	104	104
+168	96	96	96	96
+169	104	104	104	104
+170	96	96	96	96
+171	104	104	104	104
+172	96	96	96	96
+173	104	104	104	104
+174	96	96	96	96
+175	104	104	104	104
+176	96	96	96	96
+177	104	104	104	104
+178	96	96	96	96
+179	104	104	104	104
+180	96	96	96	96
+181	104	104	104	104
+182	96	96	96	96
+183	104	104	104	104
+184	96	96	96	96
+185	104	104	104	104
+186	96	96	96	96
+187	104	104	104	104
+188	96	96	96	96
+189	104	104	104	104
+190	96	96	96	96
+191	104	104	104	104
+192	96	96	96	96
+193	104	104	104	104
+194	96	96	96	96
+195	104	104	104	104
+196	96	96	96	96
+197	104	104	104	104
+198	96	96	96	96
+199	104	104	104	104
+200	96	96	96	96
+201	104	104	104	104
+202	96	96	96	96
+203	104	104	104	104
+204	96	96	96	96
+205	104	104	104	104
+206	96	96	96	96
+207	104	104	104	104
+208	96	96	96	96
+209	104	104	104	104
+210	96	96	96	96
+211	104	104	104	104
+212	96	96	96	96
+213	104	104	104	104
+214	96	96	96	96
+215	104	104	104	104
+216	96	96	96	96
+217	104	104	104	104
+218	96	96	96	96
+219	104	104	104	104
+220	96	96	96	96
+221	104	104	104	104
+222	96	96	96	96
+223	104	104	104	104
+224	96	96	96	96
+225	104	104	104	104
+226	96	96	96	96
+227	104	104	104	104
+228	96	96	96	96
+229	104	104	104	104
+230	96	96	96	96
+231	104	104	104	104
+232	96	96	96	96
+233	104	104	104	104
+234	96	96	96	96
+235	104	104	104	104
+236	96	96	96	96
+237	104	104	104	104
+238	96	96	96	96
+239	104	104	104	104
+240	96	96	96	96
+Command ['/home/jiaming/Downloads/Mesh_NS3/ns-3.30-obss/build/scratch/simple-ofdma', '--ofdmaEnabled=true', '--datarate=1e5', '-totalTime=240'] exited with code 1

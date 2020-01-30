@@ -96,6 +96,7 @@ public:
    * \return true if the given RU overlaps with the given set of RUs.
    */
   static bool Overlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v);
+  static bool Overlap (uint8_t bw, RuSpec ru, RuSpec v);
   static bool IsValid (uint8_t bw, RuSpec ru);
   static bool IsSame (RuSpec ru1, RuSpec ru2);
 

@@ -790,6 +790,31 @@ QosTxop::GotAck (void)
 }
 
 void
+QosTxop::GotMuAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (1)
+    {
+      NS_LOG_DEBUG ("got mu ack. tx done.");
+      if (!m_txOkCallback.IsNull ())
+        {
+          m_txOkCallback (m_currentHdr);
+        }
+
+      if (m_currentHdr.IsQosData () && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()))
+        {
+          // notify the BA manager that the current packet was acknowledged
+          m_baManager->NotifyGotAck (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr,
+                                                                     m_currentPacketTimestamp));
+        }
+    }
+  else
+    {
+      NS_LOG_WARN ("fragmentation is not currently compatible with ofdma");
+    }  
+}
+
+void
 QosTxop::MissedAck (void)
 {
   NS_LOG_FUNCTION (this);
@@ -847,6 +872,27 @@ QosTxop::MissedAck (void)
   m_backoffTrace (m_backoff);
   StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
+}
+
+void
+QosTxop::MissedMuAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("missed mu ack");
+  if (1)
+    {
+      NS_LOG_DEBUG ("Ack Fail");
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                               m_currentPacket->GetSize ());
+      if (!m_txFailedCallback.IsNull ())
+        {
+          m_txFailedCallback (m_currentHdr);
+        }
+      if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
+        {
+          m_baManager->NotifyDiscardedMpdu (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr));
+        }
+    }
 }
 
 void

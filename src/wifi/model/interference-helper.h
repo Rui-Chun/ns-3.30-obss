@@ -369,6 +369,7 @@ private:
    * \returns an iterator to the list of NiChanges
    */
   NiChanges::const_iterator GetPreviousPosition (Time moment) const;
+  double GetPreviousRuPower (Time moment, HeRu::RuSpec ru) const;
 
   /**
    * Add NiChange to the list at the appropriate position and

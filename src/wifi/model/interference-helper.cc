@@ -203,6 +203,8 @@ InterferenceHelper::AppendEvent (Ptr<Event> event)
   double previousPowerEnd = 0;
   previousPowerStart = GetPreviousPosition (event->GetStartTime ())->second.GetPower ();
   previousPowerEnd = GetPreviousPosition (event->GetEndTime ())->second.GetPower ();
+  previousPowerStart = GetPreviousRuPower (event->GetStartTime (), event->GetTxVector ().GetRu ());
+  previousPowerEnd = GetPreviousRuPower (event->GetEndTime (), event->GetTxVector ().GetRu ());
 
   if (!m_rxing)
     {
@@ -215,7 +217,10 @@ InterferenceHelper::AppendEvent (Ptr<Event> event)
   auto last = AddNiChangeEvent (event->GetEndTime (), NiChange (previousPowerEnd, event));
   for (auto i = first; i != last; ++i)
     {
-      i->second.AddPower (event->GetRxPowerW ());
+      if (JudgeEventInterference (i->second.GetEvent (), event))
+        {
+          i->second.AddPower (event->GetRxPowerW ());
+        }
     }
 }
 
@@ -260,17 +265,17 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni
 bool
 InterferenceHelper::JudgeEventInterference (Ptr<Event> event1, Ptr<Event> event2) const
 {
-  if ((!event1->GetTxVector ().IsRu ()) || (!event2->GetTxVector ().IsRu ()))
-    return true;
-
-  std::vector<HeRu::RuSpec> preRu;
-  preRu.push_back (event2->GetTxVector ().GetRu ());
-  if (HeRu::Overlap ((uint8_t) event1->GetTxVector ().GetChannelWidth (),
+  bool overlap = false;
+  if ((!event1->GetTxVector ().IsRu ()) ||
+      (!event2->GetTxVector ().IsRu ()) ||
+      HeRu::Overlap ((uint8_t) event1->GetTxVector ().GetChannelWidth (),
                       event1->GetTxVector ().GetRu (),
-                      preRu))
-    return true;
+                      event2->GetTxVector ().GetRu ()))
+    {
+      overlap = true;
+    }
   
-  return false;  
+  return overlap;
 }
 
 double
@@ -959,6 +964,27 @@ InterferenceHelper::GetPreviousPosition (Time moment) const
   // before moment.
   --it;
   return it;
+}
+
+double
+InterferenceHelper::GetPreviousRuPower (Time moment, HeRu::RuSpec ru) const
+{
+  auto it = GetPreviousPosition (moment);
+
+  if (ru.index == 0)
+    {
+      return it->second.GetPower ();
+    }
+
+  while (it != m_niChanges.begin ())
+    {
+      if (HeRu::IsSame (it->second.GetEvent ()->GetTxVector ().GetRu (), ru))
+        {
+          break;
+        }
+      it--;
+    }
+  return it->second.GetPower ();
 }
 
 InterferenceHelper::NiChanges::iterator

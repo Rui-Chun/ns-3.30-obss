@@ -22,6 +22,8 @@
 #define WIFI_PHY_HEADER_H
 
 #include "ns3/header.h"
+#include "ns3/he-ru.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -461,17 +463,20 @@ private:
   // Jiaming
   // for ofdma
 public:
-  void SetRuPrimary80MHz (uint8_t primary80MHz);
-  uint8_t GetRuPrimary80MHz (void);
-  void SetRuType (uint8_t type);
-  uint8_t GetRuType (void);
-  void SetRuIndex (uint8_t index);
-  uint8_t GetRuIndex (void);
+  void SetRuPrimary80MHz (bool primary80MHz);
+  bool GetRuPrimary80MHz (void);
+  void SetRuType (HeRu::RuType type);
+  HeRu::RuType GetRuType (void);
+  void SetRuIndex (size_t index);
+  size_t GetRuIndex (void);
+  void SetOfdmaDelay (Time delay);
+  Time GetOfdmaDelay (void);
 
 private:
   uint8_t m_primary80MHz;
   uint8_t m_ruType;
   uint8_t m_ruIndex;
+  uint16_t m_ofdmaDelay;
 
   /// This is used to decide whether MU SIG-B should be added or not
   bool m_mu;

@@ -734,7 +734,8 @@ HeSigHeader::GetSerializedSize (void) const
   size += 4; //HE-SIG-A2
   // #####
   size += 4; //Obss pd Info
-  size += 2;
+  // OFDMA
+  size += 4;
 
   if (m_mu)
     {
@@ -918,39 +919,51 @@ HeSigHeader::GetTxPower(void) const
 }
 
 void
-HeSigHeader::SetRuPrimary80MHz (uint8_t primary80MHz)
+HeSigHeader::SetRuPrimary80MHz (bool primary80MHz)
 {
-  m_primary80MHz = primary80MHz;
+  m_primary80MHz = static_cast<uint8_t> (primary80MHz);
 }
 
-uint8_t
+bool
 HeSigHeader::GetRuPrimary80MHz (void)
 {
-  return m_primary80MHz;
+  return static_cast<bool> (m_primary80MHz);
 }
 
 void
-HeSigHeader::SetRuType (uint8_t type)
+HeSigHeader::SetRuType (HeRu::RuType type)
 {
-  m_ruType = (uint8_t) type;
+  m_ruType = static_cast<uint8_t> (type);
 }
 
-uint8_t
+HeRu::RuType
 HeSigHeader::GetRuType (void)
 {
-  return m_ruType;
+  return static_cast<HeRu::RuType> (m_ruType);
 }
 
 void
-HeSigHeader::SetRuIndex (uint8_t index)
+HeSigHeader::SetRuIndex (size_t index)
 {
-  m_ruIndex = index;
+  m_ruIndex = static_cast<uint8_t> (index);
 }
 
-uint8_t
+size_t
 HeSigHeader::GetRuIndex (void)
 {
-  return m_ruIndex;
+  return static_cast<size_t> (m_ruIndex);
+}
+
+void
+HeSigHeader::SetOfdmaDelay (Time delay)
+{
+  m_ofdmaDelay = (uint16_t) std::ceil (delay.GetNanoSeconds () / 1e3);
+}
+
+Time
+HeSigHeader::GetOfdmaDelay (void)
+{
+  return MicroSeconds (m_ofdmaDelay);
 }
 
 void
@@ -986,6 +999,7 @@ HeSigHeader::Serialize (Buffer::Iterator start) const
   type |= ((m_primary80MHz & 0x01) << 7);
   start.WriteU8 (type);
   start.WriteU8 (m_ruIndex);
+  start.WriteU16 (m_ofdmaDelay);
 
   if (m_mu)
     {
@@ -1027,6 +1041,7 @@ HeSigHeader::Deserialize (Buffer::Iterator start)
   m_ruType = (type & 0x7f);
   m_primary80MHz = ((type >> 7) & 0x01);
   m_ruIndex = i.ReadU8 ();
+  m_ofdmaDelay = i.ReadU16 ();
 
   if (m_mu)
     {

@@ -643,6 +643,7 @@ private:
    * \param hdr the header
    */
   void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr);
+  void NotifyMuNav (Time duration);
   /**
    * Reset NAV with the given duration.
    *
@@ -988,6 +989,8 @@ private:
   uint32_t m_defaultOfdmaSize = 4;
   std::list<Ptr<WifiPsdu>> m_currentPacketList;
   std::list<WifiTxVector> m_currentTxVectorList;
+  bool m_receivedMu = false;
+  EventId m_notifyMuNavEvent;
   std::list<bool> m_receivedCtsList;
   std::list<bool> m_receivedAckList;
   std::map<Mac48Address, uint32_t> m_potentialRxList;

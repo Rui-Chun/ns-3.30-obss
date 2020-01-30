@@ -43,7 +43,7 @@ CalculateThroughput (double monitorInterval)
 void
 PrintThroughputTitle (uint32_t clNum)
 {
-  std::cout << "-------------------------------------------------\n";
+  std::cout << "--------------------------Rate[Kbps]--------------------------\n";
   std::cout << "Time[s]";
   for (uint32_t i = 0; i < clNum; ++i)
       std::cout << '\t' << "cl-" << i;
@@ -55,16 +55,20 @@ int main (int argc, char **argv)
   CommandLine cmd;
 
   bool ofdmaEnabled = false;
-  uint32_t clNum = 1;
-  double startTime = 10.0;
-  double totalTime = 20.0;
+  uint32_t clNum = 4;
+  double startTime = 60.0;
+  double totalTime = 120.0;
   double monitorInterval = 1.0;
+  double datarate = 1e5;
+  double packetSize = 1e3;
 
   cmd.AddValue ("ofdmaEnabled", "", ofdmaEnabled);
   cmd.AddValue ("clNum", "", clNum);
   cmd.AddValue ("startTime", "Application start time, s.", startTime);
   cmd.AddValue ("totalTime", "Simulation time, s.", totalTime);
   cmd.AddValue ("monitorInterval", "Monitor interval, s.", monitorInterval);
+  cmd.AddValue ("datarate", "Datarate, bps.", datarate);
+  cmd.AddValue ("packetSize", "Packet size, bytes.", packetSize);
   cmd.Parse (argc, argv);
 
   // Create nodes and set mobility
@@ -106,13 +110,12 @@ int main (int argc, char **argv)
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ofdma");
   mac.SetType ("ns3::ApWifiMac",
+               "BeaconInterval", TimeValue (MicroSeconds (65535 * 1024)),
                "Ssid", SsidValue (ssid),
-               "QosSupported", BooleanValue (false),
                "OfdmaSupported", BooleanValue (ofdmaEnabled));
   apDevices = wifi.Install (phy, mac, apNodes);
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
-               "QosSupported", BooleanValue (false),
                "OfdmaSupported", BooleanValue (ofdmaEnabled));
   clDevices = wifi.Install (phy, mac, clNodes);
 
@@ -129,6 +132,7 @@ int main (int argc, char **argv)
   // Install application
   ApplicationContainer apApplications;
   ApplicationContainer clApplications;
+  ApplicationContainer trApplications;
   for (uint32_t i = 0; i < clNum; i++)
     {
       uint16_t port = 5000+i;
@@ -140,22 +144,33 @@ int main (int argc, char **argv)
       throughput.push_back (0);
 
       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
+      AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (i), port));
       client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-      client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (8e3))));
-      client.SetAttribute ("PacketSize", UintegerValue (1000));
-      client.SetAttribute ("MaxBytes", UintegerValue (0));
-      AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (i), port));
+      client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
+      client.SetAttribute ("PacketSize", UintegerValue (packetSize));
       client.SetAttribute ("Remote", remoteAddress);
       apApplications.Add (client.Install (apNodes));
+
+      client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+      client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+      client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
+      client.SetAttribute ("PacketSize", UintegerValue (25));
+      trApplications.Add (client.Install (apNodes));
     }
   apApplications.Start (Seconds (startTime));
   apApplications.Stop (Seconds (totalTime));
   clApplications.Start (Seconds (0.0));
   clApplications.Stop (Seconds (totalTime + 0.1));
+  trApplications.Start (Seconds (startTime * 0.3));
+  trApplications.Stop (Seconds (startTime * 0.8));
 
   Simulator::Schedule (Seconds (startTime), &PrintThroughputTitle, clNum);
-  Simulator::Schedule (Seconds (startTime+monitorInterval), &CalculateThroughput, monitorInterval);
+  Simulator::Schedule (Seconds (startTime), &CalculateThroughput, monitorInterval);
+
+  // Config::Set ("/NodeLst/*/DeviceList/*/$ns3::WifiNetDevice/Mac/QosSupported", BooleanValue (false));
+  Config::Set ("/NodeLst/*/DeviceList/*/$ns3::WifiNetDevice/Mac/VI_MaxAmpduSize", UintegerValue (0));
+  Config::Set ("/NodeLst/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize", UintegerValue (0));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
