@@ -269,6 +269,8 @@ private:
    */
   typedef std::multimap<Time, NiChange> NiChanges;
 
+  typedef std::pair<uint16_t, HeRu::RuSpec> BwRu;
+
   /**
    * Append the given Event.
    *
@@ -284,7 +286,6 @@ private:
    * \return noise and interference power
    */
   double CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const;
-  bool JudgeEventInterference (Ptr<Event> event1, Ptr<Event> event2) const;
   /**
    * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
    *
@@ -348,6 +349,10 @@ private:
   double m_firstPower; ///< first power
   bool m_rxing; ///< flag whether it is in receiving state
 
+  std::list<BwRu> m_bwruList;
+  std::list<double> m_firstPowerList;
+  std::list<NiChanges> m_niChangesList;
+
   /**
    * Returns an iterator to the first nichange that is later than moment
    *
@@ -369,7 +374,6 @@ private:
    * \returns an iterator to the list of NiChanges
    */
   NiChanges::const_iterator GetPreviousPosition (Time moment) const;
-  double GetPreviousRuPower (Time moment, HeRu::RuSpec ru) const;
 
   /**
    * Add NiChange to the list at the appropriate position and
@@ -380,6 +384,15 @@ private:
    * \returns the iterator of the new event
    */
   NiChanges::iterator AddNiChangeEvent (Time moment, NiChange change);
+
+  void UpdateNiChanges (BwRu bwru);
+  void UpdateNiChanges (std::list<double>::iterator it, std::list<NiChanges>::iterator it2);
+  void FetchNiChanges (BwRu bwru);
+  void FetchNiChanges (std::list<double>::iterator it, std::list<NiChanges>::iterator it2);
+  void StageNiChanges (void);
+  void RecoverNiChanges (void);
+  double GetFirstPower (Ptr<const Event> event) const;
+  void CleanNiChanges (Ptr<const Event> event);
 };
 
 } //namespace ns3

@@ -1014,53 +1014,28 @@ Txop::NotifyAccessGrantedOfdma (void)
                     
   if (m_currentHdr.GetAddr1 ().IsGroup ())
     {
-      m_currentParams.DisableRts ();
-      m_currentParams.DisableAck ();
-      m_currentParams.DisableNextData ();
-      NS_LOG_DEBUG ("tx broadcast");
-      GetLow ()->StartTransmissionOfdma (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
-                                    m_currentParams, this);
+      return false;
     }
   else
     {
       m_currentParams.EnableAck ();
-      if (NeedFragmentation ())
+      NS_ASSERT (!NeedFragmentation ());
+      WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
+                                                                      &m_currentHdr, m_currentPacket);
+
+      if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                      m_currentPacket, dataTxVector)
+          && !m_low->IsCfPeriod ())
         {
-          m_currentParams.DisableRts ();
-          WifiMacHeader hdr;
-          Ptr<Packet> fragment = GetFragmentPacket (&hdr);
-          if (IsLastFragment ())
-            {
-              NS_LOG_DEBUG ("fragmenting last fragment size=" << fragment->GetSize ());
-              m_currentParams.DisableNextData ();
-            }
-          else
-            {
-              NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
-              m_currentParams.EnableNextData (GetNextFragmentSize ());
-            }
-          GetLow ()->StartTransmissionOfdma (Create<WifiMacQueueItem> (fragment, hdr),
-                                        m_currentParams, this);
+          m_currentParams.EnableRts ();
         }
       else
         {
-          WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
-                                                                         &m_currentHdr, m_currentPacket);
-
-          if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                         m_currentPacket, dataTxVector)
-              && !m_low->IsCfPeriod ())
-            {
-              m_currentParams.EnableRts ();
-            }
-          else
-            {
-              m_currentParams.DisableRts ();
-            }
-          m_currentParams.DisableNextData ();
-          GetLow ()->StartTransmissionOfdma (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
-                                        m_currentParams, this);
+          m_currentParams.DisableRts ();
         }
+      m_currentParams.DisableNextData ();
+      GetLow ()->StartTransmissionOfdma (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                    m_currentParams, this);
     }
   return true;
 }

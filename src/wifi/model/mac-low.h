@@ -988,6 +988,7 @@ private:
   bool m_ofdmaEnabled = false;
   uint32_t m_defaultOfdmaSize = 4;
   std::list<Ptr<WifiPsdu>> m_currentPacketList;
+  std::list<MacLowTransmissionParameters> m_txParamsList;
   std::list<WifiTxVector> m_currentTxVectorList;
   bool m_receivedMu = false;
   EventId m_notifyMuNavEvent;

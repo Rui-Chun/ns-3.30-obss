@@ -592,8 +592,12 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
     }
 
   // if (m_ofdmaEnabled && !hdr.GetAddr1 ().IsGroup ())
-  if (m_ofdmaEnabled && hdr.IsData () && !hdr.GetAddr1 ().IsGroup ())
+  if (m_ofdmaEnabled &&
+      hdr.IsData () &&
+      !hdr.GetAddr1 ().IsGroup () &&
+      m_txParams.MustWaitNormalAck ())
     {
+      NS_ASSERT (m_currentPacketList.empty ());
       NS_ASSERT (!m_txParams.HasNextPacket ());
       HeRu::RuType ruType = HeRu::RU_26_TONE;
       std::size_t ruIndex = 1;
@@ -613,6 +617,7 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
         }
       bool newPackets = true;
       m_currentPacketList.push_back (m_currentPacket);
+      m_txParamsList.push_back (m_txParams);
       m_currentTxVector.SetRu ({true, ruType, ruIndex});
       m_currentTxVectorList.push_back (m_currentTxVector);
       m_receivedCtsList.push_back (false);
@@ -625,6 +630,7 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
             {
               ruIndex++;
               m_currentPacketList.push_back (m_currentPacket);
+              m_txParamsList.push_back (m_txParams);
               m_currentTxVector.SetRu ({true, ruType, ruIndex});
               m_currentTxVectorList.push_back (m_currentTxVector);
               m_receivedCtsList.push_back (false);
@@ -807,16 +813,16 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
   packet->RemoveHeader (hdr);
 
   bool isPrevNavZero = IsNavZero ();
-  NS_LOG_DEBUG ("duration/id=" << hdr.GetDuration ());
+  NS_LOG_DEBUG ("duration/id=" << hdr.GetDuration () << ", isru=" << txVector.IsRu () << ", rawDuration=" << hdr.GetRawDuration ());
   if (!txVector.IsRu ())
     {
       NotifyNav (packet, hdr);
     }
   else if (m_notifyMuNavEvent.IsExpired ())
     {
-      m_notifyMuNavEvent = Simulator::Schedule (Simulator::Now (),
+      m_notifyMuNavEvent = Simulator::Schedule (Seconds (0),
                                                 &MacLow::NotifyMuNav, this,
-                                                hdr.GetDuration ());
+                                                hdr.GetDuration () + txVector.GetOfdmaDelay ());
     }
   if (hdr.IsRts ())
     {
@@ -878,7 +884,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
           NS_FATAL_ERROR ("Received CTS as part of an A-MPDU");
         }
 
-      NS_LOG_DEBUG ("received cts from=" << m_currentPacket->GetAddr1 ());
+      NS_LOG_DEBUG ("received cts from=" << hdr.GetAddr2 ());
 
       SnrTag tag;
       packet->RemovePacketTag (tag);
@@ -889,6 +895,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
 
       if (txVector.IsRu ())
         {
+          m_receivedMu = true;
           auto it = m_currentTxVectorList.begin ();
           auto it2 = m_receivedCtsList.begin ();
           while (it != m_currentTxVectorList.end())
@@ -926,6 +933,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
 
       if (txVector.IsRu ())
         {
+          m_receivedMu = false;
           auto it = m_currentTxVectorList.begin ();
           auto it2 = m_currentPacketList.begin ();
           auto it3 = m_receivedAckList.begin ();
@@ -1142,7 +1150,6 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequenceControl (),
                                                             hdr.GetAddr2 (), hdr.GetQosTid ());
               RxCompleteBufferedPacketsUntilFirstLost (hdr.GetAddr2 (), hdr.GetQosTid ());
-              NS_ASSERT (m_sendAckEvent.IsExpired ());
               if (txVector.IsRu ())
                 {
                   m_receivedMu = true;
@@ -1155,6 +1162,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
                 }
               else
                 {
+                  NS_ASSERT (m_sendAckEvent.IsExpired ());
                   m_sendAckEvent = Simulator::Schedule (GetSifs (),
                                                         &MacLow::SendAckAfterData, this,
                                                         hdr.GetAddr2 (),
@@ -1727,6 +1735,7 @@ MacLow::DoNavStartNow (Time duration)
     }
   Time newNavEnd = Simulator::Now () + duration;
   Time oldNavEnd = m_lastNavStart + m_lastNavDuration;
+  NS_LOG_DEBUG ("newNavEnd=" << newNavEnd << ", oldNavEnd=" << oldNavEnd);
   if (newNavEnd > oldNavEnd)
     {
       m_lastNavStart = Simulator::Now ();
@@ -2893,6 +2902,7 @@ SendDlMuRts (void)
   Time ackDuration = Seconds (0);
 
   auto it = m_currentPacketList.begin ();
+  auto it1 = m_txParamsList.begin ();
   auto it2 = m_currentTxVectorList.begin ();
   while (it != m_currentPacketList.end ())
     {
@@ -2927,13 +2937,13 @@ SendDlMuRts (void)
           m_currentTxVector = (*it2);
         }
 
-      if (m_txParams.MustWaitBlockAck ())
+      if ((*it1).MustWaitBlockAck ())
         {
           WifiTxVector blockAckReqTxVector = GetBlockAckTxVector ((*it)->GetAddr2 (), (*it2).GetMode ());
           blockAckReqTxVector.SetRu (ru);
-          itDuration = GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
+          itDuration = GetBlockAckDuration (blockAckReqTxVector, (*it1).GetBlockAckType ());
         }
-      else if (m_txParams.MustWaitNormalAck ())
+      else if ((*it1).MustWaitNormalAck ())
         {
           itDuration = GetAckDuration ((*it)->GetAddr1 (), (*it2));
         }
@@ -2948,6 +2958,7 @@ SendDlMuRts (void)
       rtsTxVectorList.push_back (rtsTxVector);
 
       it++;
+      it1++;
       it2++;
     }
 
@@ -3035,13 +3046,13 @@ MacLow::SendDlMuData (Time dataDuration, Time ackDuration)
 {
   NS_LOG_FUNCTION (this);
   Time ackDelay = dataDuration + GetSifs () + ackDuration + GetSifs ();
-  if (m_txParams.MustWaitNormalAck () && !IsCfPeriod ())
+  if (m_txParamsList.front ().MustWaitNormalAck () && !IsCfPeriod ())
     {
       NS_ASSERT (m_normalAckTimeoutEvent.IsExpired ());
       NotifyAckTimeoutStartNow (ackDelay);
       m_normalAckTimeoutEvent = Simulator::Schedule (ackDelay, &MacLow::MuNormalAckTimeout, this);
     }
-  else if (m_txParams.MustWaitBlockAck ())
+  else if (m_txParamsList.front ().MustWaitBlockAck ())
     {
       NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
       NotifyAckTimeoutStartNow (ackDelay);
@@ -3135,6 +3146,8 @@ void
 MacLow::SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr)
 {
   NS_LOG_FUNCTION (this);
+  m_receivedMu = false;
+
   // send an ACK, after SIFS, when you receive a packet
   WifiTxVector ackTxVector = GetAckTxVector (source, dataTxVector.GetMode ());
   ackTxVector.SetRu (dataTxVector.GetRu ());
@@ -3158,8 +3171,6 @@ MacLow::SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVect
   SnrTag tag;
   tag.Set (dataSnr);
   packet->AddPacketTag (tag);
-
-  m_receivedMu = false;
 
   //ACK should always use non-HT PPDU (HT PPDU cases not supported yet)
   ForwardDown (Create<const WifiPsdu> (packet, ack), ackTxVector);
@@ -3429,24 +3440,13 @@ MacLow::StartTransmissionOfdma (Ptr<WifiMacQueueItem> mpdu,
                                 Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << *mpdu << params << txop);
+  NS_ASSERT (mpdu->GetHeader ().IsData ());
 
   m_currentPacket = Create<WifiPsdu> (mpdu, false);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
-  CancelAllEvents ();
   m_currentTxop = txop;
   m_txParams = params;
-  if (m_ofdmaEnabled && hdr.IsMgt ())
-    {
-      m_currentTxVector = GetRtsTxVector (mpdu);
-    }
-  else if (hdr.IsCtl ())
-    {
-      m_currentTxVector = GetRtsTxVector  (mpdu);
-    }
-  else
-    {
-      m_currentTxVector = GetDataTxVector (mpdu);
-    }
+  m_currentTxVector = GetDataTxVector (mpdu);
 
   /* The packet received by this function can be any of the following:
    * (a) a management frame dequeued from the Txop
@@ -3528,6 +3528,7 @@ void
 MacLow::MuPacketsClear ()
 {
   m_currentPacketList.clear ();
+  m_txParamsList.clear ();
   m_currentTxVectorList.clear ();
   m_receivedCtsList.clear ();
   m_receivedAckList.clear ();

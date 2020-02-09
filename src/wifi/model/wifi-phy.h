@@ -1578,6 +1578,7 @@ public:
    * it should use power restriction as imposed by OBSS_PD SR.
    */
   void NotifyChannelAccessRequested (void);
+  bool EmptyEventList (void);
 
 
 protected:
@@ -1948,6 +1949,9 @@ private:
   void FetchEventItem (Ptr<Event> event);
   void PopEventItem (std::list<EventListItem>::iterator it);
   void PopEventItem (Ptr<Event> event);
+  bool ExistRuItem (HeRu::RuSpec ru);
+  void FetchRuItem (HeRu::RuSpec ru);
+  void PopRuItem (HeRu::RuSpec ru);
 
   std::list<EventListItem> m_currentEventList;
 };

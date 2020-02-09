@@ -127,6 +127,23 @@ InterferenceHelper::InterferenceHelper ()
 {
   // Always have a zero power noise event in the list
   AddNiChangeEvent (Time (0), NiChange (0.0, 0));
+
+  // HeRu::RuSpec ru = {true, HeRu::RuType::RU_26_TONE, 0};
+  // m_bwruList.push_back (std::make_pair (0, ru));
+  // m_firstPowerList.push_back (0);
+  // m_niChangesList.push_back (m_niChanges);
+  for (uint16_t bw = 20; bw <= 80; bw *= 2)
+    {
+      for (uint8_t i = 1; i <= HeRu::GetNRus (bw, HeRu::RuType::RU_52_TONE); i++)
+        {
+          NiChanges niChanges;
+          niChanges.insert (niChanges.upper_bound (Time (0)), std::make_pair (Time (0), NiChange (0.0, 0)));
+          HeRu::RuSpec ru = {true, HeRu::RuType::RU_52_TONE, i};
+          m_bwruList.push_back (std::make_pair (bw, ru));
+          m_firstPowerList.push_back (0);
+          m_niChangesList.push_back (niChanges);
+        }
+    }
 }
 
 InterferenceHelper::~InterferenceHelper ()
@@ -203,8 +220,6 @@ InterferenceHelper::AppendEvent (Ptr<Event> event)
   double previousPowerEnd = 0;
   previousPowerStart = GetPreviousPosition (event->GetStartTime ())->second.GetPower ();
   previousPowerEnd = GetPreviousPosition (event->GetEndTime ())->second.GetPower ();
-  previousPowerStart = GetPreviousRuPower (event->GetStartTime (), event->GetTxVector ().GetRu ());
-  previousPowerEnd = GetPreviousRuPower (event->GetEndTime (), event->GetTxVector ().GetRu ());
 
   if (!m_rxing)
     {
@@ -212,16 +227,55 @@ InterferenceHelper::AppendEvent (Ptr<Event> event)
       // Always leave the first zero power noise event in the list
       m_niChanges.erase (++(m_niChanges.begin ()),
                          GetNextPosition (event->GetStartTime ()));
+      CleanNiChanges (event);
     }
   auto first = AddNiChangeEvent (event->GetStartTime (), NiChange (previousPowerStart, event));
   auto last = AddNiChangeEvent (event->GetEndTime (), NiChange (previousPowerEnd, event));
   for (auto i = first; i != last; ++i)
     {
-      if (JudgeEventInterference (i->second.GetEvent (), event))
+      i->second.AddPower (event->GetRxPowerW ());
+    }
+
+  StageNiChanges ();
+  auto it = m_bwruList.begin ();
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  for (; it != m_bwruList.end (); it++, it2++, it3++)
+    {
+      if (it->first < event->GetTxVector ().GetChannelWidth ())
         {
-          i->second.AddPower (event->GetRxPowerW ());
+          continue;
+        }
+      else if (it->first > event->GetTxVector ().GetChannelWidth ())
+        {
+          break;
+        }
+      else
+        {
+          if (event->GetTxVector ().IsRu () &&
+            !HeRu::Overlap (it->first, it->second, event->GetTxVector ().GetRu ()))
+            {
+              continue;
+            }
+
+          FetchNiChanges (it2, it3);
+
+          double previousPowerStart = 0;
+          double previousPowerEnd = 0;
+          previousPowerStart = GetPreviousPosition (event->GetStartTime ())->second.GetPower ();
+          previousPowerEnd = GetPreviousPosition (event->GetEndTime ())->second.GetPower ();
+          
+          auto first = AddNiChangeEvent (event->GetStartTime (), NiChange (previousPowerStart, event));
+          auto last = AddNiChangeEvent (event->GetEndTime (), NiChange (previousPowerEnd, event));
+          for (auto i = first; i != last; ++i)
+            {
+              i->second.AddPower (event->GetRxPowerW ());
+            }
+
+          UpdateNiChanges (it2, it3);
         }
     }
+  RecoverNiChanges ();
 }
 
 double
@@ -242,40 +296,77 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint1
 double
 InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const
 {
+  NS_LOG_FUNCTION (this << event->GetTxVector ().GetRu ().ruType << event->GetTxVector ().GetRu ().index);
   double noiseInterferenceW = m_firstPower;
   auto it = m_niChanges.find (event->GetStartTime ());
   for (; it != m_niChanges.end () && it->first < Simulator::Now (); ++it)
     {
-      if (JudgeEventInterference (event, it->second.GetEvent ()))
-        noiseInterferenceW = it->second.GetPower () - event->GetRxPowerW ();
+      noiseInterferenceW = it->second.GetPower () - event->GetRxPowerW ();
     }
-  it = m_niChanges.find (event->GetStartTime ());
-  for (; it != m_niChanges.end () && it->second.GetEvent () != event; ++it);
-  ni->emplace (event->GetStartTime (), NiChange (0, event));
-  while (++it != m_niChanges.end () && it->second.GetEvent () != event)
+
+  noiseInterferenceW = -1;
+  auto it1 = m_bwruList.begin ();
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  auto it1m = it1;
+  auto it2m = it2;
+  auto it3m = it3;
+  for (; it1 != m_bwruList.end (); it1++, it2++, it3++)
     {
-      if (JudgeEventInterference (event, it->second.GetEvent ()))
-        ni->insert (*it);
+      if (it1->first < event->GetTxVector ().GetChannelWidth ())
+        {
+          continue;
+        }
+      else if (it1->first > event->GetTxVector ().GetChannelWidth ())
+        {
+          break;
+        }
+      else
+        {
+          if (event->GetTxVector ().IsRu () &&
+            !HeRu::Overlap (it1->first, it1->second, event->GetTxVector ().GetRu ()))
+            {
+              continue;
+            }
+
+          double temp = (*it2);
+          auto it = (*it3).find (event->GetStartTime ());
+          for (; it != (*it3).end () && it->first < Simulator::Now (); ++it)
+            {
+              temp = it->second.GetPower () - event->GetRxPowerW ();
+            }
+          if (temp > noiseInterferenceW)
+            {
+              noiseInterferenceW = temp;
+              it1m = it1;
+              it2m = it2;
+              it3m = it3;
+            }
+        }
+    }
+
+  it = (*it3m).find (event->GetStartTime ());
+  for (; it != (*it3m).end () && it->second.GetEvent () != event; ++it);
+  ni->emplace (event->GetStartTime (), NiChange (0, event));
+  while (++it != (*it3m).end () && it->second.GetEvent () != event)
+    {
+      ni->insert (*it);
     }
   ni->emplace (event->GetEndTime (), NiChange (0, event));
+
+  // it = m_niChanges.find (event->GetStartTime ());
+  // for (; it != m_niChanges.end () && it->second.GetEvent () != event; ++it);
+  // ni->emplace (event->GetStartTime (), NiChange (0, event));
+  // while (++it != m_niChanges.end () && it->second.GetEvent () != event)
+  //   {
+  //     ni->insert (*it);
+  //   }
+  // ni->emplace (event->GetEndTime (), NiChange (0, event));
+
+  NS_LOG_DEBUG ("ru=(" << (*it1m).second.ruType << "," << (*it1m).second.index <<
+                "), noiseInterferenceW=" << noiseInterferenceW);
   NS_ASSERT_MSG (noiseInterferenceW >= 0, "CalculateNoiseInterferenceW returns negative value " << noiseInterferenceW);
   return noiseInterferenceW;
-}
-
-bool
-InterferenceHelper::JudgeEventInterference (Ptr<Event> event1, Ptr<Event> event2) const
-{
-  bool overlap = false;
-  if ((!event1->GetTxVector ().IsRu ()) ||
-      (!event2->GetTxVector ().IsRu ()) ||
-      HeRu::Overlap ((uint8_t) event1->GetTxVector ().GetChannelWidth (),
-                      event1->GetTxVector ().GetRu (),
-                      event2->GetTxVector ().GetRu ()))
-    {
-      overlap = true;
-    }
-  
-  return overlap;
 }
 
 double
@@ -317,6 +408,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, 
   Time windowStart = plcpPayloadStart + window.first;
   Time windowEnd = plcpPayloadStart + window.second;
   double noiseInterferenceW = m_firstPower;
+  noiseInterferenceW = GetFirstPower (event);
   double powerW = event->GetRxPowerW ();
   while (++j != ni->end ())
     {
@@ -359,6 +451,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, 
 double
 InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const
 {
+
   NS_LOG_FUNCTION (this);
   const WifiTxVector txVector = event->GetTxVector ();
   double psr = 1.0; /* Packet Success Rate */
@@ -371,6 +464,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChang
   Time plcpTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble) + WifiPhy::GetPlcpSigA1Duration (preamble) + WifiPhy::GetPlcpSigA2Duration (preamble); //packet start time + preamble + L-SIG + HT-SIG or SIG-A
   Time plcpPayloadStart = plcpTrainingSymbolsStart + WifiPhy::GetPlcpTrainingSymbolDuration (txVector) + WifiPhy::GetPlcpSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
   double noiseInterferenceW = m_firstPower;
+  noiseInterferenceW = GetFirstPower (event);
   double powerW = event->GetRxPowerW ();
   while (++j != ni->end ())
     {
@@ -531,6 +625,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
   Time plcpTrainingSymbolsStart = plcpHsigHeaderStart + WifiPhy::GetPlcpHtSigHeaderDuration (preamble) + WifiPhy::GetPlcpSigA1Duration (preamble) + WifiPhy::GetPlcpSigA2Duration (preamble); //packet start time + preamble + L-SIG + HT-SIG or SIG-A
   Time plcpPayloadStart = plcpTrainingSymbolsStart + WifiPhy::GetPlcpTrainingSymbolDuration (txVector) + WifiPhy::GetPlcpSigBDuration (preamble); //packet start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
   double noiseInterferenceW = m_firstPower;
+  noiseInterferenceW = GetFirstPower (event);
   double powerW = event->GetRxPowerW ();
   while (++j != ni->end ())
     {
@@ -948,6 +1043,15 @@ InterferenceHelper::EraseEvents (void)
   AddNiChangeEvent (Time (0), NiChange (0.0, 0));
   m_rxing = false;
   m_firstPower = 0;
+
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  for (; it2 != m_firstPowerList.end (); it2++, it3++)
+    {
+      *it2 = 0;
+      (*it3).clear ();
+      (*it3).insert (GetNextPosition (Time (0)), std::make_pair (Time (0), NiChange (0.0, 0)));
+    }
 }
 
 InterferenceHelper::NiChanges::const_iterator
@@ -964,27 +1068,6 @@ InterferenceHelper::GetPreviousPosition (Time moment) const
   // before moment.
   --it;
   return it;
-}
-
-double
-InterferenceHelper::GetPreviousRuPower (Time moment, HeRu::RuSpec ru) const
-{
-  auto it = GetPreviousPosition (moment);
-
-  if (ru.index == 0)
-    {
-      return it->second.GetPower ();
-    }
-
-  while (it != m_niChanges.begin ())
-    {
-      if (HeRu::IsSame (it->second.GetEvent ()->GetTxVector ().GetRu (), ru))
-        {
-          break;
-        }
-      it--;
-    }
-  return it->second.GetPower ();
 }
 
 InterferenceHelper::NiChanges::iterator
@@ -1009,6 +1092,125 @@ InterferenceHelper::NotifyRxEnd ()
   auto it = m_niChanges.find (Simulator::Now ());
   it--;
   m_firstPower = it->second.GetPower ();
+
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  for (; it2 != m_firstPowerList.end (); it2++, it3++)
+    {
+      auto it = (*it3).find (Simulator::Now ());
+      it--;
+      *it2 = it->second.GetPower ();
+    }
+}
+
+void
+InterferenceHelper::UpdateNiChanges (BwRu bwru)
+{
+  auto it = m_bwruList.begin ();
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  for (; it != m_bwruList.end (); it++, it2++, it3++)
+    {
+      if ((bwru.first == it->first) && HeRu::IsSame (bwru.second, it->second))
+        {
+          UpdateNiChanges (it2, it3);
+          return;
+        }
+    }
+}
+
+void
+InterferenceHelper::UpdateNiChanges (std::list<double>::iterator it, std::list<NiChanges>::iterator it2)
+{
+  *it = m_firstPower;
+  *it2 = m_niChanges;
+}
+
+void
+InterferenceHelper::FetchNiChanges (BwRu bwru)
+{
+  auto it = m_bwruList.begin ();
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  for (; it != m_bwruList.end (); it++, it2++, it3++)
+    {
+      if ((bwru.first == it->first) && HeRu::IsSame (bwru.second, it->second))
+        {
+          FetchNiChanges (it2, it3);
+          return;
+        }
+    }
+}
+
+void
+InterferenceHelper::FetchNiChanges (std::list<double>::iterator it, std::list<NiChanges>::iterator it2)
+{
+  m_firstPower = *it;
+  m_niChanges = *it2;
+}
+
+void
+InterferenceHelper::StageNiChanges (void)
+{
+  // m_firstPowerList.front () = m_firstPower;
+  // m_niChangesList.front () = m_niChanges;
+}
+
+void
+InterferenceHelper::RecoverNiChanges (void)
+{
+  // m_firstPower = m_firstPowerList.front ();
+  // m_niChanges = m_niChangesList.front ();
+}
+
+double
+InterferenceHelper::GetFirstPower (Ptr<const Event> event) const
+{
+  auto it1 = m_bwruList.begin ();
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  for (; it1 != m_bwruList.end (); it1++, it2++, it3++)
+    {
+      if (it1->first < event->GetTxVector ().GetChannelWidth ())
+        {
+          continue;
+        }
+      else if (it1->first > event->GetTxVector ().GetChannelWidth ())
+        {
+          NS_ASSERT_MSG (0, "Cannot find InterferenceHelper for RU");
+        }
+      else
+        {
+          if (event->GetTxVector ().IsRu () &&
+            !HeRu::Overlap (it1->first, it1->second, event->GetTxVector ().GetRu ()))
+            {
+              continue;
+            }
+          break;
+        }
+    }
+  return *it2;
+}
+
+void
+InterferenceHelper::CleanNiChanges (Ptr<const Event> event)
+{
+  StageNiChanges ();
+  auto it1 = m_bwruList.begin ();
+  auto it2 = m_firstPowerList.begin ();
+  auto it3 = m_niChangesList.begin ();
+  for (; it1 != m_bwruList.end (); it1++, it2++, it3++)
+    {
+      FetchNiChanges (it2, it3);
+      double previousPowerStart = 0;
+      previousPowerStart = GetPreviousPosition (event->GetStartTime ())->second.GetPower ();
+
+      m_firstPower = previousPowerStart;
+      m_niChanges.erase (++(m_niChanges.begin ()),
+                        GetNextPosition (event->GetStartTime ()));
+      UpdateNiChanges (it2, it3);
+    }
+  RecoverNiChanges ();
 }
 
 } //namespace ns3

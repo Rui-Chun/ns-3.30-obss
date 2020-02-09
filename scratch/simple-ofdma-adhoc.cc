@@ -74,11 +74,11 @@ int main (int argc, char **argv)
   double startTime = 10.0;
   double totalTime = 11.0;
   double monitorInterval = 1.0;
+  std::string routing = "olsr";
   std::string dataMode = "HeMcs0";
-  std::string routing = "none";
   double datarate = 1e6;
   double packetSize = 1e3;
-  uint32_t adhoc = 0;
+  uint32_t adhoc = 1;
   uint32_t tcp = 0;
   uint32_t rtscts = 0;
 
@@ -117,11 +117,16 @@ int main (int argc, char **argv)
                                  "MinY", DoubleValue (0.0));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (apNodes);
-  mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
-                                 "X", DoubleValue (0.0),
-                                 "Y", DoubleValue (0.0),
-                                 "Rho", StringValue ("ns3::UniformRandomVariable[Min=10.0|Max=20.0]"),
-                                 "Theta", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.2830]"));
+  // mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
+  //                                "X", DoubleValue (0.0),
+  //                                "Y", DoubleValue (0.0),
+  //                                "Rho", StringValue ("ns3::UniformRandomVariable[Min=10.0|Max=20.0]"),
+  //                                "Theta", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.2830]"));
+  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                 "MinX", DoubleValue (40.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (40.0),
+                                 "GridWidth", UintegerValue (clNum));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (clNodes);
 
