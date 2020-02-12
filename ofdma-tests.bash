@@ -3,6 +3,7 @@
 unset NS_LOG
 ./waf
 
+# udp
 # echo 01
 # ./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120" &> log01.out
 # echo 02
@@ -39,12 +40,20 @@ unset NS_LOG
 # echo 16
 # ./waf --run "simple-ofdma --ofdmaEnabled=true --dataMode=HeMcs4 --datarate=5e6 --adhoc=1 --clNum=4 --startTime=60 --totalTime=120 --routing=olsr" &> log16.out
 
-echo 17
-./waf --run "simple-ofdma-adhoc --ofdmaEnabled=false --rtscts=1 --datarate=0.5e6 --adhoc=1 --clNum=4 --startTime=60 --totalTime=120" &> log17.out
-echo 18
-./waf --run "simple-ofdma-adhoc --ofdmaEnabled=true --datarate=0.5e6 --adhoc=1 --clNum=4 --startTime=60 --totalTime=120" &> log18.out
+# echo 17
+# ./waf --run "simple-ofdma-adhoc --ofdmaEnabled=false --rtscts=1 --datarate=3e4 --clNum=20 --startTime=60 --totalTime=120" &> log17.out
+# echo 18
+# ./waf --run "simple-ofdma-adhoc --ofdmaEnabled=true --datarate=3e4 --clNum=20 --startTime=60 --totalTime=120" &> log18.out
 
-# echo 51
-# ./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120 --tcp=1" &> log51.out
-# echo 52
-# ./waf --run "simple-ofdma --ofdmaEnabled=true --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120 --tcp=1" &> log52.out
+
+
+
+
+
+
+
+tcp
+echo 51
+./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120 --tcp=1" &> log51.out
+echo 52
+./waf --run "simple-ofdma --ofdmaEnabled=true --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120 --tcp=1" &> log52.out

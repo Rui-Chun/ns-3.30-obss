@@ -196,6 +196,7 @@ int main (int argc, char **argv)
           PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
           clApplications.Add (server.Install (clNodes.Get (i)));
           packetSink.push_back (StaticCast<PacketSink> (clApplications.Get (i)));
+          firstTotalRx.push_back (0);
           lastTotalRx.push_back (0);
           throughput.push_back (0);
 
