@@ -382,25 +382,25 @@ WifiMode::GetDataRate (HeRu::RuSpec ru, uint16_t guardInterval, uint8_t nss) con
       switch (ru.ruType)
         {
         case HeRu::RU_26_TONE:
-          usableSubCarriers = 26;
+          usableSubCarriers = 24;
           break;
         case HeRu::RU_52_TONE:
-          usableSubCarriers = 52;
+          usableSubCarriers = 48;
           break;
         case HeRu::RU_106_TONE:
-          usableSubCarriers = 106;
+          usableSubCarriers = 102;
           break;
         case HeRu::RU_242_TONE:
-          usableSubCarriers = 242;
+          usableSubCarriers = 234;
           break;
         case HeRu::RU_484_TONE:
-          usableSubCarriers = 484;
+          usableSubCarriers = 468;
           break;
         case HeRu::RU_996_TONE:
-          usableSubCarriers = 996;
+          usableSubCarriers = 980;
           break;
         case HeRu::RU_2x996_TONE:
-          usableSubCarriers = 2*996;
+          usableSubCarriers = 2*980;
           break;
         }
 
