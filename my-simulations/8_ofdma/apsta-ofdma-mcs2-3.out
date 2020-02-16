@@ -1,0 +1,6 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.382s)
+Invalid argument value: ofdmaEnabled=ture
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma', '--ofdmaEnabled=ture', '--clNum=4', '--startTime=60', '--totalTime=120', '--dataMode=HeMcs2', '--datarate=5.5e6', '--RngRun=3'] exited with code 1

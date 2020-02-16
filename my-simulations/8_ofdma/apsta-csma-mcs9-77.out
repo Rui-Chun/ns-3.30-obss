@@ -1,0 +1,69 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.337s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-0	cl-1	cl-2	cl-3
+60	0	0	0	12
+61	0	0	0	17800
+62	0	0	0	17696
+63	0	0	0	17704
+64	0	0	0	17712
+65	0	0	0	17744
+66	0	0	0	17792
+67	0	0	0	17776
+68	0	0	0	17728
+69	0	0	0	17776
+70	0	0	0	17776
+71	0	0	0	17760
+72	0	0	0	17760
+73	0	0	0	17704
+74	0	0	0	17728
+75	0	0	0	17680
+76	0	0	0	17816
+77	0	0	0	17800
+78	0	0	0	17760
+79	0	0	0	17768
+80	0	0	0	17792
+81	0	0	0	17760
+82	0	0	0	17696
+83	0	0	0	17744
+84	0	0	0	17728
+85	0	0	0	17784
+86	0	0	0	17776
+87	0	0	0	17776
+88	0	0	0	17720
+89	0	0	0	17736
+90	0	0	0	17744
+91	0	0	0	17712
+92	0	0	0	17752
+93	0	0	0	17664
+94	0	0	0	17752
+95	0	0	0	17728
+96	0	0	0	17720
+97	0	0	0	17736
+98	0	0	0	17712
+99	0	0	0	17776
+100	0	0	0	17728
+101	0	0	0	17800
+102	0	0	0	17696
+103	0	0	0	17696
+104	0	0	0	17680
+105	0	0	0	17704
+106	0	0	0	17728
+107	0	0	0	17744
+108	0	0	0	17720
+109	0	0	0	17744
+110	0	0	0	17736
+111	0	0	0	17744
+112	0	0	0	17728
+113	0	0	0	17704
+114	0	0	0	17736
+115	0	0	0	17672
+116	0	0	0	17752
+117	0	0	0	17728
+118	0	0	0	17760
+119	0	0	0	17784
+120	0	0	0	17720
+avg	0	0	0	17739.9
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma', '--ofdmaEnabled=false', '--rtscts=1', '--clNum=4', '--startTime=60', '--totalTime=120', '--dataMode=HeMcs9', '--datarate=24e6', '--RngRun=77'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
