@@ -153,7 +153,6 @@ int main (int argc, char **argv)
     {
       Ssid ssid = Ssid ("ofdma");
       mac.SetType ("ns3::ApWifiMac",
-                  "BeaconInterval", TimeValue (MicroSeconds (65535 * 1024)),
                   "Ssid", SsidValue (ssid),
                   "OfdmaSupported", BooleanValue (ofdmaEnabled));
       apDevices = wifi.Install (phy, mac, apNodes);
