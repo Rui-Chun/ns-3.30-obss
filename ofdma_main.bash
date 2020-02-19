@@ -11,6 +11,7 @@ do
         bash ofdma_loopac.bash $i $j &
         bash ofdma_loopao.bash $i $j &
     done
-    wait
-    echo finished
 done
+
+wait
+echo finish
