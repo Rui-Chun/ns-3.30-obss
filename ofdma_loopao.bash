@@ -26,4 +26,4 @@ case "$mcs" in
     ;;
 esac
 
-./waf --run "simple-ofdma-adhoc --ofdmaEnabled=false --rtscts=1 --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --RngRun=$1" &> $outpath/adhoc-csma-mcs$mcs-$1.out
+./waf --run "simple-ofdma-adhoc --ofdmaEnabled=false --rtscts=1 --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --clNum=20 --RngRun=$1" &> $outpath/adhoc-csma-mcs$mcs-$1.out

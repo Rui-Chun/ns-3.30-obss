@@ -4,14 +4,14 @@ unset NS_LOG
 ./waf
 
 # udp
-echo 01
-./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120" &> log01.out
-echo 02
-./waf --run "simple-ofdma --ofdmaEnabled=true --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120" &> log02.out
-echo 03
-./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --dataMode=HeMcs4 --datarate=5e6 --clNum=4 --startTime=60 --totalTime=120" &> log03.out
-echo 04
-./waf --run "simple-ofdma --ofdmaEnabled=true --dataMode=HeMcs4 --datarate=5e6 --clNum=4 --startTime=60 --totalTime=120" &> log04.out
+# echo 01
+# ./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120" &> log01.out
+# echo 02
+# ./waf --run "simple-ofdma --ofdmaEnabled=true --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120" &> log02.out
+# echo 03
+# ./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --dataMode=HeMcs4 --datarate=5e6 --clNum=4 --startTime=60 --totalTime=120" &> log03.out
+# echo 04
+# ./waf --run "simple-ofdma --ofdmaEnabled=true --dataMode=HeMcs4 --datarate=5e6 --clNum=4 --startTime=60 --totalTime=120" &> log04.out
 
 # echo 05
 # ./waf --run "simple-ofdma --ofdmaEnabled=false --rtscts=1 --datarate=2e6 --clNum=4 --startTime=60 --totalTime=120 --routing=olsr" &> log05.out
@@ -40,10 +40,10 @@ echo 04
 # echo 16
 # ./waf --run "simple-ofdma --ofdmaEnabled=true --dataMode=HeMcs4 --datarate=5e6 --adhoc=1 --clNum=4 --startTime=60 --totalTime=120 --routing=olsr" &> log16.out
 
-# echo 17
-# ./waf --run "simple-ofdma-adhoc --ofdmaEnabled=false --rtscts=1 --datarate=3e4 --clNum=20 --startTime=60 --totalTime=120" &> log17.out
-# echo 18
-# ./waf --run "simple-ofdma-adhoc --ofdmaEnabled=true --datarate=3e4 --clNum=20 --startTime=60 --totalTime=120" &> log18.out
+echo 17
+./waf --run "simple-ofdma-adhoc --ofdmaEnabled=false --rtscts=1 --datarate=3e4 --clNum=20 --startTime=60 --totalTime=120" &> log17.out
+echo 18
+./waf --run "simple-ofdma-adhoc --ofdmaEnabled=true --datarate=3e4 --clNum=20 --startTime=60 --totalTime=120" &> log18.out
 
 
 
