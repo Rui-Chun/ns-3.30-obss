@@ -11,11 +11,11 @@ do
         ;;
     1)  rate="2e5"
         ;;
-    2)  rate="3e5"
+    2)  rate="2.5e5"
         ;;
-    3)  rate="3.5e5"
+    3)  rate="3e5"
         ;;
-    4)  rate="4e5"
+    4)  rate="3.5e5"
         ;;
     5)  rate="6e5"
         ;;
