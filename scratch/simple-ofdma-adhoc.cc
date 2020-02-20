@@ -10,6 +10,7 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/aodv-module.h"
 #include "ns3/olsr-module.h"
+#include "ns3/ipv4-flow-classifier.h"
 
 using namespace ns3;
 
@@ -17,6 +18,7 @@ using namespace ns3;
 std::vector<uint64_t> firstTotalRx;
 std::vector<uint64_t> lastTotalRx;
 std::vector<double> throughput;
+std::vector<double> delay;
 std::vector<Ptr<PacketSink>> packetSink;
 
 double
@@ -281,6 +283,7 @@ int main (int argc, char **argv)
           firstTotalRx.push_back (0);
           lastTotalRx.push_back (0);
           throughput.push_back (0);
+          delay.push_back (0);
 
           OnOffHelper client ("ns3::TcpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
@@ -317,6 +320,7 @@ int main (int argc, char **argv)
           firstTotalRx.push_back (0);
           lastTotalRx.push_back (0);
           throughput.push_back (0);
+          delay.push_back (0);
 
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
@@ -347,10 +351,45 @@ int main (int argc, char **argv)
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+  FlowMonitorHelper flowmon;
+  Ptr<FlowMonitor> monitor = flowmon.InstallAll ();
+
   Simulator::Stop (Seconds (totalTime + 0.1));
   Simulator::Run ();
 
   CalculateAverageThroughput (totalTime - startTime);
+
+  // Delay
+  monitor->CheckForLostPackets ();
+  Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowmon.GetClassifier ());
+  std::map<FlowId, FlowMonitor::FlowStats> stats = monitor->GetFlowStats ();
+  for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
+    {
+      Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
+      if ((t.destinationPort >= 5000) && (t.destinationPort < 5000+clNum))
+        {
+          uint32_t index = t.destinationPort - 5000;
+          if (!t.destinationAddress.IsEqual (clInterfaces.GetAddress (index)))
+            {
+              continue;
+            }
+          if (i->second.rxPackets > 0)
+            {
+              delay[index] = (double)i->second.delaySum.GetMilliSeconds () / (double)i->second.rxPackets;
+            }
+          else
+            {
+              delay[index] = 0;
+            }
+        }
+    }
+  std::cout << "delay";
+  for (uint32_t i = 0; i < packetSink.size (); ++i)
+    {
+      std::cout << '\t' << delay[i];
+    }
+  std::cout << std::endl;
+  
   Simulator::Destroy ();
 
   return true;
