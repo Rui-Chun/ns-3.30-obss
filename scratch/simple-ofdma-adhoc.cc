@@ -84,6 +84,7 @@ int main (int argc, char **argv)
   double packetSize = 1e3;
   uint32_t tcp = 0;
   uint32_t rtscts = 0;
+  double ratio = 1.0;
 
   std::string routing = "static";
   std::string locationFile = "locationFile.txt";
@@ -103,6 +104,7 @@ int main (int argc, char **argv)
   cmd.AddValue ("routing", "Routing algo, none/aodv/olsr", routing);
   cmd.AddValue ("locationFile", "Location file", locationFile);
   cmd.AddValue ("routingFile", "Routing file for static routing", routingFile);
+  cmd.AddValue ("ratio", "Ratio of location file inputs.", ratio);
   cmd.Parse (argc, argv);
 
   Config::SetDefault ("ns3::RegularWifiMac::VO_MaxAmsduSize", UintegerValue (0));
@@ -153,7 +155,7 @@ int main (int argc, char **argv)
       while (fin >> locationX)
         {
           fin >> locationY >> locationZ;
-          locations.push_back (std::vector<double> {locationX, locationY, locationZ});
+          locations.push_back (std::vector<double> {locationX * ratio, locationY * ratio, locationZ * ratio});
         }
       fin.close ();
 
