@@ -2,13 +2,12 @@ topoRange = {'apsta'}
 caRange = {'csma', 'ofdma'};
 mcsRange = 0:7;
 injectRange = (2:9)*1e3;
-rngRange = 0:149;
+rngRange = 0:14;
 
 thr = zeros(length(topoRange), length(caRange), ...
     length(mcsRange), length(rngRange));
 delay = thr;
 
-error = 0;
 for topoIndex = 1:length(topoRange)
     topo = topoRange{topoIndex};
     for caIndex = 1:length(caRange)
@@ -33,7 +32,6 @@ for topoIndex = 1:length(topoRange)
                 if size(A,1)~= 2
                     thr(topoIndex, caIndex, mcsIndex, rngIndex) = nan;
                     delay(topoIndex, caIndex, mcsIndex, rngIndex) = nan;
-                    error = error + 1;
                 else
                     thr(topoIndex, caIndex, mcsIndex, rngIndex) = mean(A(1,:));
                     delay(topoIndex, caIndex, mcsIndex, rngIndex) = ...
@@ -43,7 +41,6 @@ for topoIndex = 1:length(topoRange)
         end
     end
 end
-disp(error);
 
 figure; hold on;
 plot(mcsRange, squeeze(nanmean(thr(1,1,:,:), 4)).', '-x');

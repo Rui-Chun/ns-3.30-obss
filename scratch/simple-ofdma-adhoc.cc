@@ -19,6 +19,7 @@ std::vector<uint64_t> firstTotalRx;
 std::vector<uint64_t> lastTotalRx;
 std::vector<double> throughput;
 std::vector<double> delay;
+std::vector<double> loss;
 std::vector<Ptr<PacketSink>> packetSink;
 
 double
@@ -286,6 +287,7 @@ int main (int argc, char **argv)
           lastTotalRx.push_back (0);
           throughput.push_back (0);
           delay.push_back (0);
+          loss.push_back (0);
 
           OnOffHelper client ("ns3::TcpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
@@ -323,6 +325,7 @@ int main (int argc, char **argv)
           lastTotalRx.push_back (0);
           throughput.push_back (0);
           delay.push_back (0);
+          loss.push_back (0);
 
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
@@ -378,10 +381,12 @@ int main (int argc, char **argv)
           if (i->second.rxPackets > 0)
             {
               delay[index] = (double)i->second.delaySum.GetMilliSeconds () / (double)i->second.rxPackets;
+              loss[index] = (double)i->second.lostPackets / (double)(i->second.lostPackets + i->second.rxPackets);
             }
           else
             {
               delay[index] = 0;
+              loss[index] = 0;
             }
         }
     }
@@ -389,6 +394,12 @@ int main (int argc, char **argv)
   for (uint32_t i = 0; i < packetSink.size (); ++i)
     {
       std::cout << '\t' << delay[i];
+    }
+  std::cout << std::endl;
+  std::cout << "loss";
+  for (uint32_t i = 0; i < packetSink.size (); ++i)
+    {
+      std::cout << '\t' << loss[i];
     }
   std::cout << std::endl;
   
