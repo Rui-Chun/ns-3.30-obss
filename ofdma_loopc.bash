@@ -5,7 +5,7 @@ mkdir -p $outpath
 
 for (( i=$2 ; i<=$3 ; i++ ))
 do
-    mcs=$2
+    mcs=$i
     case "$mcs" in
     0)  rate="1e5"
         ;;

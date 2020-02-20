@@ -8,7 +8,7 @@ do
     do
         rng=$((i*$3+j))
         echo "$rng start"
-        bash ofdma_loop.bash $rng 0 9 &
+        bash ofdma_loop.bash $rng 0 7 &
     done
     wait
 done
