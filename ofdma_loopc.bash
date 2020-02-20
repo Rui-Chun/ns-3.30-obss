@@ -13,9 +13,9 @@ do
         ;;
     2)  rate="3e5"
         ;;
-    3)  rate="4e5"
+    3)  rate="3.5e5"
         ;;
-    4)  rate="5e5"
+    4)  rate="4e5"
         ;;
     5)  rate="6e5"
         ;;
