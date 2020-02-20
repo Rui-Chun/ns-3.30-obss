@@ -122,7 +122,7 @@ int main (int argc, char **argv)
   mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
                                  "X", DoubleValue (0.0),
                                  "Y", DoubleValue (0.0),
-                                 "Rho", StringValue ("ns3::UniformRandomVariable[Min=10.0|Max=20.0]"),
+                                 "Rho", StringValue ("ns3::UniformRandomVariable[Min=15.0|Max=15.0]"),
                                  "Theta", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.2830]"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (clNodes);
