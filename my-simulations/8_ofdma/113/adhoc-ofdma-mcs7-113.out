@@ -1,0 +1,10 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.634s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12	cl-13	cl-14	cl-15	cl-16	cl-17	cl-18	cl-19	cl-20
+60	13.2	15.2	14.4	15.2	13.6	13.6	12.6	15.4	13.8	14.2	15.6	14.4	13.6	16.2	15.2	11.8	14.8	13.8	12.4	16.2
+61	536	552	544	544	480	304	272	256	448	408	384	408	472	456	400	408	488	432	368	424
+62	536	528	520	520	488	312	224	256	488	408	352	384	424	440	352	376	472	440	352	400
+63	432	520	576	608	480	264	176	200	392	344	288	360	264	376	384	368	232	352	296	368
