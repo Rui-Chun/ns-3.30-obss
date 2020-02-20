@@ -1,6 +1,6 @@
 #!/bin/bash
 
-outpath="./my-simulations/8_ofdma/$1"
+outpath="./my-simulations/8_ofdma1/$1"
 mkdir -p $outpath
 
 for (( i=$2 ; i<=$3 ; i++ ))
