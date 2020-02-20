@@ -271,7 +271,7 @@ int main (int argc, char **argv)
   CalculateAverageThroughput (totalTime - startTime);
 
   // Delay
-  monitor->CheckForLostPackets ();
+  // monitor->CheckForLostPackets ();
   Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowmon.GetClassifier ());
   std::map<FlowId, FlowMonitor::FlowStats> stats = monitor->GetFlowStats ();
   for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
