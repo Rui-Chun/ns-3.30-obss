@@ -8,6 +8,7 @@ do
     do
         rng=$((i*$3+j))
         echo "$rng start"
+        sleep 60
         bash ofdma_loop.bash $rng 0 7 &
     done
     wait
