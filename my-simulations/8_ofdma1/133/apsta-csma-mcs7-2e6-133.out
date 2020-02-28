@@ -1,0 +1,29 @@
+Waf: Entering directory `/home/synrg/Documents/Jiaming/ns-3.30-obss/build'
+Waf: Leaving directory `/home/synrg/Documents/Jiaming/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+Traceback (most recent call last):
+  File "/home/synrg/Documents/Jiaming/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 119, in waf_entry_point
+    run_commands()
+  File "/home/synrg/Documents/Jiaming/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 182, in run_commands
+    ctx=run_command(cmd_name)
+  File "/home/synrg/Documents/Jiaming/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 173, in run_command
+    ctx.execute()
+  File "/home/synrg/Documents/Jiaming/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 375, in execute
+    return execute_method(self)
+  File "/home/synrg/Documents/Jiaming/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 93, in execute
+    self.execute_build()
+  File "/home/synrg/Documents/Jiaming/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 112, in execute_build
+    self.post_build()
+  File "/home/synrg/Documents/Jiaming/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 272, in post_build
+    m(self)
+  File "waf-tools/clang_compilation_database.py", line 47, in write_compilation_database
+    root = json.load(database_file)
+  File "/home/synrg/anaconda3/lib/python3.7/json/__init__.py", line 296, in load
+    parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/home/synrg/anaconda3/lib/python3.7/json/__init__.py", line 348, in loads
+    return _default_decoder.decode(s)
+  File "/home/synrg/anaconda3/lib/python3.7/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/home/synrg/anaconda3/lib/python3.7/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Unterminated string starting at: line 3829 column 16 (char 442192)
