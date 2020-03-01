@@ -6,7 +6,7 @@ mkdir -p $outpath
 for (( i=$2 ; i<=$3 ; i++ ))
 do
     mcs=$i
-    for (( j=2; j<=14; j=j+2 ))
+    for (( j=1; j<=7; j++ ))
     do
         rate="${j}e6"
         echo $outpath/apsta-ofdma-mcs$mcs-$rate-$1.out

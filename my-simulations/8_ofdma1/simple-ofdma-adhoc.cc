@@ -48,12 +48,14 @@ CalculateThroughput (double monitorInterval)
 }
 
 void
-PrintThroughputTitle (uint32_t clNum)
+PrintThroughputTitle (uint32_t apNum)
 {
   std::cout << "--------------------------Rate[Kbps]--------------------------\n";
   std::cout << "Time[s]";
-  for (uint32_t i = 0; i < clNum; ++i)
-      std::cout << '\t' << "cl-" << i;
+  for (uint32_t i = 0; i < packetSink.size (); ++i)
+    {
+      std::cout << '\t' << "cl-" << i+apNum;
+    }
   std::cout << std::endl;
 }
 
@@ -73,30 +75,37 @@ int main (int argc, char **argv)
   CommandLine cmd;
 
   bool ofdmaEnabled = false;
+  uint32_t apNum = 1;
   uint32_t clNum = 2;
   double startTime = 10.0;
   double totalTime = 11.0;
   double monitorInterval = 1.0;
   std::string dataMode = "HeMcs0";
-  std::string routing = "none";
   double datarate = 1e6;
   double packetSize = 1e3;
-  uint32_t adhoc = 0;
   uint32_t tcp = 0;
   uint32_t rtscts = 0;
+  double ratio = 1.0;
+
+  std::string routing = "static";
+  std::string locationFile = "locationFile.txt";
+  std::string routingFile = "routingFile.txt";
 
   cmd.AddValue ("ofdmaEnabled", "", ofdmaEnabled);
+  cmd.AddValue ("apNum", "", apNum);
   cmd.AddValue ("clNum", "", clNum);
   cmd.AddValue ("startTime", "Application start time, s.", startTime);
   cmd.AddValue ("totalTime", "Simulation time, s.", totalTime);
   cmd.AddValue ("monitorInterval", "Monitor interval, s.", monitorInterval);
   cmd.AddValue ("dataMode", "Mode for data frames.", dataMode);
-  cmd.AddValue ("routing", "Routing algo, none/aodv/olsr", routing);
   cmd.AddValue ("datarate", "Datarate, bps.", datarate);
   cmd.AddValue ("packetSize", "Packet size, bytes.", packetSize);
-  cmd.AddValue ("adhoc", "mac protocol, 0 = apsta, 1 = adhoc", adhoc);
   cmd.AddValue ("tcp", "tcp protocl, 0 = udp, 1 = tcp", tcp);
   cmd.AddValue ("rtscts", "rtscts for csma, 0 = disable, 1 = enable", rtscts);
+  cmd.AddValue ("routing", "Routing algo, none/aodv/olsr", routing);
+  cmd.AddValue ("locationFile", "Location file", locationFile);
+  cmd.AddValue ("routingFile", "Routing file for static routing", routingFile);
+  cmd.AddValue ("ratio", "Ratio of location file inputs.", ratio);
   cmd.Parse (argc, argv);
 
   Config::SetDefault ("ns3::RegularWifiMac::VO_MaxAmsduSize", UintegerValue (0));
@@ -110,23 +119,59 @@ int main (int argc, char **argv)
 
   // Create nodes and set mobility
   NodeContainer apNodes;
-  apNodes.Create (1);
+  apNodes.Create (apNum);
   NodeContainer clNodes;
   clNodes.Create (clNum);
+  NodeContainer nodes;
+  nodes.Add (apNodes);
+  nodes.Add (clNodes);
 
   MobilityHelper mobility;
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0));
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (apNodes);
-  mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
-                                 "X", DoubleValue (0.0),
-                                 "Y", DoubleValue (0.0),
-                                 "Rho", StringValue ("ns3::UniformRandomVariable[Min=15.0|Max=15.0]"),
-                                 "Theta", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.2830]"));
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (clNodes);
+  std::vector<std::vector<double>> locations;
+  if (locationFile.empty ())
+    {
+      mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                    "MinX", DoubleValue (0.0),
+                                    "MinY", DoubleValue (0.0));
+      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+      mobility.Install (apNodes);
+      mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                    "MinX", DoubleValue (40.0),
+                                    "MinY", DoubleValue (0.0),
+                                    "DeltaX", DoubleValue (40.0),
+                                    "GridWidth", UintegerValue (clNum));
+      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+      mobility.Install (clNodes);
+    }
+  else
+    {
+      double locationX = 0;
+      double locationY = 0;
+      double locationZ = 0;
+      std::ifstream fin (locationFile);
+      if (!fin.is_open ())
+        {
+          NS_ASSERT_MSG (false, "missing location file");
+        }
+      while (fin >> locationX)
+        {
+          fin >> locationY >> locationZ;
+          locations.push_back (std::vector<double> {locationX * ratio, locationY * ratio, locationZ * ratio});
+        }
+      fin.close ();
+
+      if (locations.size () < apNum+clNum)
+        {
+          NS_ASSERT_MSG (false, "not enough input locations");
+        }
+      Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+      for (uint32_t i = 0; i < apNum+clNum; i++)
+        {
+          positionAlloc->Add (Vector (locations[i][0], locations[i][1], locations[i][2]));
+        }
+      mobility.SetPositionAllocator (positionAlloc);
+      mobility.Install (nodes);
+    }  
 
   // Install mac and phy
   NetDeviceContainer apDevices;
@@ -145,25 +190,10 @@ int main (int argc, char **argv)
                                 "RtsCtsThreshold", rtscts ? UintegerValue (0) : UintegerValue (4294967295));
 
   WifiMacHelper mac;
-  if (adhoc)
-    {
-      mac.SetType ("ns3::AdhocWifiMac",
-                   "OfdmaSupported", BooleanValue (ofdmaEnabled));
-      apDevices = wifi.Install (phy, mac, apNodes);
-      clDevices = wifi.Install (phy, mac, clNodes);
-    }
-  else
-    {
-      Ssid ssid = Ssid ("ofdma");
-      mac.SetType ("ns3::ApWifiMac",
-                  "Ssid", SsidValue (ssid),
-                  "OfdmaSupported", BooleanValue (ofdmaEnabled));
-      apDevices = wifi.Install (phy, mac, apNodes);
-      mac.SetType ("ns3::StaWifiMac",
-                  "Ssid", SsidValue (ssid),
-                  "OfdmaSupported", BooleanValue (ofdmaEnabled));
-      clDevices = wifi.Install (phy, mac, clNodes);
-    }
+  mac.SetType ("ns3::AdhocWifiMac",
+                "OfdmaSupported", BooleanValue (ofdmaEnabled));
+  apDevices = wifi.Install (phy, mac, apNodes);
+  clDevices = wifi.Install (phy, mac, clNodes);
 
   // Install Internet stack
   InternetStackHelper stack;
@@ -177,6 +207,11 @@ int main (int argc, char **argv)
       OlsrHelper olsr;
       stack.SetRoutingHelper (olsr);
     }
+  else if (routing == std::string ("static"))
+    {
+      Ipv4StaticRoutingHelper staticroute;
+      stack.SetRoutingHelper (staticroute);
+    }
   stack.Install (apNodes);
   stack.Install (clNodes);
 
@@ -184,6 +219,49 @@ int main (int argc, char **argv)
   address.SetBase ("192.168.1.0", "255.255.255.0");
   Ipv4InterfaceContainer apInterfaces = address.Assign (apDevices);
   Ipv4InterfaceContainer clInterfaces = address.Assign (clDevices);
+  Ipv4InterfaceContainer interfaces;
+  interfaces.Add (apInterfaces);
+  interfaces.Add (clInterfaces);
+
+  std::vector<std::vector<uint32_t>> routes;
+  if (routing == std::string ("static"))
+    {
+      NS_ASSERT_MSG (!routingFile.empty (), "missing routing file name");
+      uint32_t nodeId = 0;
+      uint32_t dstId = 0;
+      uint32_t nextId = 0;
+      std::ifstream fin (routingFile);
+      if (!fin.is_open ())
+        {
+          NS_ASSERT_MSG (false, "missing routing file");
+        }
+      while (fin >> nodeId)
+        {
+          fin >> dstId >> nextId;
+          routes.push_back (std::vector<uint32_t> {nodeId, dstId, nextId});
+        }
+      fin.close ();
+      
+      Ptr<Ipv4StaticRouting> staticRouting;
+      Ipv4Address dstAdd = Ipv4Address ();
+      Ipv4Address nextAdd = Ipv4Address ();
+      for (uint32_t i = 0; i < routes.size (); i++)
+        {
+          nodeId = routes[i][0];
+          dstId = routes[i][1];
+          nextId = routes[i][2];
+          if (i < clNum)
+            {
+              NS_ASSERT_MSG (nodeId < apNum, "wrong routing file format");
+              NS_ASSERT_MSG (dstId >= apNum, "wrong routing file format");
+              NS_ASSERT_MSG (dstId < apNum+clNum, "wrong routing file format");
+            }
+          staticRouting = Ipv4RoutingHelper::GetRouting<Ipv4StaticRouting> (nodes.Get (nodeId)->GetObject<Ipv4> ()->GetRoutingProtocol ());
+          dstAdd = interfaces.GetAddress (dstId);
+          nextAdd = interfaces.GetAddress (nextId);
+          staticRouting->AddHostRouteTo (dstAdd, nextAdd, 1);
+        }
+    }
 
   // Install application
   ApplicationContainer apApplications;
@@ -193,10 +271,17 @@ int main (int argc, char **argv)
     {
       for (uint32_t i = 0; i < clNum; i++)
         {
+          uint32_t sinkId = i;
+          uint32_t srcId = 0;
+          if (!routingFile.empty ())
+            {
+              sinkId = routes[i][1] - apNum;
+              srcId = routes[i][0];
+            }
           uint16_t port = 5000+i;
           Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
           PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
-          clApplications.Add (server.Install (clNodes.Get (i)));
+          clApplications.Add (server.Install (clNodes.Get (sinkId)));
           packetSink.push_back (StaticCast<PacketSink> (clApplications.Get (i)));
           firstTotalRx.push_back (0);
           lastTotalRx.push_back (0);
@@ -205,29 +290,36 @@ int main (int argc, char **argv)
           loss.push_back (0);
 
           OnOffHelper client ("ns3::TcpSocketFactory", Address ());
-          AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (i), port));
-          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+          AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
+          client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+          client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           client.SetAttribute ("Remote", remoteAddress);
-          apApplications.Add (client.Install (apNodes));
+          apApplications.Add (client.Install (apNodes.Get (srcId)));
 
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
           client.SetAttribute ("PacketSize", UintegerValue (25));
-          trApplications.Add (client.Install (apNodes));
+          trApplications.Add (client.Install (apNodes.Get (srcId)));
         }
     }
   else
     {
       for (uint32_t i = 0; i < clNum; i++)
         {
+          uint32_t sinkId = i;
+          uint32_t srcId = 0;
+          if (!routingFile.empty ())
+            {
+              sinkId = routes[i][1] - apNum;
+              srcId = routes[i][0];
+            }
           uint16_t port = 5000+i;
           Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
           PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
-          clApplications.Add (server.Install (clNodes.Get (i)));
+          clApplications.Add (server.Install (clNodes.Get (sinkId)));
           packetSink.push_back (StaticCast<PacketSink> (clApplications.Get (i)));
           firstTotalRx.push_back (0);
           lastTotalRx.push_back (0);
@@ -236,19 +328,19 @@ int main (int argc, char **argv)
           loss.push_back (0);
 
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
-          AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (i), port));
-          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+          AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
+          client.SetAttribute ("Remote", remoteAddress);
+          client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+          client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
-          client.SetAttribute ("Remote", remoteAddress);
-          apApplications.Add (client.Install (apNodes));
+          apApplications.Add (client.Install (apNodes.Get (srcId)));
 
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
           client.SetAttribute ("PacketSize", UintegerValue (25));
-          trApplications.Add (client.Install (apNodes));
+          trApplications.Add (client.Install (apNodes.Get (srcId)));
         }
     }
   
@@ -259,7 +351,7 @@ int main (int argc, char **argv)
   trApplications.Start (Seconds (startTime * 0.3));
   trApplications.Stop (Seconds (startTime * 0.8));
 
-  Simulator::Schedule (Seconds (startTime), &PrintThroughputTitle, clNum);
+  Simulator::Schedule (Seconds (startTime), &PrintThroughputTitle, apNum);
   Simulator::Schedule (Seconds (startTime), &CalculateThroughput, monitorInterval);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
@@ -270,7 +362,6 @@ int main (int argc, char **argv)
   Simulator::Stop (Seconds (totalTime + 0.1));
   Simulator::Run ();
 
-  // Throughput
   CalculateAverageThroughput (totalTime - startTime);
 
   // Delay
@@ -311,7 +402,7 @@ int main (int argc, char **argv)
       std::cout << '\t' << loss[i];
     }
   std::cout << std::endl;
-
+  
   Simulator::Destroy ();
 
   return true;

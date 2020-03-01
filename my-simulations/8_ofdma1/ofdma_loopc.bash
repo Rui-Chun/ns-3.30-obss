@@ -6,7 +6,7 @@ mkdir -p $outpath
 for (( i=$2 ; i<=$3 ; i++ ))
 do
     mcs=$i
-    for (( j=2; j<=12; j=j+2 ))
+    for (( j=1; j<=6; j++ ))
     do
         rate="${j}e5"
         echo $outpath/adhoc-ofdma-mcs$mcs-$rate-$1.out
