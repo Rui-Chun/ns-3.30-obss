@@ -54,39 +54,51 @@ end
 markerRange = {'o', '+'};
 colorRange = {'#0072BD', '#D95319', '#EDB120', '#7E2F8E', '#77AC30', ...
     '#4DBEEE', 	'#A2142F', 'k'};
-f1 = figure('Position', [800 200 1000 400]);
-subplot(1,2,1); hold on; grid on;
+f1 = figure('Position', [800 200 1400 400]);
+subplot(1,3,1); hold on; grid on;
 for caIndex = 1:length(caRange)
     for mcsIndex = 1:length(mcsRange)
-        X = squeeze(thr(1, caIndex, mcsIndex, :, :)); X = X(:);
-        Y = squeeze(delay(1, caIndex, mcsIndex, :, :)); Y = Y(:);
-        Z = repmat(inRange.', length(rngRange), 1); Z = Z(:);
-        scatter3(X, Y, Z, 64, ...
+        X = repmat(inRange, length(rngRange), 1); X = median(X,1);
+        Y = squeeze(thr(1, caIndex, mcsIndex, :, :)); Y = median(Y.',1);
+        scatter(X, Y, 64, ...
             'Marker', markerRange{caIndex}, ...
             'MarkerEdgeColor', colorRange{mcsIndex}, ...
             'LineWidth', 3);
-%         pause;
     end
 end
-xlabel('per mesh node throughput (Kbps)');
-ylabel('per mesh node delay (ms)');
-zlabel('per mesh node input (Kbps)');
-legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]));
+xlabel('per mesh node inject (Kbps)');
+ylabel('per mesh node throughput (Kbps)');
+legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
+    'Location', 'northwest');
 
-subplot(1,2,2); hold on; grid on;
+subplot(1,3,2); hold on; grid on;
 for caIndex = 1:length(caRange)
     for mcsIndex = 1:length(mcsRange)
-        X = squeeze(thr(1, caIndex, mcsIndex, :, :)); X = X(:);
-        Y = squeeze(loss(1, caIndex, mcsIndex, :, :)); Y = Y(:);
-        Z = repmat(inRange.', length(rngRange), 1); Z = Z(:);
-        scatter3(X, Y, Z, 64, ...
+        X = repmat(inRange, length(rngRange), 1); X = median(X,1);
+        Y = squeeze(delay(1, caIndex, mcsIndex, :, :)); Y = median(Y.',1);
+        scatter(X, Y, 64, ...
             'Marker', markerRange{caIndex}, ...
             'MarkerEdgeColor', colorRange{mcsIndex}, ...
             'LineWidth', 3);
-%         pause;
     end
 end
-xlabel('per mesh node throughput (Kbps)');
-ylabel('loss rate');
-zlabel('per mesh node input (Kbps)');
-legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]));
+xlabel('per mesh node inject (Kbps)');
+ylabel('per mesh node delay (ms)');
+legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
+    'Location', 'northwest');
+
+subplot(1,3,3); hold on; grid on;
+for caIndex = 1:length(caRange)
+    for mcsIndex = 1:length(mcsRange)
+        X = repmat(inRange, length(rngRange), 1); X = median(X,1);
+        Y = squeeze(loss(1, caIndex, mcsIndex, :, :)); Y = median(Y.',1);
+        scatter(X, Y, 64, ...
+            'Marker', markerRange{caIndex}, ...
+            'MarkerEdgeColor', colorRange{mcsIndex}, ...
+            'LineWidth', 3);
+    end
+end
+xlabel('per mesh node inject (Kbps)');
+ylabel('per mesh node loss ');
+legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
+    'Location', 'northwest');
