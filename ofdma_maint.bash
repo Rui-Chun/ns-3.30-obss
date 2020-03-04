@@ -1,6 +1,8 @@
 #!/bin/bash
 
-for (( i=$1 ; i<=$2 ; i=i+1))
+for (( i=0 ; i<=$1 ; i=i+1))
 do
-    bash ofdma_loopt.bash $3 $4
+    bash ofdma_loopt.bash $2 $3 &
 done
+
+wait
