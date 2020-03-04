@@ -1,6 +1,6 @@
 topoRange = {'adhoc'};
 caRange = {'csma', 'ofdma'};
-mcsRange = 0:7;
+mcsRange = [0 4 7];
 inRange = 1:6;
 rngRange = 0:149;
 
@@ -52,7 +52,7 @@ end
 
 %%
 markerRange = {'o', '+'};
-colorRange = {'#0072BD', '#D95319', '#EDB120', '#7E2F8E', '#77AC30', ...
+colorRange = {'r', 'g', 'b', '#7E2F8E', '#77AC30', ...
     '#4DBEEE', 	'#A2142F', 'k'};
 f1 = figure('Position', [800 200 1400 400]);
 subplot(1,3,1); hold on; grid on;
@@ -66,7 +66,7 @@ for caIndex = 1:length(caRange)
             'LineWidth', 3);
     end
 end
-xlabel('per mesh node inject (Kbps)');
+xlabel('per mesh node inject (Mbps)');
 ylabel('per mesh node throughput (Kbps)');
 legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
     'Location', 'northwest');
@@ -82,7 +82,7 @@ for caIndex = 1:length(caRange)
             'LineWidth', 3);
     end
 end
-xlabel('per mesh node inject (Kbps)');
+xlabel('per mesh node inject (Mbps)');
 ylabel('per mesh node delay (ms)');
 legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
     'Location', 'northwest');
@@ -98,7 +98,7 @@ for caIndex = 1:length(caRange)
             'LineWidth', 3);
     end
 end
-xlabel('per mesh node inject (Kbps)');
+xlabel('per mesh node inject (Mbps)');
 ylabel('per mesh node loss ');
 legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
     'Location', 'northwest');
