@@ -12,14 +12,16 @@ do
             mcs=$i
 
             filename="$outpath/adhoc-ofdma-mcs$mcs-$rate-$k.out"
-            if [ ! -f $filename]; then
+            if [ ! -f $filename ]
+            then
                 echo $filename
                 touch $filename
                 ./waf --run "simple-ofdma-adhoc2 --ofdmaEnabled=true --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --clNum=20 --ratio=0.375 --RngRun=$k" &> $filename
             fi
 
             filename="$outpath/adhoc-csma-mcs$mcs-$rate-$k.out"
-            if [ ! -f $filename]; then
+            if [ ! -f $filename ]
+            then
                 echo $filename
                 touch $filename
                 ./waf --run "simple-ofdma-adhoc2 --ofdmaEnabled=false --rtscts=1 --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --clNum=20 --ratio=0.375 --RngRun=$k" &> $filename

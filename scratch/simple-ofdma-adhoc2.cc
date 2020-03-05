@@ -294,7 +294,7 @@ int main (int argc, char **argv)
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3]))));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3] + 1e3))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           client.SetAttribute ("Remote", remoteAddress);
           apApplications.Add (client.Install (apNodes.Get (srcId)));
@@ -333,7 +333,7 @@ int main (int argc, char **argv)
           client.SetAttribute ("Remote", remoteAddress);
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3]))));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3] + 1e3))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           apApplications.Add (client.Install (apNodes.Get (srcId)));
 
