@@ -1,8 +1,8 @@
 topoRange = {'adhoc'};
 caRange = {'csma', 'ofdma'};
 mcsRange = [0 4 7];
-inRange = 1:6;
-rngRange = 0:149;
+inRange = 2:2:12;
+rngRange = 0:49;
 
 thr = zeros(length(topoRange), length(caRange), ...
     length(mcsRange), length(inRange), length(rngRange));
@@ -31,7 +31,7 @@ for topoIndex = 1:length(topoRange)
                         'Delimiter', '\t', ...
                         'HeaderLines', 67);
                     fclose(fileId);
-                    A = cell2mat(A(:,2:end));
+                    A = cell2mat(A(:,2:end)); A(:,1:5) = [];
                     if size(A,1)~= 3
                         thr(topoIndex, caIndex, mcsIndex, inIndex, rngIndex) = nan;
                         delay(topoIndex, caIndex, mcsIndex, inIndex, rngIndex) = nan;
@@ -117,4 +117,4 @@ legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
     'Location', 'northwest');
 
 save_fig_name = fullfile('adhoc.pdf');
-export_fig(save_fig_name, '-painters', '-q101');
+% export_fig(save_fig_name, '-painters', '-q101');

@@ -1,7 +1,7 @@
 topoRange = {'adhoc'};
 caRange = {'csma', 'ofdma'};
 mcsRange = [0 4 7];
-inRange = 1:6;
+inRange = 2:2:12;
 rngRange = 0:149;
 
 thr = zeros(length(topoRange), length(caRange), ...
