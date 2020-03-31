@@ -363,6 +363,23 @@ int main (int argc, char **argv)
   Simulator::Stop (Seconds (totalTime + 0.1));
   Simulator::Run ();
 
+  for (uint32_t i = 0; i < apNum; i++)
+    {
+      Ptr<NetDevice> nd = apDevices.Get (i);
+      Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();
+      Ptr<WifiMac> wm = wnd->GetMac ();
+      Ptr<RegularWifiMac> rwm = wm->GetObject<RegularWifiMac> ();
+      rwm->PrintRuSentNum ();
+    }
+  for (uint32_t i = 0; i < clNum; i++)
+    {
+      Ptr<NetDevice> nd = clDevices.Get (i);
+      Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();
+      Ptr<WifiMac> wm = wnd->GetMac ();
+      Ptr<RegularWifiMac> rwm = wm->GetObject<RegularWifiMac> ();
+      rwm->PrintRuSentNum ();
+    }
+
   CalculateAverageThroughput (totalTime - startTime);
 
   // Delay

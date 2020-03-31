@@ -281,6 +281,7 @@ public:
   Time GetBasicBlockAckTimeout (void) const;
   void SetCompressedBlockAckTimeout (Time blockAckTimeout);
   Time GetCompressedBlockAckTimeout (void) const;
+  void PrintRuSentNum (void);
 
 
 protected:

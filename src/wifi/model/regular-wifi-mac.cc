@@ -105,7 +105,7 @@ RegularWifiMac::DoDispose ()
 
   m_rxMiddle = 0;
   m_txMiddle = 0;
-
+  
   m_low->Dispose ();
   m_low = 0;
 
@@ -123,7 +123,7 @@ RegularWifiMac::DoDispose ()
 
   m_channelAccessManager->Dispose ();
   m_channelAccessManager = 0;
-  
+
   WifiMac::DoDispose ();
 }
 
@@ -1359,6 +1359,19 @@ bool
 RegularWifiMac::GetOfdmaSupported () const
 {
   return m_ofdmaSupported;
+}
+
+void
+RegularWifiMac::PrintRuSentNum ()
+{
+  if (m_ofdmaSupported)
+    {
+      for (auto i = m_low->m_ruSentNum.begin (); i != m_low->m_ruSentNum.end (); i++)
+        {
+          std::cout << '(' << i->first << ',' << i->second << ')' << '\t';
+        }
+      std::cout << '\n';
+    }
 }
 
 } //namespace ns3

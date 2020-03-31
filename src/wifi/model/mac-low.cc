@@ -194,14 +194,6 @@ MacLow::DoDispose (void)
       delete m_phyMacLowListener;
       m_phyMacLowListener = 0;
     }
-  if (m_ofdmaEnabled)
-    {
-      for (auto i = m_ruSentNum.begin (); i != m_ruSentNum.end (); i++)
-        {
-          std::cout << '(' << i->first << ',' << i->second << ')' << '\t';
-        }
-      std::cout << '\n';
-    }
 }
 
 void
