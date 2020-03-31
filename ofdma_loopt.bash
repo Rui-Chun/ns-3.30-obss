@@ -2,7 +2,7 @@
 
 for (( k=$1; k<=$2; k=k+1 ))
 do
-    outpath="./my-simulations/8_ofdma4/$k"
+    outpath="./my-simulations/8_ofdma5/$k"
     mkdir -p $outpath
     for (( j=1; j<=6; j=j+1 ))
     do
@@ -16,7 +16,7 @@ do
             then
                 echo $filename
                 touch $filename
-                ./waf --run "simple-ofdma-adhoc3 --ofdmaEnabled=true --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --clNum=20 --ratio=0.375 --RngRun=$k" &> $filename
+                ./waf --run "simple-ofdma-adhoc4 --ofdmaEnabled=true --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --clNum=20 --ratio=0.375 --RngRun=$k" &> $filename
             fi
 
             filename="$outpath/adhoc-csma-mcs$mcs-$rate-$k.out"
@@ -24,7 +24,7 @@ do
             then
                 echo $filename
                 touch $filename
-                ./waf --run "simple-ofdma-adhoc3 --ofdmaEnabled=false --rtscts=1 --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --clNum=20 --ratio=0.375 --RngRun=$k" &> $filename
+                ./waf --run "simple-ofdma-adhoc4 --ofdmaEnabled=false --rtscts=1 --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --clNum=20 --ratio=0.375 --RngRun=$k" &> $filename
             fi
         done
     done

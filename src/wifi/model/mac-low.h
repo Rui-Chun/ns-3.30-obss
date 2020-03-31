@@ -965,6 +965,7 @@ public:
   void SetOfdmaEnable (bool enable);
   bool GetOfdmaEnable () const;
   void StartTransmissionOfdma (Ptr<WifiMacQueueItem> mpdu, MacLowTransmissionParameters params, Ptr<Txop> txop);
+  std::map<uint32_t, uint32_t> m_ruSentNum;
   
 private:
   // OFDMA DL

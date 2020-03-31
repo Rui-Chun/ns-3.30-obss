@@ -132,6 +132,10 @@ MacLow::MacLow ()
     m_notifyMuNavEvent ()
 {
   NS_LOG_FUNCTION (this);
+  for (uint32_t i = 1; i <= m_defaultOfdmaSize; i++)
+    {
+      m_ruSentNum[i] = 0;
+    }
 }
 
 MacLow::~MacLow ()
@@ -189,6 +193,14 @@ MacLow::DoDispose (void)
     {
       delete m_phyMacLowListener;
       m_phyMacLowListener = 0;
+    }
+  if (m_ofdmaEnabled)
+    {
+      for (auto i = m_ruSentNum.begin (); i != m_ruSentNum.end (); i++)
+        {
+          std::cout << '(' << i->first << ',' << i->second << ')' << '\t';
+        }
+      std::cout << '\n';
     }
 }
 
@@ -599,44 +611,33 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
     {
       NS_ASSERT (m_currentPacketList.empty ());
       NS_ASSERT (!m_txParams.HasNextPacket ());
+      uint32_t nPackets = txop->GetWifiMacQueue ()->GetNPackets () + 1;
       HeRu::RuType ruType = HeRu::RU_26_TONE;
-      std::size_t ruIndex = 1;
-      switch (GetPhy ()->GetChannelWidth ())
+      uint32_t ruNum = HeRu::GetNRus (GetPhy ()->GetChannelWidth (), ruType);
+      while ((ruNum > nPackets) || (ruNum > m_defaultOfdmaSize))
         {
-          case 20:
-            ruType = HeRu::RU_52_TONE;
-            break;
-          case 40:
-            ruType = HeRu::RU_106_TONE;
-            break;
-          case 80:
-            ruType = HeRu::RU_242_TONE;
-            break;
-          default:
-            NS_LOG_ERROR ("channel width not supported yet");
+          HeRu::RuType nextRuType = static_cast<HeRu::RuType> (static_cast<int> (ruType)+1);
+          uint32_t nextRuNum = HeRu::GetNRus (GetPhy ()->GetChannelWidth (), nextRuType);
+          ruType = nextRuType;
+          ruNum = nextRuNum;
         }
       bool newPackets = true;
-      m_currentPacketList.push_back (m_currentPacket);
-      m_txParamsList.push_back (m_txParams);
-      m_currentTxVector.SetRu ({true, ruType, ruIndex});
-      m_currentTxVectorList.push_back (m_currentTxVector);
-      m_receivedCtsList.push_back (false);
-      m_receivedAckList.push_back (false);
-      while (newPackets && (m_currentPacketList.size () < m_defaultOfdmaSize))
+      for (uint32_t ruIndex = 1; ruIndex <= ruNum; ruIndex++)
         {
-          txop->NotifyAccessRequestedOfdma ();
-          newPackets = txop->NotifyAccessGrantedOfdma ();
-          if (newPackets)
+          m_currentPacketList.push_back (m_currentPacket);
+          m_txParamsList.push_back (m_txParams);
+          m_currentTxVector.SetRu ({true, ruType, ruIndex});
+          m_currentTxVectorList.push_back (m_currentTxVector);
+          m_receivedCtsList.push_back (false);
+          m_receivedAckList.push_back (false);
+          if (ruIndex < ruNum)
             {
-              ruIndex++;
-              m_currentPacketList.push_back (m_currentPacket);
-              m_txParamsList.push_back (m_txParams);
-              m_currentTxVector.SetRu ({true, ruType, ruIndex});
-              m_currentTxVectorList.push_back (m_currentTxVector);
-              m_receivedCtsList.push_back (false);
-              m_receivedAckList.push_back (false);
+              txop->NotifyAccessRequestedOfdma ();
+              newPackets = txop->NotifyAccessGrantedOfdma ();
+              NS_ASSERT_MSG (newPackets, "txop getting ofdma packets error");
             }
         }
+      m_ruSentNum[ruNum]++;
 
       SendDlMuRts ();
 
