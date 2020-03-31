@@ -1,6 +1,6 @@
 topoRange = {'adhoc'};
 caRange = {'csma', 'ofdma'};
-mcsRange = [0 4 7];
+mcsRange = [0 2 4];
 inRange = 1:6;
 rngRange = 0:85;
 
