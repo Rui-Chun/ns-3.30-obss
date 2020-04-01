@@ -2,7 +2,7 @@
 
 for (( k=$1; k<=$2; k=k+1 ))
 do
-    outpath="./my-simulations/8_ofdma6/$k"
+    outpath="./my-simulations/8_ofdma5/$k"
     mkdir -p $outpath
     for (( j=2; j<=9; j=j+1 ))
     do

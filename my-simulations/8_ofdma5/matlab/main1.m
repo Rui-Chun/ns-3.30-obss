@@ -1,6 +1,6 @@
 topoRange = {'adhoc'};
 caRange = {'ofdma'};
-mcsRange = 0:7;
+mcsRange = [0 4 7];
 inRange = 2:2:12;
 rngRange = 0:38;
 
@@ -51,8 +51,8 @@ for topoIndex = 1:length(topoRange)
 end
 
 %%
-lineRange = {'-', '--'};
-markerRange = {'o', '+'};
+lineRange = {'-'};
+markerRange = {'o'};
 colorRange = {[0.6350, 0.0780, 0.1840], ...
     [0, 0.4470, 0.7410], ...
     [0.4660, 0.6740, 0.1880], ...
@@ -118,8 +118,8 @@ legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
 
 %%
 topoRange = {'adhoc'};
-caRange = {'csma'};
-mcsRange = 0:7;
+caRange = {'ofdma'};
+mcsRange = [0 4 7];
 inRange = 2:2:12;
 rngRange = 0:38;
 
@@ -172,7 +172,7 @@ end
 %%
 lineRange = {'--'};
 markerRange = {'+'};
-f1 = figure('Position', [800 200 1400 400]);
+% f1 = figure('Position', [800 200 1400 400]);
 subplot(1,3,1); hold on; grid on;
 for caIndex = 1:length(caRange)
     for mcsIndex = 1:length(mcsRange)
@@ -223,9 +223,13 @@ for caIndex = 1:length(caRange)
     end
 end
 xlabel('per mesh node inject (Kbps)');
-ylabel('per mesh node loss ');
+ylabel('per mesh node loss');
 legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
     'Location', 'northwest');
 
-save_fig_name = fullfile('adhoc.pdf');
-% export_fig(save_fig_name, '-painters', '-q101');
+subplot(1,3,2);
+title('OFDMA fixing RU number (before vs after)');
+
+%%
+save_fig_name = fullfile('fix_ru_number.pdf');
+export_fig(save_fig_name, '-painters', '-q101');
