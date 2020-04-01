@@ -24,18 +24,18 @@ for mcsIndex = 1:length(mcsRange)
             for i = 1:67
                 A = fgetl(fileId);
             end
+            A = fscanf(fileId, '(1,%d)\t(2,%d)\t(3,0)\t(4,%d)\t');
+            A = reshape(A, 3, []);
             for i = 1:1
-                A = fscanf(fileId, '(1,%d)\t(2,%d)\t(3,0)\t(4,%d)\t');
                 for j = 1:3
                     ru1(mcsIndex, inIndex, j) = ...
-                        ru1(mcsIndex, inIndex, j) + A(j);
+                        ru1(mcsIndex, inIndex, j) + A(j,i);
                 end
             end
-            for i = 2:5
-                A = fscanf(fileId, '(1,%d)\t(2,%d)\t(3,0)\t(4,%d)\t');
+            for i = 2:6
                 for j = 1:3
                     ru2(mcsIndex, inIndex, j) = ...
-                        ru2(mcsIndex, inIndex, j) + A(j);
+                        ru2(mcsIndex, inIndex, j) + A(j,i);
                 end
             end
             fclose(fileId);
@@ -54,26 +54,28 @@ colorRange = {[0.6350, 0.0780, 0.1840], ...
     [0.4940, 0.1840, 0.5560], ...
     [0.9290, 0.6940, 0.1250], ...
     [0, 0.5, 0]};
-f1 = figure('Position', [800 200 500 400]);
-hold on; grid on;
-for caIndex = 1:length(caRange)
-    for mcsIndex = 1:length(mcsRange)
-        X = repmat(inRange * 1e2, length(rngRange), 1); X = nanmedian(X,1);
-        Y = squeeze(ru1(mcsIndex, :, :)); Y = nanmedian(Y.',1);
-        plot(X, Y, ...
-            'LineStyle', lineRange{caIndex}, ...
-            'Marker', markerRange{caIndex}, ...
-            'MarkerSize', 6, ...
-            'Color', colorRange{mcsIndex}, ...
-            'LineWidth', 2);
-    end
+f1 = figure('Position', [800 200 450*length(mcsRange)+50 400]);
+for mcsIndex = 1:length(mcsRange)
+    subplot(2,length(mcsRange),mcsIndex); hold on; grid on;
+    X = repmat(inRange * 1e2, length(rngRange), 1); X = nanmedian(X,1);
+    Y = squeeze(ru1(mcsIndex, :, :));
+    bar(X, Y);
+    xlabel('per mesh node inject (Kbps)');
+    ylabel('number of transmissions');
+    title(['gateway (mcs' num2str(mcsRange(mcsIndex)) ')']);
+    
+    subplot(2,length(mcsRange),mcsIndex+length(mcsRange)); hold on; grid on;
+    X = repmat(inRange * 1e2, length(rngRange), 1); X = nanmedian(X,1);
+    Y = squeeze(ru2(mcsIndex, :, :));
+    bar(X, Y);
+    xlabel('per mesh node inject (Kbps)');
+    ylabel('number of transmissions');
+    title(['hop-1 relay (mcs' num2str(mcsRange(mcsIndex)) ')']);
 end
-xlabel('per mesh node inject (Kbps)');
-ylabel('per mesh node throughput (Kbps)');
-legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
-    'Location', 'northwest');
-title('OFDMA vs CSMA');
+subplot(2,length(mcsRange),1);
+legend({'1 RU', '2 RUs', '4 RUs'}, ...
+    'Location', 'northeast');
 
 %%
-save_fig_name = fullfile('ca_compare.pdf');
+save_fig_name = fullfile('ru_num.pdf');
 export_fig(save_fig_name, '-painters', '-q101');
