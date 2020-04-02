@@ -280,11 +280,6 @@ int main (int argc, char **argv)
         {
           uint32_t sinkId = i;
           uint32_t srcId = 0;
-          if (!routingFile.empty ())
-            {
-              sinkId = routes[i][1] - apNum;
-              srcId = routes[i][0];
-            }
           uint16_t port = 5000+i;
           Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
           PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
@@ -300,7 +295,7 @@ int main (int argc, char **argv)
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3] + 1))));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           client.SetAttribute ("Remote", remoteAddress);
           apApplications.Add (client.Install (apNodes.Get (srcId)));
@@ -318,11 +313,6 @@ int main (int argc, char **argv)
         {
           uint32_t sinkId = i;
           uint32_t srcId = 0;
-          if (!routingFile.empty ())
-            {
-              sinkId = routes[i][1] - apNum;
-              srcId = routes[i][0];
-            }
           uint16_t port = 5000+i;
           Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
           PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
@@ -339,7 +329,7 @@ int main (int argc, char **argv)
           client.SetAttribute ("Remote", remoteAddress);
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3] + 1))));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           apApplications.Add (client.Install (apNodes.Get (srcId)));
 
