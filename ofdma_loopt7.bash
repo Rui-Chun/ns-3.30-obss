@@ -13,8 +13,8 @@ do
 
             for note in "22" "23" "24" "25" "32" "33" "34" "35" "42" "43" "44" "52" "53" "222" "223" "232" "322"
             do
-                locationfile="my-simulations/8_ofdma7/locationFile${note}.txt"
-                routingfile="my-simulations/8_ofdma7/routingFile${note}.txt"
+                locationfile="my-simulations/8_ofdma7/txt/locationFile${note}.txt"
+                routingfile="my-simulations/8_ofdma7/txt/routingFile${note}.txt"
                 filename="$outpath/adhoc-ofdma-mcs$mcs-$rate-$k-${note}.out"
                 if [ ! -f $filename ]
                 then

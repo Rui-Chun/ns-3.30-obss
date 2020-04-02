@@ -2,7 +2,7 @@
 
 for (( k=$1; k<=$2; k=k+1 ))
 do
-    outpath="./my-simulations/8_ofdma8/$k"
+    outpath="./my-simulations/8_ofdma7/$k"
     mkdir -p $outpath
     for (( j=2; j<=10; j=j+2 ))
     do
@@ -11,24 +11,16 @@ do
         do
             mcs=$i
 
-            for note in "22" "23" "24" "25" "32" "33" "52" "222"
+            for note in "22" "23" "24" "25" "32" "33" "34" "35" "42" "43" "44" "52" "53" "222" "223" "232" "322"
             do
-                locationfile="my-simulations/8_ofdma7/locationFile${note}.txt"
-                routingfile="my-simulations/8_ofdma7/routingFile${note}.txt"
+                locationfile="my-simulations/8_ofdma7/txt/locationFile${note}.txt"
+                routingfile="my-simulations/8_ofdma7/txt/routingFile${note}.txt"
                 filename="$outpath/adhoc-ofdma-mcs$mcs-$rate-$k-${note}.out"
                 if [ ! -f $filename ]
                 then
                     echo $filename
                     touch $filename
-                    ./waf --run "simple-ofdma-adhoc4 --ofdmaEnabled=true --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --tcp=1 --locationFile=${locationfile} --routingFile=${routingfile}" &> $filename
-                fi
-
-                filename="$outpath/adhoc-csma-mcs$mcs-$rate-$k-${note}.out"
-                if [ ! -f $filename ]
-                then
-                    echo $filename
-                    touch $filename
-                    ./waf --run "simple-ofdma-adhoc4 --ofdmaEnabled=false -rtscts=1 --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --tcp=1 --locationFile=${locationfile} --routingFile=${routingfile}" &> $filename
+                    ./waf --run "simple-ofdma-adhoc4 --ofdmaEnabled=true --startTime=60 --totalTime=120 --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile}" &> $filename
                 fi
             done
         done

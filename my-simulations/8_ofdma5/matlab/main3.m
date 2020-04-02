@@ -58,7 +58,7 @@ f1 = figure('Position', [800 200 450*length(mcsRange)+50 400]);
 for mcsIndex = 1:length(mcsRange)
     subplot(2,length(mcsRange),mcsIndex); hold on; grid on;
     X = repmat(inRange * 1e2, length(rngRange), 1); X = nanmedian(X,1);
-    Y = squeeze(ru1(mcsIndex, :, :));
+    Y = squeeze(ru1(mcsIndex, :, :)) / length(rngRange);
     bar(X, Y);
     xlabel('per mesh node inject (Kbps)');
     ylabel('number of transmissions');
@@ -70,7 +70,7 @@ for mcsIndex = 1:length(mcsRange)
     bar(X, Y);
     xlabel('per mesh node inject (Kbps)');
     ylabel('number of transmissions');
-    title(['hop-1 relay (mcs' num2str(mcsRange(mcsIndex)) ')']);
+    title(['sum of other nodes (mcs' num2str(mcsRange(mcsIndex)) ')']);
 end
 subplot(2,length(mcsRange),1);
 legend({'1 RU', '2 RUs', '4 RUs'}, ...
