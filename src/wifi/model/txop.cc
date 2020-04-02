@@ -1040,4 +1040,71 @@ Txop::NotifyAccessGrantedOfdma (void)
   return true;
 }
 
+bool
+Txop::NotifyAccessGrantedOfdma (uint32_t size)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_accessRequested);
+  m_accessRequested = false;
+  
+  if (m_queue->IsEmpty ())
+    {
+      NS_LOG_DEBUG ("queue empty");
+      return false;
+    }
+  auto citem = m_queue->PeekBySize (size);
+  NS_ASSERT ((*citem) != 0);
+  if ((*citem)->GetHeader ().GetAddr1 ().IsGroup ())
+    {
+      return false;
+    }
+  if (!(*citem)->GetHeader ().IsData ())
+    {
+      return false;
+    }
+
+  Ptr<WifiMacQueueItem> item = m_queue->Dequeue (citem);
+  NS_ASSERT (item != 0);
+  m_currentPacket = item->GetPacket ();
+  m_currentHdr = item->GetHeader ();
+  NS_ASSERT (m_currentPacket != 0);
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
+  m_currentHdr.SetSequenceNumber (sequence);
+  m_stationManager->UpdateFragmentationThreshold ();
+  m_currentHdr.SetFragmentNumber (0);
+  m_currentHdr.SetNoMoreFragments ();
+  m_currentHdr.SetNoRetry ();
+  m_fragmentNumber = 0;
+  NS_LOG_DEBUG ("dequeued size=" << m_currentPacket->GetSize () <<
+                ", to=" << m_currentHdr.GetAddr1 () <<
+                ", seq=" << m_currentHdr.GetSequenceControl ());
+                    
+  if (m_currentHdr.GetAddr1 ().IsGroup ())
+    {
+      return false;
+    }
+  else
+    {
+      m_currentParams.EnableAck ();
+      NS_ASSERT (!NeedFragmentation ());
+      WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
+                                                                      &m_currentHdr, m_currentPacket);
+
+      if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                      m_currentPacket, dataTxVector)
+          && !m_low->IsCfPeriod ())
+        {
+          m_currentParams.EnableRts ();
+        }
+      else
+        {
+          m_currentParams.DisableRts ();
+        }
+      m_currentParams.DisableNextData ();
+      GetLow ()->StartTransmissionOfdma (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                    m_currentParams, this);
+    }
+  return true;
+}
+
 } //namespace ns3

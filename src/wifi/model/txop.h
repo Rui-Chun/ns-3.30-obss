@@ -506,6 +506,7 @@ protected:
 
   void NotifyAccessRequestedOfdma (void);
   bool NotifyAccessGrantedOfdma (void);
+  bool NotifyAccessGrantedOfdma (uint32_t size);
 
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
   TxOk m_txOkCallback; //!< the transmit OK callback
