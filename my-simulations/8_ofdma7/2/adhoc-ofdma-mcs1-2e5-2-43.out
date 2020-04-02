@@ -1,0 +1,5 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.760s)
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc4', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--dataMode=HeMcs1', '--datarate=2e5', '--ratio=0.375', '--RngRun=2', '--locationFile=my-simulations/8_ofdma7/locationFile43.txt', '--routingFile=my-simulations/8_ofdma7/routingFile43.txt'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
