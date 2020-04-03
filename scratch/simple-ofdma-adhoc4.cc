@@ -117,6 +117,29 @@ int main (int argc, char **argv)
   Config::SetDefault ("ns3::RegularWifiMac::BE_MaxAmpduSize", UintegerValue (0));
   Config::SetDefault ("ns3::RegularWifiMac::BK_MaxAmpduSize", UintegerValue (0));
 
+  std::vector<std::vector<double>> locations;
+  if (!locationFile.empty ())
+    {
+      clNum = 0;
+      double locationX = 0;
+      double locationY = 0;
+      double locationZ = 0;
+      double inject = 0;
+      std::ifstream fin (locationFile);
+      if (!fin.is_open ())
+        {
+          NS_ASSERT_MSG (false, "missing location file");
+        }
+      while (fin >> locationX)
+        {
+          clNum++;
+          fin >> locationY >> locationZ >> inject;
+          locations.push_back (std::vector<double> {locationX * ratio, locationY * ratio, locationZ * ratio, inject});
+        }
+      fin.close ();
+      clNum -= apNum;
+    }
+
   // Create nodes and set mobility
   NodeContainer apNodes;
   apNodes.Create (apNum);
@@ -127,7 +150,6 @@ int main (int argc, char **argv)
   nodes.Add (clNodes);
 
   MobilityHelper mobility;
-  std::vector<std::vector<double>> locations;
   if (locationFile.empty ())
     {
       mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
@@ -145,22 +167,6 @@ int main (int argc, char **argv)
     }
   else
     {
-      double locationX = 0;
-      double locationY = 0;
-      double locationZ = 0;
-      double inject = 0;
-      std::ifstream fin (locationFile);
-      if (!fin.is_open ())
-        {
-          NS_ASSERT_MSG (false, "missing location file");
-        }
-      while (fin >> locationX)
-        {
-          fin >> locationY >> locationZ >> inject;
-          locations.push_back (std::vector<double> {locationX * ratio, locationY * ratio, locationZ * ratio, inject});
-        }
-      fin.close ();
-
       if (locations.size () < apNum+clNum)
         {
           NS_ASSERT_MSG (false, "not enough input locations");
@@ -274,11 +280,6 @@ int main (int argc, char **argv)
         {
           uint32_t sinkId = i;
           uint32_t srcId = 0;
-          if (!routingFile.empty ())
-            {
-              sinkId = routes[i][1] - apNum;
-              srcId = routes[i][0];
-            }
           uint16_t port = 5000+i;
           Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
           PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
@@ -294,7 +295,7 @@ int main (int argc, char **argv)
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3] + 1e3))));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           client.SetAttribute ("Remote", remoteAddress);
           apApplications.Add (client.Install (apNodes.Get (srcId)));
@@ -312,11 +313,6 @@ int main (int argc, char **argv)
         {
           uint32_t sinkId = i;
           uint32_t srcId = 0;
-          if (!routingFile.empty ())
-            {
-              sinkId = routes[i][1] - apNum;
-              srcId = routes[i][0];
-            }
           uint16_t port = 5000+i;
           Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
           PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
@@ -333,7 +329,7 @@ int main (int argc, char **argv)
           client.SetAttribute ("Remote", remoteAddress);
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[i][3] + 1e3))));
+          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           apApplications.Add (client.Install (apNodes.Get (srcId)));
 

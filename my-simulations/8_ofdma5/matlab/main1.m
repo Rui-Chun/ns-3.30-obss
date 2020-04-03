@@ -1,6 +1,6 @@
 topoRange = {'adhoc'};
 caRange = {'ofdma'};
-mcsRange = [0 4 7];
+mcsRange = [0 4];
 inRange = 2:2:12;
 rngRange = 0:38;
 
@@ -119,7 +119,7 @@ legend(cellstr([repmat('MCS', size(mcsRange.')), num2str(mcsRange.')]), ...
 %%
 topoRange = {'adhoc'};
 caRange = {'ofdma'};
-mcsRange = [0 4 7];
+% mcsRange = [0 4 7];
 inRange = 2:2:12;
 rngRange = 0:38;
 

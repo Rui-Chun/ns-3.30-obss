@@ -297,6 +297,9 @@ public:
    */
   bool IsEmpty (void);
 
+  ConstIterator PeekBySize (uint32_t size, ConstIterator pos = EMPTY) const;
+  uint32_t GetNPacketsBySize (uint32_t size);
+
   /**
    * \return The number of packets currently stored in the Queue
    *

@@ -603,6 +603,8 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
     {
       NS_ASSERT (m_currentPacketList.empty ());
       NS_ASSERT (!m_txParams.HasNextPacket ());
+
+      // without considering size
       uint32_t nPackets = txop->GetWifiMacQueue ()->GetNPackets () + 1;
       HeRu::RuType ruType = HeRu::RU_26_TONE;
       uint32_t ruNum = HeRu::GetNRus (GetPhy ()->GetChannelWidth (), ruType);
@@ -629,8 +631,37 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
               NS_ASSERT_MSG (newPackets, "txop getting ofdma packets error");
             }
         }
-      m_ruSentNum[ruNum]++;
+      
+      // considering size
+      // uint32_t size = m_currentPacket->GetSize ();
+      // uint32_t nPackets = txop->GetWifiMacQueue ()->GetNPacketsBySize (size) + 1;
+      // HeRu::RuType ruType = HeRu::RU_26_TONE;
+      // uint32_t ruNum = HeRu::GetNRus (GetPhy ()->GetChannelWidth (), ruType);
+      // while ((ruNum > nPackets) || (ruNum > m_defaultOfdmaSize))
+      //   {
+      //     HeRu::RuType nextRuType = static_cast<HeRu::RuType> (static_cast<int> (ruType)+1);
+      //     uint32_t nextRuNum = HeRu::GetNRus (GetPhy ()->GetChannelWidth (), nextRuType);
+      //     ruType = nextRuType;
+      //     ruNum = nextRuNum;
+      //   }
+      // bool newPackets = true;
+      // for (uint32_t ruIndex = 1; ruIndex <= ruNum; ruIndex++)
+      //   {
+      //     m_currentPacketList.push_back (m_currentPacket);
+      //     m_txParamsList.push_back (m_txParams);
+      //     m_currentTxVector.SetRu ({true, ruType, ruIndex});
+      //     m_currentTxVectorList.push_back (m_currentTxVector);
+      //     m_receivedCtsList.push_back (false);
+      //     m_receivedAckList.push_back (false);
+      //     if (ruIndex < ruNum)
+      //       {
+      //         txop->NotifyAccessRequestedOfdma ();
+      //         newPackets = txop->NotifyAccessGrantedOfdma (size);
+      //         NS_ASSERT_MSG (newPackets, "txop getting ofdma packets error");
+      //       }
+      //   }
 
+      m_ruSentNum[ruNum]++;
       SendDlMuRts ();
 
       return;
