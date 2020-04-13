@@ -62,7 +62,6 @@ public:
     std::size_t index;   //!< index (starting at 1)
   } RuSpec;
 
-
   /**
    * Get the number of distinct RUs of the given type (number of tones)
    * available in a HE PPDU of the given bandwidth.
@@ -97,7 +96,9 @@ public:
    * \return true if the given RU overlaps with the given set of RUs.
    */
   static bool Overlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v);
+  static bool Overlap (uint8_t bw, RuSpec ru, RuSpec v);
   static bool IsValid (uint8_t bw, RuSpec ru);
+  static bool IsSame (RuSpec ru1, RuSpec ru2);
 
   /// (bandwidth, number of tones) pair
   typedef std::pair<uint8_t, RuType> BwTonesPair;

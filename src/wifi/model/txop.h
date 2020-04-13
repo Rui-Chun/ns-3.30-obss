@@ -256,10 +256,13 @@ public:
    * Event handler when an ACK is received.
    */
   virtual void GotAck (void);
+  virtual void GotMuAck (void);
   /**
    * Event handler when an ACK is missed.
    */
   virtual void MissedAck (void);
+  virtual void MissedMuAck (void);
+  virtual void DoneMuAck (void);
   /**
    * Event handler when a CF-END frame is received.
    */
@@ -280,11 +283,14 @@ public:
    * \param dataSnr reported data SNR from the peer.
    */
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
+  virtual void GotMuBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
    * Event handler when a Block ACK timeout has occurred.
    * \param nMpdus the number of MPDUs sent in the A-MPDU transmission that results in a Block ACK timeout.
    */
   virtual void MissedBlockAck (uint8_t nMpdus);
+  virtual void MissedMuBlockAck (uint8_t nMpdus);
+  virtual void DoneMuBlockAck (void);
 
   /**
    * Start transmission for the next fragment.
@@ -353,6 +359,7 @@ public:
 protected:
   ///< ChannelAccessManager associated class
   friend class ChannelAccessManager;
+  friend class MacLow;
 
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
@@ -496,6 +503,10 @@ protected:
    * \param item the wifi MAC queue item.
    */
   void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
+
+  void NotifyAccessRequestedOfdma (void);
+  bool NotifyAccessGrantedOfdma (void);
+  bool NotifyAccessGrantedOfdma (uint32_t size);
 
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
   TxOk m_txOkCallback; //!< the transmit OK callback

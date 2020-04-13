@@ -643,6 +643,7 @@ private:
    * \param hdr the header
    */
   void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr);
+  void NotifyMuNav (Time duration);
   /**
    * Reset NAV with the given duration.
    *
@@ -960,12 +961,22 @@ private:
   /* OFDMA
    * Author: Jiaming
    */
+public:
+  void SetOfdmaEnable (bool enable);
+  bool GetOfdmaEnable () const;
+  void StartTransmissionOfdma (Ptr<WifiMacQueueItem> mpdu, MacLowTransmissionParameters params, Ptr<Txop> txop);
+  std::map<uint32_t, uint32_t> m_ruSentNum;
+  
 private:
   // OFDMA DL
   void SendDlMuRts (void);
+  void MuCtsTimeout (void);
   void SendDlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
-  void SendDlMuData (void);
+  void SendDlMuData (Time dataDuration, Time ackDuration);
+  void MuNormalAckTimeout (void);
+  void MuBlockAckTimeout (void);
   void SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
+  void MuPacketsClear (void);
   // OFDMA UL
   void SendUlMuBsrp () {};
   void SendUlMuBsr () {};
@@ -975,9 +986,15 @@ private:
   void SendUlMuData (Mac48Address source, Time duration, WifiTxVector tfTxVector, double tfSnr);
   void SendUlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
 
-  uint32_t m_defaultOfdmaSize;
+  bool m_ofdmaEnabled = false;
+  uint32_t m_defaultOfdmaSize = 4;
   std::list<Ptr<WifiPsdu>> m_currentPacketList;
+  std::list<MacLowTransmissionParameters> m_txParamsList;
   std::list<WifiTxVector> m_currentTxVectorList;
+  bool m_receivedMu = false;
+  EventId m_notifyMuNavEvent;
+  std::list<bool> m_receivedCtsList;
+  std::list<bool> m_receivedAckList;
   std::map<Mac48Address, uint32_t> m_potentialRxList;
   std::map<Mac48Address, WifiTxVector> m_currentRxList;
 };

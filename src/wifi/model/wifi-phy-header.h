@@ -22,8 +22,12 @@
 #define WIFI_PHY_HEADER_H
 
 #include "ns3/header.h"
+#include "ns3/he-ru.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
+
+class HeRu;
 
 /**
  * \ingroup wifi
@@ -427,17 +431,6 @@ public:
    */
   uint8_t GetNStreams (void) const;
 
-
-  void SetDst(uint8_t dst);
-  uint8_t GetDst(void) const;
-  void SetSrc(uint8_t src);
-  uint8_t GetSrc(void) const;
-  void SetTime(uint8_t time) ;
-  uint8_t GetTime(void) const;
-  void SetTxPower(uint8_t power);
-  uint8_t GetTxPower(void) const;
-
-
 private:
   //HE-SIG-A1 fields
   uint8_t m_format;       ///< Format bit
@@ -451,10 +444,39 @@ private:
 
   // #####
   // for obss pd
+public:
+  void SetDst(uint8_t dst);
+  uint8_t GetDst(void) const;
+  void SetSrc(uint8_t src);
+  uint8_t GetSrc(void) const;
+  void SetTime(uint8_t time) ;
+  uint8_t GetTime(void) const;
+  void SetTxPower(uint8_t power);
+  uint8_t GetTxPower(void) const;
+
+private:
   uint8_t m_dst;
   uint8_t m_src;
   uint8_t m_txpower;
   uint8_t m_time;
+
+  // Jiaming
+  // for ofdma
+public:
+  void SetRuPrimary80MHz (bool primary80MHz);
+  bool GetRuPrimary80MHz (void);
+  void SetRuType (HeRu::RuType type);
+  HeRu::RuType GetRuType (void);
+  void SetRuIndex (size_t index);
+  size_t GetRuIndex (void);
+  void SetOfdmaDelay (Time delay);
+  Time GetOfdmaDelay (void);
+
+private:
+  uint8_t m_primary80MHz;
+  uint8_t m_ruType;
+  uint8_t m_ruIndex;
+  uint16_t m_ofdmaDelay;
 
   /// This is used to decide whether MU SIG-B should be added or not
   bool m_mu;

@@ -281,6 +281,7 @@ public:
   Time GetBasicBlockAckTimeout (void) const;
   void SetCompressedBlockAckTimeout (Time blockAckTimeout);
   Time GetCompressedBlockAckTimeout (void) const;
+  void PrintRuSentNum (void);
 
 
 protected:
@@ -515,6 +516,9 @@ protected:
    */
   bool GetHeSupported () const;
 
+  void SetOfdmaSupported (bool enable);
+  bool GetOfdmaSupported () const;
+
 private:
   /// type conversion operator
   RegularWifiMac (const RegularWifiMac &);
@@ -629,6 +633,8 @@ private:
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
   bool m_rifsSupported; ///< flag whether RIFS is supported (deprecated)
+
+  bool m_ofdmaSupported;
 };
 
 } //namespace ns3

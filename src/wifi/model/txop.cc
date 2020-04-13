@@ -662,6 +662,24 @@ Txop::GotAck (void)
 }
 
 void
+Txop::GotMuAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (!NeedFragmentation ())
+    {
+      NS_LOG_DEBUG ("got ack. tx done.");
+      if (!m_txOkCallback.IsNull ())
+        {
+          m_txOkCallback (m_currentHdr);
+        }
+    }
+  else
+    {
+      NS_LOG_WARN ("fragmentation is not currently compatible with ofdma");
+    }
+}
+
+void
 Txop::MissedAck (void)
 {
   NS_LOG_FUNCTION (this);
@@ -689,6 +707,39 @@ Txop::MissedAck (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
+  RestartAccessIfNeeded ();
+}
+
+void
+Txop::MissedMuAck (void)
+{
+  // TODO: different cw for different ru
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("missed mu ack");
+
+  if (1)
+    {
+      NS_LOG_DEBUG ("Ack Fail");
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                               m_currentPacket->GetSize ());
+      if (!m_txFailedCallback.IsNull ())
+        {
+          m_txFailedCallback (m_currentHdr);
+        }
+    }
+}
+
+void
+Txop::DoneMuAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("done mu ack");
+  m_currentPacket = 0;
+  ResetCw ();
+  m_cwTrace = GetCw ();
   m_backoff = m_rng->GetInteger (0, GetCw ());
   m_backoffTrace (m_backoff);
   StartBackoffNow (m_backoff);
@@ -879,9 +930,27 @@ Txop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipien
 }
 
 void
+Txop::GotMuBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
+{
+  NS_LOG_WARN ("GotMuBlockAck should not be called for non QoS!");
+}
+
+void
 Txop::MissedBlockAck (uint8_t nMpdus)
 {
   NS_LOG_WARN ("MissedBlockAck should not be called for non QoS!");
+}
+
+void
+Txop::MissedMuBlockAck (uint8_t nMpdus)
+{
+  NS_LOG_WARN ("MissedMuBlockAck should not be called for non QoS!");
+}
+
+void
+Txop::DoneMuBlockAck (void)
+{
+  NS_LOG_WARN ("DoneMuBlockAck should not be called for non QoS!");
 }
 
 Time
@@ -895,6 +964,147 @@ void
 Txop::TerminateTxop (void)
 {
   NS_LOG_WARN ("TerminateTxop should not be called for non QoS!");
+}
+
+void
+Txop::NotifyAccessRequestedOfdma (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_accessRequested = true;
+}
+
+bool
+Txop::NotifyAccessGrantedOfdma (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_accessRequested);
+  m_accessRequested = false;
+  
+  if (m_queue->IsEmpty ())
+    {
+      NS_LOG_DEBUG ("queue empty");
+      return false;
+    }
+  Ptr<const WifiMacQueueItem> citem = m_queue->Peek ();
+  NS_ASSERT (citem != 0);
+  if (citem->GetHeader ().GetAddr1 ().IsGroup ())
+    {
+      return false;
+    }
+  if (!citem->GetHeader ().IsData ())
+    {
+      return false;
+    }
+
+  Ptr<WifiMacQueueItem> item = m_queue->Dequeue ();
+  NS_ASSERT (item != 0);
+  m_currentPacket = item->GetPacket ();
+  m_currentHdr = item->GetHeader ();
+  NS_ASSERT (m_currentPacket != 0);
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
+  m_currentHdr.SetSequenceNumber (sequence);
+  m_stationManager->UpdateFragmentationThreshold ();
+  m_currentHdr.SetFragmentNumber (0);
+  m_currentHdr.SetNoMoreFragments ();
+  m_currentHdr.SetNoRetry ();
+  m_fragmentNumber = 0;
+  NS_LOG_DEBUG ("dequeued size=" << m_currentPacket->GetSize () <<
+                ", to=" << m_currentHdr.GetAddr1 () <<
+                ", seq=" << m_currentHdr.GetSequenceControl ());
+                    
+  if (m_currentHdr.GetAddr1 ().IsGroup ())
+    {
+      return false;
+    }
+  else
+    {
+      m_currentParams.EnableAck ();
+      NS_ASSERT (!NeedFragmentation ());
+      WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
+                                                                      &m_currentHdr, m_currentPacket);
+
+      if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                      m_currentPacket, dataTxVector)
+          && !m_low->IsCfPeriod ())
+        {
+          m_currentParams.EnableRts ();
+        }
+      else
+        {
+          m_currentParams.DisableRts ();
+        }
+      m_currentParams.DisableNextData ();
+      GetLow ()->StartTransmissionOfdma (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                    m_currentParams, this);
+    }
+  return true;
+}
+
+bool
+Txop::NotifyAccessGrantedOfdma (uint32_t size)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_accessRequested);
+  m_accessRequested = false;
+  
+  if (m_queue->IsEmpty ())
+    {
+      NS_LOG_DEBUG ("queue empty");
+      return false;
+    }
+  auto citem = m_queue->PeekBySize (size);
+  NS_ASSERT ((*citem) != 0);
+  if ((*citem)->GetHeader ().GetAddr1 ().IsGroup ())
+    {
+      return false;
+    }
+  if (!(*citem)->GetHeader ().IsData ())
+    {
+      return false;
+    }
+
+  Ptr<WifiMacQueueItem> item = m_queue->Dequeue (citem);
+  NS_ASSERT (item != 0);
+  m_currentPacket = item->GetPacket ();
+  m_currentHdr = item->GetHeader ();
+  NS_ASSERT (m_currentPacket != 0);
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
+  m_currentHdr.SetSequenceNumber (sequence);
+  m_stationManager->UpdateFragmentationThreshold ();
+  m_currentHdr.SetFragmentNumber (0);
+  m_currentHdr.SetNoMoreFragments ();
+  m_currentHdr.SetNoRetry ();
+  m_fragmentNumber = 0;
+  NS_LOG_DEBUG ("dequeued size=" << m_currentPacket->GetSize () <<
+                ", to=" << m_currentHdr.GetAddr1 () <<
+                ", seq=" << m_currentHdr.GetSequenceControl ());
+                    
+  if (m_currentHdr.GetAddr1 ().IsGroup ())
+    {
+      return false;
+    }
+  else
+    {
+      m_currentParams.EnableAck ();
+      NS_ASSERT (!NeedFragmentation ());
+      WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
+                                                                      &m_currentHdr, m_currentPacket);
+
+      if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                      m_currentPacket, dataTxVector)
+          && !m_low->IsCfPeriod ())
+        {
+          m_currentParams.EnableRts ();
+        }
+      else
+        {
+          m_currentParams.DisableRts ();
+        }
+      m_currentParams.DisableNextData ();
+      GetLow ()->StartTransmissionOfdma (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                    m_currentParams, this);
+    }
+  return true;
 }
 
 } //namespace ns3

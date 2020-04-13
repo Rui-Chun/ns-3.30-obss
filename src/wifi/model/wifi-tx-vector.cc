@@ -34,7 +34,8 @@ WifiTxVector::WifiTxVector ()
     m_stbc (false),
     m_bssColor (0),
     m_modeInitialized (false),
-    m_isRu (false)
+    m_ru ({true, HeRu::RU_26_TONE, 0}),
+    m_ofdmaDelay (Seconds (0))
 {
 }
 
@@ -61,7 +62,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_stbc (stbc),
     m_bssColor (bssColor),
     m_modeInitialized (true),
-    m_isRu (false)
+    m_ru ({true, HeRu::RU_26_TONE, 0})
 {
 }
 
@@ -237,7 +238,7 @@ WifiTxVector::IsValid (void) const
           return (modeName != "VhtMcs9");
         }
     }
-  if ((m_isRu == true) && (HeRu::IsValid ((uint8_t) m_channelWidth, m_ru) == false))
+  if ((m_ru.index > 0) && !HeRu::IsValid ((uint8_t) m_channelWidth, m_ru))
     {
       return false;
     }
@@ -302,20 +303,31 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 void
 WifiTxVector::SetRu (HeRu::RuSpec ru)
 {
-  m_isRu = true;
   m_ru = ru;
 }
 
 bool
 WifiTxVector::IsRu (void)
 {
-  return m_isRu;
+  return (m_ru.index > 0);
 }
 
 HeRu::RuSpec
-WifiTxVector::GetRu (void)
+WifiTxVector::GetRu (void) const
 {
   return m_ru;
+}
+
+void
+WifiTxVector::SetOfdmaDelay (Time delay)
+{
+  m_ofdmaDelay = delay;
+}
+
+Time
+WifiTxVector::GetOfdmaDelay (void) const
+{
+  return m_ofdmaDelay;
 }
 
 } //namespace ns3

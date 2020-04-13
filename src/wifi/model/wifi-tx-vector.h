@@ -25,6 +25,7 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "he-ru.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -218,7 +219,9 @@ public:
   bool IsValid (void) const;
   void SetRu (HeRu::RuSpec ru);
   bool IsRu (void);
-  HeRu::RuSpec GetRu (void);
+  HeRu::RuSpec GetRu (void) const;
+  void SetOfdmaDelay (Time delay);
+  Time GetOfdmaDelay (void) const;
 
   // ######
   // store obss info
@@ -255,8 +258,8 @@ private:
 
   bool     m_modeInitialized;         /**< Internal initialization flag */
 
-  bool m_isRu;
   HeRu::RuSpec m_ru;
+  Time m_ofdmaDelay;
 };
 
 /**

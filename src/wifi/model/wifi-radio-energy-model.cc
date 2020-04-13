@@ -404,8 +404,10 @@ WifiRadioEnergyModel::GetStateA (int state) const
     case WifiPhyState::CCA_BUSY:
       return m_ccaBusyCurrentA;
     case WifiPhyState::TX:
+    case WifiPhyState::TX_RU:
       return m_txCurrentA;
     case WifiPhyState::RX:
+    case WifiPhyState::RX_RU:
       return m_rxCurrentA;
     case WifiPhyState::SWITCHING:
       return m_switchingCurrentA;
@@ -440,8 +442,14 @@ WifiRadioEnergyModel::SetWifiRadioState (const WifiPhyState state)
     case WifiPhyState::TX:
       stateName = "TX";
       break;
+    case WifiPhyState::TX_RU:
+      stateName = "TX_RU";
+      break;
     case WifiPhyState::RX:
       stateName = "RX";
+      break;
+    case WifiPhyState::RX_RU:
+      stateName = "RX_RU";
       break;
     case WifiPhyState::SWITCHING:
       stateName = "SWITCHING";

@@ -1,0 +1,26 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+[1812/1914] Linking build/lib/libns3.30-test-optimized.so
+[1857/1914] Linking build/scratch/simple-ofdma-adhoc2
+[1858/1914] Linking build/scratch/mesh-loc-0
+[1859/1914] Linking build/scratch/obss-pd-0917
+[1860/1914] Linking build/scratch/simple-ofdma
+[1861/1914] Linking build/scratch/simple-ofdma-adhoc
+[1862/1914] Linking build/scratch/simple-ofdma-adhoc4
+[1863/1914] Linking build/scratch/obss-pd-test
+[1864/1914] Linking build/scratch/scratch-simulator
+[1865/1914] Linking build/scratch/mesh-loc-jw-ac
+[1866/1914] Linking build/scratch/simple-ofdma-adhoc3
+[1867/1914] Linking build/scratch/mesh-loc-3
+[1868/1914] Linking build/scratch/simple_wifi
+[1869/1914] Linking build/scratch/mesh-loc-2
+[1870/1914] Linking build/scratch/subdir/subdir
+[1871/1914] Linking build/scratch/mesh-loc-2b
+[1872/1914] Linking build/scratch/mesh-loc-jw
+[1873/1914] Linking build/utils/ns3.30-test-runner-optimized
+[1874/1914] Linking build/utils/ns3.30-print-introspected-doxygen-optimized
+scratch/mesh-loc-3.cc.11.o: file not recognized: File truncated
+collect2: error: ld returned 1 exit status
+
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build failed
+ -> task in 'mesh-loc-3' failed with exit status 1 (run with -v to display more information)

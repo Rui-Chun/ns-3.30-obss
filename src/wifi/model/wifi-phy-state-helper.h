@@ -117,12 +117,14 @@ public:
    * \return true if the current state is RX, false otherwise
    */
   bool IsStateRx (void) const;
+  bool IsStateMuRx (void) const;
   /**
    * Check whether the current state is TX.
    *
    * \return true if the current state is TX, false otherwise
    */
   bool IsStateTx (void) const;
+  bool IsStateMuTx (void) const;
   /**
    * Check whether the current state is SWITCHING.
    *
@@ -169,6 +171,7 @@ public:
    * \param rxDuration the duration of the RX
    */
   void SwitchToRx (Time rxDuration);
+  void SwitchToMuRx (Time rxDuration);
   /**
    * Switch state to channel switching for the given duration.
    *
@@ -191,6 +194,9 @@ public:
    * \param snr the SNR of the received packet
    */
   void SwitchFromRxEndError (Ptr<Packet> packet, double snr);
+  void NotifyMuRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void NotifyMuRxEndError (Ptr<Packet> packet, double snr);
+  void SwitchFromMuRxEnd (void);
   /**
    * Switch to CCA busy.
    *
@@ -329,6 +335,7 @@ private:
    * Switch the state from RX.
    */
   void DoSwitchFromRx (void);
+  void DoSwitchFromMuRx (void);
   /**
    * Notify all WifiPhyListener that we are going to switch on
    */
@@ -351,6 +358,8 @@ private:
   Time m_startSwitching; ///< start switching
   Time m_startSleep; ///< start sleep
   Time m_previousStateChangeTime; ///< previous state change time
+
+  bool m_ru;
 
   Listeners m_listeners; ///< listeners
   TracedCallback<Ptr<const Packet>, double, WifiMode, WifiPreamble> m_rxOkTrace; ///< receive OK trace callback
