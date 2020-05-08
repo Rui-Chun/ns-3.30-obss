@@ -59,7 +59,6 @@ RegularWifiMac::RegularWifiMac ()
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
   m_low->SetMac (this);
-  m_low->SetOfdmaEnable (m_ofdmaSupported);
 
   m_channelAccessManager = CreateObject<ChannelAccessManager> ();
   m_channelAccessManager->SetupLow (m_low);
@@ -1230,12 +1229,23 @@ RegularWifiMac::GetTypeId (void)
                      "The header of unsuccessfully transmitted packet.",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
                      "ns3::WifiMacHeader::TracedCallback")
+    .AddAttribute ("QosDisabled",
+                   "This Boolean attribute is set to disable QoS support at this STA.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RegularWifiMac::SetQosDisabled,
+                                        &RegularWifiMac::GetQosDisabled),
+                   MakeBooleanChecker ())
     .AddAttribute ("OfdmaSupported",
                    "This Boolean attribute is set to enable 802.11ax ofdma support at this STA.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetOfdmaSupported,
                                         &RegularWifiMac::GetOfdmaSupported),
                    MakeBooleanChecker ())
+    .AddAttribute ("MaxRu",
+                   "Maximum number RUs for one OFDMA transmission.",
+                   UintegerValue (4),
+                   MakeUintegerAccessor (&RegularWifiMac::m_maxRu),
+                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -1249,6 +1259,13 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
   switch (standard)
     {
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
+      {
+        if (m_ofdmaSupported)
+          {
+            m_low->SetOfdmaSupported (m_ofdmaSupported);
+            m_low->SetMaxRu (m_maxRu);
+          }
+      }
     case WIFI_PHY_STANDARD_80211ac:
     case WIFI_PHY_STANDARD_80211n_5GHZ:
       {
@@ -1263,6 +1280,13 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
         break;
       }
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
+      {
+        if (m_ofdmaSupported)
+          {
+            m_low->SetOfdmaSupported (m_ofdmaSupported);
+            m_low->SetMaxRu (m_maxRu);
+          }
+      }
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       {
         EnableAggregation ();
@@ -1288,6 +1312,11 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
       break;
     default:
       NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
+    }
+
+  if (m_qosDisabled)
+    {
+      SetQosSupported (false);
     }
 
   ConfigureContentionWindow (cwmin, cwmax);
@@ -1348,15 +1377,28 @@ RegularWifiMac::DisableAggregation (void)
   m_low->SetMpduAggregator (0);
 }
 
+
+
 void
-RegularWifiMac::SetOfdmaSupported (bool enable)
+RegularWifiMac::SetQosDisabled (bool disable)
 {
-  m_ofdmaSupported = enable;
-  m_low->SetOfdmaEnable (enable);  
+  m_qosDisabled = true;
 }
 
 bool
-RegularWifiMac::GetOfdmaSupported () const
+RegularWifiMac::GetQosDisabled (void) const
+{
+  return m_qosDisabled;
+}
+
+void
+RegularWifiMac::SetOfdmaSupported (bool support)
+{
+  m_ofdmaSupported = support;
+}
+
+bool
+RegularWifiMac::GetOfdmaSupported (void) const
 {
   return m_ofdmaSupported;
 }

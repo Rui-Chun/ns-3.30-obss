@@ -516,9 +516,6 @@ protected:
    */
   bool GetHeSupported () const;
 
-  void SetOfdmaSupported (bool enable);
-  bool GetOfdmaSupported () const;
-
 private:
   /// type conversion operator
   RegularWifiMac (const RegularWifiMac &);
@@ -634,7 +631,19 @@ private:
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
   bool m_rifsSupported; ///< flag whether RIFS is supported (deprecated)
 
+
+
+
+public:
+  void SetQosDisabled (bool disable);
+  bool GetQosDisabled (void) const;
+  void SetOfdmaSupported (bool enable);
+  bool GetOfdmaSupported (void) const;
+
+private:
+  bool m_qosDisabled;
   bool m_ofdmaSupported;
+  uint32_t m_maxRu;
 };
 
 } //namespace ns3

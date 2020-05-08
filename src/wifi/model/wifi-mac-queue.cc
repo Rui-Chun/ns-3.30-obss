@@ -541,11 +541,9 @@ WifiMacQueue::IsEmpty (void)
 }
 
 WifiMacQueue::ConstIterator
-WifiMacQueue::PeekBySize (uint32_t size, ConstIterator pos) const
+WifiMacQueue::PeekBySize (uint32_t size1, uint32_t size2, ConstIterator pos) const
 {
-  NS_LOG_FUNCTION (this << +size);
-  double low = 0.9;
-  double high = 1.1;
+  NS_LOG_FUNCTION (this << +size1 << +size2);
 
   ConstIterator it = (pos != EMPTY ? pos : begin ());
   while (it != end ())
@@ -554,7 +552,7 @@ WifiMacQueue::PeekBySize (uint32_t size, ConstIterator pos) const
       // actually removed from the queue by the next call to a non-const method
       if (Simulator::Now () <= (*it)->GetTimeStamp () + m_maxDelay)
         {
-          if (((*it)->GetSize () >= low * size) && ((*it)->GetSize () <= high * size))
+          if (((*it)->GetSize () >= size1) && ((*it)->GetSize () <= size2))
             {
               return it;
             }
@@ -571,18 +569,16 @@ WifiMacQueue::PeekBySize (uint32_t size, ConstIterator pos) const
 }
 
 uint32_t
-WifiMacQueue::GetNPacketsBySize (uint32_t size)
+WifiMacQueue::GetNPacketsBySize (uint32_t size1, uint32_t size2)
 {
-  NS_LOG_FUNCTION (this << size);
+  NS_LOG_FUNCTION (this << +size1 << +size2);
 
-  double low = 0.9;
-  double high = 1.1;
   uint32_t nPackets = 0;
   for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
-          if (((*it)->GetSize () >= low * size) && ((*it)->GetSize () <= high * size))
+          if (((*it)->GetSize () >= size1) && ((*it)->GetSize () <= size2))
             {
               nPackets++;
             }

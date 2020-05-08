@@ -190,7 +190,6 @@ public:
    * Event handler when an ACK is received.
    */
   void GotAck (void);
-  void GotMuAck (void);
   /**
    * Event handler when a Block ACK is received.
    *
@@ -224,7 +223,6 @@ public:
    * Event handler when an ACK is missed.
    */
   void MissedAck (void);
-  void MissedMuAck (void);
 
   /**
    * Start transmission for the next packet if allowed by the TxopLimit.
@@ -618,6 +616,24 @@ private:
   bool m_useExplicitBarAfterMissedBlockAck;             //!< flag whether explicit Block Ack Request should be sent upon missed Block Ack Response
 
   TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
+
+
+public:
+  virtual void MissedMuCts (uint32_t id, std::list<Ptr<WifiMacQueueItem>> mpduList);
+  virtual void MissedAllMuCts (void);
+  virtual void GotMuAck (uint32_t id);
+  virtual void MissedMuAck (uint32_t id);
+  virtual void GotMuBlockAck (uint32_t id, const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
+  virtual void MissedMuBlockAck (uint32_t id, uint8_t nMpdus);
+  virtual void DoneMuAck (void);
+
+protected:
+  void NotifyAccessGrantedOfdma (void);
+  void SetCurrentParameters (Ptr<WifiMacQueueItem> item);
+  void PushBackCurrentParameters (void);
+  void PopFrontCurrentParameters (void);
+
+  std::list<Time> m_currentPacketTimestampList;
 };
 
 } //namespace ns3

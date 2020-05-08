@@ -297,9 +297,6 @@ public:
    */
   bool IsEmpty (void);
 
-  ConstIterator PeekBySize (uint32_t size, ConstIterator pos = EMPTY) const;
-  uint32_t GetNPacketsBySize (uint32_t size);
-
   /**
    * \return The number of packets currently stored in the Queue
    *
@@ -336,6 +333,10 @@ private:
   TracedCallback<Ptr<const WifiMacQueueItem> > m_traceExpired;
 
   NS_LOG_TEMPLATE_DECLARE;                  //!< redefinition of the log component
+
+public:
+  ConstIterator PeekBySize (uint32_t size1, uint32_t size2, ConstIterator pos = EMPTY) const;
+  uint32_t GetNPacketsBySize (uint32_t size1, uint32_t size2);
 };
 
 } //namespace ns3

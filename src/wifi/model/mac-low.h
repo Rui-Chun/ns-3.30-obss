@@ -958,13 +958,15 @@ private:
 
   CfAckInfo m_cfAckInfo; //!< Info about piggyback ACKs used in PCF
 
-  /* OFDMA
-   * Author: Jiaming
-   */
+  // OFDMA CODE BEGIN
 public:
-  void SetOfdmaEnable (bool enable);
-  bool GetOfdmaEnable () const;
-  void StartTransmissionOfdma (Ptr<WifiMacQueueItem> mpdu, MacLowTransmissionParameters params, Ptr<Txop> txop);
+  void SetOfdmaSupported (bool support);
+  bool GetOfdmaSupported () const;
+  void SetMaxRu (uint32_t ru);
+  uint32_t GetMaxRu (void) const;
+  void StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueItemList,
+                               std::list<MacLowTransmissionParameters> currentParamsList,
+                               Ptr<Txop> txop);
   std::map<uint32_t, uint32_t> m_ruSentNum;
   
 private:
@@ -973,30 +975,32 @@ private:
   void MuCtsTimeout (void);
   void SendDlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
   void SendDlMuData (Time dataDuration, Time ackDuration);
-  void MuNormalAckTimeout (void);
-  void MuBlockAckTimeout (void);
+  void MuAckTimeout (void);
   void SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
   void MuPacketsClear (void);
   // OFDMA UL
-  void SendUlMuBsrp () {};
-  void SendUlMuBsr () {};
-  void SendUlMuRts (void);
-  void SendUlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
-  void SendUlMuTf (Mac48Address source, Time duration, WifiTxVector ctsTxVector, double ctsSnr);
-  void SendUlMuData (Mac48Address source, Time duration, WifiTxVector tfTxVector, double tfSnr);
-  void SendUlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
+  // void SendUlMuBsrp () {};
+  // void SendUlMuBsr () {};
+  // void SendUlMuRts (void);
+  // void SendUlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVector, double rtsSnr);
+  // void SendUlMuTf (Mac48Address source, Time duration, WifiTxVector ctsTxVector, double ctsSnr);
+  // void SendUlMuData (Mac48Address source, Time duration, WifiTxVector tfTxVector, double tfSnr);
+  // void SendUlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
 
-  bool m_ofdmaEnabled = false;
-  uint32_t m_defaultOfdmaSize = 4;
+  bool m_ofdmaSupported = false;
+  uint32_t m_maxRu = 4;
+
   std::list<Ptr<WifiPsdu>> m_currentPacketList;
   std::list<MacLowTransmissionParameters> m_txParamsList;
   std::list<WifiTxVector> m_currentTxVectorList;
+  
   bool m_receivedMu = false;
   EventId m_notifyMuNavEvent;
   std::list<bool> m_receivedCtsList;
   std::list<bool> m_receivedAckList;
-  std::map<Mac48Address, uint32_t> m_potentialRxList;
-  std::map<Mac48Address, WifiTxVector> m_currentRxList;
+  // std::map<Mac48Address, uint32_t> m_potentialRxList;
+  // std::map<Mac48Address, WifiTxVector> m_currentRxList;
+  // OFDMA CODE END
 };
 
 } //namespace ns3

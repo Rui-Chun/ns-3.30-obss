@@ -198,7 +198,8 @@ int main (int argc, char **argv)
 
   WifiMacHelper mac;
   mac.SetType ("ns3::AdhocWifiMac",
-                "OfdmaSupported", BooleanValue (ofdmaEnabled));
+               "QosDisabled", BooleanValue (true),
+               "OfdmaSupported", BooleanValue (ofdmaEnabled));
   apDevices = wifi.Install (phy, mac, apNodes);
   clDevices = wifi.Install (phy, mac, clNodes);
 
@@ -293,8 +294,8 @@ int main (int argc, char **argv)
 
           OnOffHelper client ("ns3::TcpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
-          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+          client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+          client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           client.SetAttribute ("Remote", remoteAddress);
@@ -327,8 +328,8 @@ int main (int argc, char **argv)
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
           client.SetAttribute ("Remote", remoteAddress);
-          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+          client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+          client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize));
           apApplications.Add (client.Install (apNodes.Get (srcId)));

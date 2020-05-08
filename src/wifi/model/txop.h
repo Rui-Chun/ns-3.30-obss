@@ -256,13 +256,10 @@ public:
    * Event handler when an ACK is received.
    */
   virtual void GotAck (void);
-  virtual void GotMuAck (void);
   /**
    * Event handler when an ACK is missed.
    */
   virtual void MissedAck (void);
-  virtual void MissedMuAck (void);
-  virtual void DoneMuAck (void);
   /**
    * Event handler when a CF-END frame is received.
    */
@@ -283,15 +280,12 @@ public:
    * \param dataSnr reported data SNR from the peer.
    */
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
-  virtual void GotMuBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
    * Event handler when a Block ACK timeout has occurred.
    * \param nMpdus the number of MPDUs sent in the A-MPDU transmission that results in a Block ACK timeout.
    */
   virtual void MissedBlockAck (uint8_t nMpdus);
-  virtual void MissedMuBlockAck (uint8_t nMpdus);
-  virtual void DoneMuBlockAck (void);
-
+  
   /**
    * Start transmission for the next fragment.
    * This is called for fragment only.
@@ -504,10 +498,6 @@ protected:
    */
   void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
 
-  void NotifyAccessRequestedOfdma (void);
-  bool NotifyAccessGrantedOfdma (void);
-  bool NotifyAccessGrantedOfdma (uint32_t size);
-
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
   TxOk m_txOkCallback; //!< the transmit OK callback
   TxFailed m_txFailedCallback; //!< the transmit failed callback
@@ -540,6 +530,28 @@ protected:
   uint8_t m_fragmentNumber; //!< the fragment number
   TracedCallback<uint32_t> m_backoffTrace; //!< backoff trace value
   TracedValue<uint32_t> m_cwTrace;         //!< CW trace value
+
+  // OFDMA CODE BEGIN
+public:
+  virtual void MissedMuCts (uint32_t id);
+  virtual void MissedAllMuCts (void);
+  virtual void GotMuAck (uint32_t id);
+  virtual void MissedMuAck (uint32_t id);
+  virtual void DoneMuAck (void);
+  virtual void GotMuBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
+  virtual void MissedMuBlockAck (uint8_t nMpdus);
+  virtual void DoneMuBlockAck (void);
+
+protected:
+  void NotifyAccessGrantedOfdma (void);
+  void SetCurrentParameters (Ptr<WifiMacQueueItem> item);
+  void PushBackCurrentParameters (void);
+  void PopFrontCurrentParameters (void);
+
+  std::list<Ptr<WifiMacQueueItem>> m_currentQueueItemList;
+  std::list<MacLowTransmissionParameters> m_currentParamsList;
+  std::list<bool> m_handledList;
+  // OFDMA CODE END
 };
 
 } //namespace ns3
