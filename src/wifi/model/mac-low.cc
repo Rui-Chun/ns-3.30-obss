@@ -1184,7 +1184,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
                   if (txVector.IsRu ())
                     {
                       m_receivedMu = true;
-                      m_sendAckEvent = Simulator::Schedule (GetSifs (),
+                      Simulator::Schedule (GetSifs (),
                                                             &MacLow::SendDlMuAck, this,
                                                             hdr.GetAddr2 (),
                                                             hdr.GetDuration (),

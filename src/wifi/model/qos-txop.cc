@@ -2103,7 +2103,7 @@ QosTxop::NotifyAccessGrantedOfdma (void)
               return;
             }
             
-          auto item = m_queue->Dequeue ();
+          Ptr<WifiMacQueueItem> item = m_queue->Dequeue ();
           NS_ASSERT (item != 0);
           SetCurrentParameters (item);
         }
@@ -2116,7 +2116,7 @@ QosTxop::NotifyAccessGrantedOfdma (void)
       uint32_t size = m_currentQueueItemList.front ()->GetSize ();
       uint32_t size1 = 0.9 * size;
       uint32_t size2 = 1.1 * size;
-      NS_LOG_DEBUG ("try more OFDMA packets" << +size1 << +size2);
+      NS_LOG_DEBUG ("try more OFDMA packets, " << +size1 << ", " << +size2);
 
       auto citem = m_queue->PeekBySize (size1, size2);
       while ((m_currentQueueItemList.size () < m_low->GetMaxRu ())
@@ -2127,13 +2127,12 @@ QosTxop::NotifyAccessGrantedOfdma (void)
             {
               break;
             }
-          auto item = m_queue->Dequeue (citem);
-          if (item == 0)
-            {
-              break;
-            }
+          auto temp = ++citem;
+          auto item = m_queue->Dequeue (--citem);
+          NS_ASSERT (item != 0);
           SetCurrentParameters (item);
           PushBackCurrentParameters ();
+          citem = m_queue->PeekBySize (size1, size2, temp);
         }
     }
 
