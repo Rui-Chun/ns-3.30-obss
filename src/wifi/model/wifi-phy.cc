@@ -2722,6 +2722,10 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
           NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
           PopEventItem (event);
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+          if (!isRu || m_currentEventList.empty ())
+            {
+              m_interference.NotifyRxEnd ();
+            }
           MaybeCcaBusyDuration ();
           return;
         }
@@ -2786,6 +2790,7 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
   else //legacy PHY header reception failed
     {
       NS_LOG_DEBUG ("Abort reception because legacy PHY header reception failed");
+      FetchEventItem (event);
       AbortCurrentReception (L_SIG_FAILURE);
     }
 }
@@ -3138,12 +3143,21 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
           NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txMode << ")");
           PopEventItem (event);
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+          if (!isRu || m_currentEventList.empty ())
+            {
+              m_interference.NotifyRxEnd ();
+            }
         }
     }
   else //plcp reception failed
     {
       NS_LOG_DEBUG ("Drop packet because non-legacy PHY header reception failed");
+      PopEventItem (event);
       NotifyRxDrop (event->GetPacket (), SIG_A_FAILURE);
+      if (!isRu || m_currentEventList.empty ())
+        {
+          m_interference.NotifyRxEnd ();
+        }
     }
 }
 
@@ -4402,6 +4416,7 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration)
 
   if (!m_endPreambleDetectionEvent.IsRunning ())
     {
+      NS_LOG_DEBUG ("Receiving first-arriving packet");
       Time startOfPreambleDuration = GetPreambleDetectionDuration ();
       Time remainingRxDuration = rxDuration - startOfPreambleDuration;
       m_endPreambleDetectionEvent = Simulator::Schedule (startOfPreambleDuration, &WifiPhy::StartReceiveHeader, this,
@@ -4416,6 +4431,7 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration)
   else if (m_currentEvent->GetTxVector ().IsRu () &&
            !ExistRuItem (event->GetTxVector ().GetRu ()))
     {
+      NS_LOG_DEBUG ("Receiving packets on other RUs");
       Time startOfPreambleDuration = GetPreambleDetectionDuration ();
       Time remainingRxDuration = rxDuration - startOfPreambleDuration;
       m_endPreambleDetectionEvent = Simulator::Schedule (startOfPreambleDuration, &WifiPhy::StartReceiveHeader, this,
@@ -4447,6 +4463,12 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration)
           NotifyRxDrop (event->GetPacket (), NOT_ALLOWED);
           return;
         }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Drop packet because RX is already decoding preamble");
+      NotifyRxDrop (event->GetPacket (), NOT_ALLOWED);
+      return;
     }
   m_currentEvent = event;
   PushEventItem ();

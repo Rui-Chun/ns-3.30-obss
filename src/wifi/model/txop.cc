@@ -914,7 +914,7 @@ Txop::MissedMuCts (uint32_t id)
   auto it = m_currentQueueItemList.begin ();
   auto it2 = m_handledList.begin ();
   for (uint32_t i = 0; i < id; i++, it++, it2++);
-  NS_LOG_DEBUG ("missed MUCTS from" << (*it)->GetHeader ().GetAddr1 ());
+  NS_LOG_DEBUG ("missed MUCTS from " << (*it)->GetHeader ().GetAddr1 ());
 
   m_currentPacket = (*it)->GetPacket ();
   m_currentHdr = (*it)->GetHeader ();
@@ -957,7 +957,14 @@ Txop::MissedAllMuCts (void)
         }
     }
 
-  UpdateFailedCw ();
+  if (m_currentQueueItemList.empty ())
+    {
+      ResetCw ();
+    }
+  else
+    {
+      UpdateFailedCw ();
+    }
   m_cwTrace = GetCw ();
   m_backoff = m_rng->GetInteger (0, GetCw ());
   m_backoffTrace (m_backoff);

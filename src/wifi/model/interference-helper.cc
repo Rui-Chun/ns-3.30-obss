@@ -1079,7 +1079,7 @@ InterferenceHelper::AddNiChangeEvent (Time moment, NiChange change)
 void
 InterferenceHelper::NotifyRxStart ()
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << m_rxing);
   m_rxing = true;
 }
 

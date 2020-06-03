@@ -2865,7 +2865,7 @@ SendDlMuRts (void)
       rts.SetNoMoreFragments ();
       rts.SetAddr1 ((*it)->GetAddr1 ());
       rts.SetAddr2 (m_self);
-      WifiTxVector rtsTxVector = GetRtsTxVector (*(m_currentPacketList.front ())->begin ());
+      WifiTxVector rtsTxVector = GetRtsTxVector (*(*it)->begin ());
       auto ru = it2->GetRu ();
       rtsTxVector.SetRu (ru);
 
@@ -2967,6 +2967,7 @@ MacLow::MuCtsTimeout (void)
   if (failAll)
     {
       MuPacketsClear ();
+      m_sendDataEvent.Cancel ();
       m_currentTxop->MissedAllMuCts ();
     }
 }
@@ -2988,6 +2989,7 @@ MacLow::SendDlMuCts (Mac48Address source, Time duration, WifiTxVector rtsTxVecto
   cts.SetNoMoreFragments ();
   cts.SetNoRetry ();
   cts.SetAddr1 (source);
+  cts.SetAddr2 (m_self);
   duration -= GetCtsDuration (source, rtsTxVector);
   duration -= GetSifs ();
   NS_ASSERT (duration.IsPositive ());
@@ -3083,6 +3085,7 @@ MacLow::SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVect
   ack.SetNoRetry ();
   ack.SetNoMoreFragments ();
   ack.SetAddr1 (source);
+  ack.SetAddr2 (m_self);
   // 802.11-2012, Section 8.3.1.4:  Duration/ID is received duration value
   // minus the time to transmit the ACK frame and its SIFS interval
   duration -= GetAckDuration (ackTxVector);
