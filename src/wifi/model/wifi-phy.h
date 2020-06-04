@@ -1950,6 +1950,7 @@ private:
   void PopEventItem (std::list<EventListItem>::iterator it);
   void PopEventItem (Ptr<Event> event);
   bool ExistRuItem (HeRu::RuSpec ru);
+  bool ExistRuCollide (HeRu::RuSpec ru);
   void FetchRuItem (HeRu::RuSpec ru);
   void PopRuItem (HeRu::RuSpec ru);
 
