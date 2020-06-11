@@ -2089,6 +2089,14 @@ QosTxop::NotifyAccessGrantedOfdma (void)
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_accessRequested);
   m_accessRequested = false;
+  m_isAccessRequestedForRts = false;
+  m_startTxop = Simulator::Now ();
+
+  if (m_currentPacket != 0 && m_currentHdr.IsQosData ()
+      && (m_currentPacketTimestamp + m_queue->GetMaxDelay () < Simulator::Now ()))
+    {
+      m_currentPacket = 0;
+    }
 
   // at least one of (m_currentPacket == 0) or (m_currentQueueItemList.empty ())
   if (m_currentQueueItemList.empty ())
@@ -2114,25 +2122,45 @@ QosTxop::NotifyAccessGrantedOfdma (void)
       && m_currentHdr.IsData ())
     {
       uint32_t size = m_currentQueueItemList.front ()->GetSize ();
-      uint32_t size1 = 0.9 * size;
-      uint32_t size2 = 1.1 * size;
+      uint32_t size1 = 0 * size + 1;
+      uint32_t size2 = 0 * size + 65535;
       NS_LOG_DEBUG ("try more OFDMA packets, " << +size1 << ", " << +size2);
 
+      uint8_t count = 1;
       auto citem = m_queue->PeekBySize (size1, size2);
-      while ((m_currentQueueItemList.size () < m_low->GetMaxRu ())
-             && ((*citem) != 0))
+      bool found = m_queue->PeekBySize (citem, size1, size2);
+      while ((count < m_low->GetMaxRu ())
+             && (m_currentQueueItemList.size () < m_low->GetMaxRu ())
+             && found)
         {
+          count++;
           if ((*citem)->GetHeader ().GetAddr1 ().IsGroup ()
               || !(*citem)->GetHeader ().IsData ())
             {
-              break;
+              continue;
             }
+          
+          bool repeat = false;
+          auto it = m_currentQueueItemList.begin ();
+          while (it != m_currentQueueItemList.end ())
+            {
+              if ((*citem)->GetHeader ().GetAddr1 () == (*it)->GetHeader ().GetAddr1 ())
+                {
+                  repeat = true;
+                  break;
+                }
+            }
+          if (repeat)
+            {
+              continue;
+            }
+
           auto temp = ++citem;
           auto item = m_queue->Dequeue (--citem);
           NS_ASSERT (item != 0);
           SetCurrentParameters (item);
           PushBackCurrentParameters ();
-          citem = m_queue->PeekBySize (size1, size2, temp);
+          found = m_queue->PeekBySize (citem, size1, size2, temp);
         }
     }
 

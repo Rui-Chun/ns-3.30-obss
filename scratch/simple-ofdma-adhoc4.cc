@@ -108,14 +108,14 @@ int main (int argc, char **argv)
   cmd.AddValue ("ratio", "Ratio of location file inputs.", ratio);
   cmd.Parse (argc, argv);
 
-  Config::SetDefault ("ns3::RegularWifiMac::VO_MaxAmsduSize", UintegerValue (0));
-  Config::SetDefault ("ns3::RegularWifiMac::VI_MaxAmsduSize", UintegerValue (0));
-  Config::SetDefault ("ns3::RegularWifiMac::BE_MaxAmsduSize", UintegerValue (0));
-  Config::SetDefault ("ns3::RegularWifiMac::BK_MaxAmsduSize", UintegerValue (0));
-  Config::SetDefault ("ns3::RegularWifiMac::VO_MaxAmpduSize", UintegerValue (0));
-  Config::SetDefault ("ns3::RegularWifiMac::VI_MaxAmpduSize", UintegerValue (0));
-  Config::SetDefault ("ns3::RegularWifiMac::BE_MaxAmpduSize", UintegerValue (0));
-  Config::SetDefault ("ns3::RegularWifiMac::BK_MaxAmpduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::VO_MaxAmsduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::VI_MaxAmsduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::BE_MaxAmsduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::BK_MaxAmsduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::VO_MaxAmpduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::VI_MaxAmpduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::BE_MaxAmpduSize", UintegerValue (0));
+  // Config::SetDefault ("ns3::RegularWifiMac::BK_MaxAmpduSize", UintegerValue (0));
 
   std::vector<std::vector<double>> locations;
   if (!locationFile.empty ())
@@ -198,7 +198,7 @@ int main (int argc, char **argv)
 
   WifiMacHelper mac;
   mac.SetType ("ns3::AdhocWifiMac",
-               "QosDisabled", BooleanValue (true),
+              //  "QosDisabled", BooleanValue (true),
                "OfdmaSupported", BooleanValue (ofdmaEnabled));
   apDevices = wifi.Install (phy, mac, apNodes);
   clDevices = wifi.Install (phy, mac, clNodes);
@@ -275,71 +275,40 @@ int main (int argc, char **argv)
   ApplicationContainer apApplications;
   ApplicationContainer clApplications;
   ApplicationContainer trApplications;
+  std::string appName = "ns3::UdpSocketFactory";
   if (tcp)
     {
-      for (uint32_t i = 0; i < clNum; i++)
-        {
-          uint32_t sinkId = i;
-          uint32_t srcId = 0;
-          uint16_t port = 5000+i;
-          Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
-          PacketSinkHelper server ("ns3::TcpSocketFactory", localAddress);
-          clApplications.Add (server.Install (clNodes.Get (sinkId)));
-          packetSink.push_back (StaticCast<PacketSink> (clApplications.Get (i)));
-          firstTotalRx.push_back (0);
-          lastTotalRx.push_back (0);
-          throughput.push_back (0);
-          delay.push_back (0);
-          loss.push_back (0);
-
-          OnOffHelper client ("ns3::TcpSocketFactory", Address ());
-          AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
-          client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
-          client.SetAttribute ("PacketSize", UintegerValue (packetSize));
-          client.SetAttribute ("Remote", remoteAddress);
-          apApplications.Add (client.Install (apNodes.Get (srcId)));
-
-          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
-          client.SetAttribute ("PacketSize", UintegerValue (25));
-          trApplications.Add (client.Install (apNodes.Get (srcId)));
-        }
+      appName = "ns3::TcpSocketFactory";
     }
-  else
+  for (uint32_t i = 0; i < clNum; i++)
     {
-      for (uint32_t i = 0; i < clNum; i++)
-        {
-          uint32_t sinkId = i;
-          uint32_t srcId = 0;
-          uint16_t port = 5000+i;
-          Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
-          PacketSinkHelper server ("ns3::UdpSocketFactory", localAddress);
-          clApplications.Add (server.Install (clNodes.Get (sinkId)));
-          packetSink.push_back (StaticCast<PacketSink> (clApplications.Get (i)));
-          firstTotalRx.push_back (0);
-          lastTotalRx.push_back (0);
-          throughput.push_back (0);
-          delay.push_back (0);
-          loss.push_back (0);
+      uint32_t sinkId = i;
+      uint32_t srcId = 0;
+      uint16_t port = 5000+i;
+      Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
+      PacketSinkHelper server (appName.c_str (), localAddress);
+      clApplications.Add (server.Install (clNodes.Get (sinkId)));
+      packetSink.push_back (StaticCast<PacketSink> (clApplications.Get (i)));
+      firstTotalRx.push_back (0);
+      lastTotalRx.push_back (0);
+      throughput.push_back (0);
+      delay.push_back (0);
+      loss.push_back (0);
 
-          OnOffHelper client ("ns3::UdpSocketFactory", Address ());
-          AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
-          client.SetAttribute ("Remote", remoteAddress);
-          client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
-          client.SetAttribute ("PacketSize", UintegerValue (packetSize));
-          apApplications.Add (client.Install (apNodes.Get (srcId)));
+      OnOffHelper client (appName.c_str (), Address ());
+      AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
+      client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+      client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+      client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * locations[sinkId+apNum][3] + 1))));
+      client.SetAttribute ("PacketSize", UintegerValue (packetSize));
+      client.SetAttribute ("Remote", remoteAddress);
+      apApplications.Add (client.Install (apNodes.Get (srcId)));
 
-          client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-          client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
-          client.SetAttribute ("PacketSize", UintegerValue (25));
-          trApplications.Add (client.Install (apNodes.Get (srcId)));
-        }
+      client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+      client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+      client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
+      client.SetAttribute ("PacketSize", UintegerValue (25));
+      trApplications.Add (client.Install (apNodes.Get (srcId)));
     }
   
   apApplications.Start (Seconds (startTime));

@@ -2913,21 +2913,20 @@ SendDlMuRts (void)
 
   NS_LOG_FUNCTION (rtsDuration << ctsDuration << dataDuration << ackDuration);
 
-  auto it3 = rtsList.begin ();
-  for (; it3 != rtsList.end (); it3++)
-    {
-      it3->SetDuration (3*GetSifs () + ctsDuration + dataDuration + ackDuration);
-    }
-
   Time ctsTimer = rtsDuration + GetSifs () + ctsDuration + GetSifs ();
   NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
   NotifyCtsTimeoutStartNow (ctsTimer);
   m_ctsTimeoutEvent = Simulator::Schedule (ctsTimer, &MacLow::MuCtsTimeout, this);
 
-  it3 = rtsList.begin ();
+  auto it3 = rtsList.begin ();
   auto it4 = rtsTxVectorList.begin ();
   for (; it3 != rtsList.end (); it3++, it4++)
     {
+      Time duration = m_phy->CalculateTxDuration (GetRtsSize (), *it4, m_phy->GetFrequency ());
+      duration = rtsDuration - duration;
+      NS_ASSERT (duration.IsPositive ());
+      it4->SetOfdmaDelay (duration);
+      it3->SetDuration (3*GetSifs () + ctsDuration + dataDuration + ackDuration);
       ForwardDown (Create<const WifiPsdu> (Create<Packet> (), *it3), *it4);
     }
 
@@ -3361,6 +3360,9 @@ MacLow::SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVect
 //   ForwardDown (Create<const WifiPsdu> (packet, ack), ackTxVector);
 // }
 
+
+
+
 void
 MacLow::StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueItemList,
                                 std::list<MacLowTransmissionParameters> currentParamsList,
@@ -3409,19 +3411,54 @@ MacLow::StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueIte
       uint8_t tid = GetTid (m_currentPacket->GetPayload (0), hdr);
       Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
 
+      Time txopLimit = Seconds (0);
+      if (m_currentTxop->GetTxopLimit ().IsStrictlyPositive ())
+        {
+          auto it1 = currentQueueItemList.begin ();
+          auto it2 = currentParamsList.begin ();
+          while (it1 != currentQueueItemList.end ())
+            {
+              if (txopLimit > m_currentTxop->GetTxopRemaining () - CalculateOverheadTxTime (*it1, *it2))
+                {
+                  txopLimit = m_currentTxop->GetTxopRemaining () - CalculateOverheadTxTime (*it1, *it2);
+                }
+              it1++;
+              it2++;
+            }
+          NS_ASSERT (txopLimit.IsPositive ());
+        }
+
       auto it = m_currentTxVectorList.begin ();
       auto it1 = currentQueueItemList.begin ();
       auto it3 = m_currentPacketList.begin ();
       auto it4 = m_txParamsList.begin ();
       for ( ;it != m_currentTxVectorList.end (); it++, it1++, it3++, it4++)
         {
-          if ((*it).GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
+          auto hdr = (*it1)->GetHeader ();
+          std::vector<Ptr<WifiMacQueueItem>> mpduList;
+          mpduList = m_mpduAggregator->GetNextAmpdu (*it1, *it, txopLimit);
+
+          if (mpduList.size () > 1)
+            {
+              *it3 = Create<WifiPsdu> (mpduList);
+              if (qosTxop->GetBaBufferSize (hdr.GetAddr1 (), tid) > 64)
+                {
+                  (*it4).EnableExtendedCompressedBlockAck ();
+                }
+              else
+                {
+                  (*it4).EnableCompressedBlockAck ();
+                }
+              NS_LOG_DEBUG ("tx unicast A-MPDU containing " << mpduList.size () << " MPDUs");
+              qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
+            }
+          else if ((*it).GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
               || (*it).GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
             {
               // VHT/HE single MPDU
               (*it3) = Create<WifiPsdu> ((*it1), true);
               (*it3)->SetAckPolicyForTid (tid, WifiMacHeader::NORMAL_ACK);
-              //VHT/HE single MPDUs are followed by normal ACKs
+              // VHT/HE single MPDUs are followed by normal ACKs
               (*it4).EnableAck ();
               NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
               qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
@@ -3436,6 +3473,154 @@ MacLow::StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueIte
   m_ruSentNum[m_currentPacketList.size ()]++;
   SendDlMuRts ();
 }
+
+// void
+// MacLow::StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueItemList,
+//                                 std::list<MacLowTransmissionParameters> currentParamsList,
+//                                 Ptr<Txop> txop)
+// {
+//   NS_LOG_FUNCTION (this << txop);
+//   NS_ASSERT (!m_cfAckInfo.expectCfAck);
+//   if (m_phy->IsStateOff ())
+//     {
+//       NS_LOG_DEBUG ("Cannot start TX because device is OFF");
+//       return;
+//     }
+
+//   m_currentTxop = txop;
+//   MuPacketsClear ();
+
+//   m_currentTxVectorList.clear ();
+//   auto it1 = currentQueueItemList.begin ();
+//   auto it2 = currentParamsList.begin ();
+//   for (; it1 != currentQueueItemList.end (); it1++, it2++)
+//     {
+//       m_currentPacket = Create<WifiPsdu> ((*it1), false);
+//       m_currentTxVector = GetDataTxVector ((*it1));
+
+//       m_currentPacketList.push_back (m_currentPacket);
+//       m_txParamsList.push_back ((*it2));
+//       m_currentTxVectorList.push_back (m_currentTxVector);
+//       m_receivedCtsList.push_back (false);
+//       m_receivedAckList.push_back (false);
+//     }
+
+//   // QoS aggregation
+//   const WifiMacHeader& hdr = m_currentPacket->GetHeader (0);
+//   if (hdr.IsQosData () && (m_mpduAggregator != 0))
+//     {
+//       uint8_t tid = GetTid (m_currentPacket->GetPayload (0), hdr);
+//       Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
+
+//       Time txopLimit = Seconds (0);
+//       if (m_currentTxop->GetTxopLimit ().IsStrictlyPositive ())
+//         {
+//           auto it1 = currentQueueItemList.begin ();
+//           auto it2 = currentParamsList.begin ();
+//           while (it1 != currentQueueItemList.end ())
+//             {
+//               if (txopLimit > m_currentTxop->GetTxopRemaining () - CalculateOverheadTxTime (*it1, *it2))
+//                 {
+//                   txopLimit = m_currentTxop->GetTxopRemaining () - CalculateOverheadTxTime (*it1, *it2);
+//                 }
+//               it1++;
+//               it2++;
+//             }
+//           NS_ASSERT (txopLimit.IsPositive ());
+//         }
+
+//       auto it = m_currentTxVectorList.begin ();
+//       auto it1 = currentQueueItemList.begin ();
+//       auto it3 = m_currentPacketList.begin ();
+//       auto it4 = m_txParamsList.begin ();
+//       for ( ;it != m_currentTxVectorList.end (); it++, it1++, it3++, it4++)
+//         {
+//           auto hdr = (*it1)->GetHeader ();
+//           std::vector<Ptr<WifiMacQueueItem>> mpduList;
+//           mpduList = m_mpduAggregator->GetNextAmpdu (*it1, *it, txopLimit);
+
+//           if (mpduList.size () > 1)
+//             {
+//               *it3 = Create<WifiPsdu> (mpduList);
+//               if (qosTxop->GetBaBufferSize (hdr.GetAddr1 (), tid) > 64)
+//                 {
+//                   (*it4).EnableExtendedCompressedBlockAck ();
+//                 }
+//               else
+//                 {
+//                   (*it4).EnableCompressedBlockAck ();
+//                 }
+//               NS_LOG_DEBUG ("tx unicast A-MPDU containing " << mpduList.size () << " MPDUs");
+//               qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
+//             }
+//           else if ((*it).GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
+//               || (*it).GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
+//             {
+//               // VHT/HE single MPDU
+//               (*it3) = Create<WifiPsdu> ((*it1), true);
+//               (*it3)->SetAckPolicyForTid (tid, WifiMacHeader::NORMAL_ACK);
+//               // VHT/HE single MPDUs are followed by normal ACKs
+//               (*it4).EnableAck ();
+//               NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
+//               qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
+//             }
+//           else if (hdr.IsQosData () && !hdr.IsQosBlockAck () && !hdr.GetAddr1 ().IsGroup ())
+//             {
+//               (*it4).EnableAck ();
+//             }
+//         }
+//     }
+
+//   // Greedy RU allocation
+//   std::list<std::pair<Time, uint16_t>> duraIndex;
+//   for (uint16_t i = 0; i < m_currentPacketList.size (); i++)
+//     {
+//       auto dura = m_phy->CalculateTxDuration (m_currentPacketList[i]->GetSize (),
+//                                               m_currentTxVectorList[i],
+//                                               m_phy->GetFrequency ());
+//       duraIndex.push_back (std::make_pair (dura, i));
+//     }
+//   auto duraIndexCompare = [](const std::pair<Time, uint16_t>& first,
+//                              const std::pair<Time, uint16_t>& second)
+//     {
+//       return (first.first > second.first);
+//     };
+//   duraIndex.sort (duraIndexCompare);
+//   auto preAlloc = HeRu::m_heRuPreAllocs.find (std::make_pair (GetPhy ()->GetChannelWidth (),
+//                                                               m_currentPacketList.size ()));
+//   double maxDura = 0;
+//   uint16_t maxId = 0;
+//   for (uint16_t i = 0; i < preAlloc->second.size (); i++)
+//     {
+//       double temp = 0;
+//       auto it = duraIndex.begin ();
+//       for (uint16_t j = 0; j < m_currentPacketList.size (); j++, it++)
+//         {
+//           uint8_t tempRu = static_cast<uint8_t> (preAlloc->second[i].second[j].ruType);
+//           if (temp < it->first.GetDouble () / HeRu::m_heRuDataSubcarriers[tempRu])
+//             {
+//               temp = it->first.GetDouble () / HeRu::m_heRuDataSubcarriers[tempRu];
+//             }
+//         }
+//       if (i == 0)
+//         {
+//           maxDura = temp;
+//         }
+//       else if (maxDura > temp)
+//         {
+//           maxDura = temp;
+//           maxId = i;
+//         }
+//     }
+//   auto it5 = duraIndex.begin ();
+//   for (uint16_t j = 0; it5 != duraIndex.end (); j++, it5++)
+//     {
+//       m_currentTxVectorList[it5->second].SetRu (preAlloc->second[maxId].second[j]);
+//     }
+  
+//   m_ruSentNum[m_currentPacketList.size ()]++;
+//   SendDlMuRts ();
+// }
 
 void
 MacLow::SetOfdmaSupported (bool support)

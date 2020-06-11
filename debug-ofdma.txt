@@ -1,0 +1,18 @@
+Waf: Entering directory `/home/jw27/ns-3.30-obss/build'
+[1338/1923] Compiling src/wifi/model/wifi-mac-queue.cc
+[1414/1923] Compiling src/wifi/model/block-ack-manager.cc
+[1426/1923] Compiling src/wifi/model/mpdu-aggregator.cc
+[1714/1923] Compiling src/mesh/helper/mesh-helper.cc
+[1786/1923] Compiling src/wave/model/wave-net-device.cc
+[1816/1923] Compiling src/wave/model/channel-scheduler.cc
+../src/wifi/model/wifi-mac-queue.cc:572:107: error: default argument given for parameter 4 of ‘bool ns3::WifiMacQueue::PeekBySize(ns3::Queue<ns3::WifiMacQueueItem>::ConstIterator&, uint32_t, uint32_t, ns3::Queue<ns3::WifiMacQueueItem>::ConstIterator) const’ [-fpermissive]
+ WifiMacQueue::PeekBySize (ConstIterator& pos1, uint32_t size1, uint32_t size2, ConstIterator pos = EMPTY) const
+                                                                                                           ^~~~~
+In file included from ../src/wifi/model/wifi-mac-queue.cc:25:0:
+../src/wifi/model/wifi-mac-queue.h:339:8: note: previous specification in ‘bool ns3::WifiMacQueue::PeekBySize(ns3::Queue<ns3::WifiMacQueueItem>::ConstIterator&, uint32_t, uint32_t, ns3::Queue<ns3::WifiMacQueueItem>::ConstIterator) const’ here
+   bool PeekBySize (ConstIterator& pos1, uint32_t size1, uint32_t size2, ConstIterator pos = EMPTY) const;
+        ^~~~~~~~~~
+
+Waf: Leaving directory `/home/jw27/ns-3.30-obss/build'
+Build failed
+ -> task in 'ns3-wifi' failed with exit status 1 (run with -v to display more information)

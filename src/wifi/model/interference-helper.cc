@@ -134,11 +134,11 @@ InterferenceHelper::InterferenceHelper ()
   // m_niChangesList.push_back (m_niChanges);
   for (uint16_t bw = 20; bw <= 80; bw *= 2)
     {
-      for (uint8_t i = 1; i <= HeRu::GetNRus (bw, HeRu::RuType::RU_52_TONE); i++)
+      for (uint8_t i = 1; i <= HeRu::GetNRus (bw, HeRu::RuType::RU_26_TONE); i++)
         {
           NiChanges niChanges;
           niChanges.insert (niChanges.upper_bound (Time (0)), std::make_pair (Time (0), NiChange (0.0, 0)));
-          HeRu::RuSpec ru = {true, HeRu::RuType::RU_52_TONE, i};
+          HeRu::RuSpec ru = {true, HeRu::RuType::RU_26_TONE, i};
           m_bwruList.push_back (std::make_pair (bw, ru));
           m_firstPowerList.push_back (0);
           m_niChangesList.push_back (niChanges);

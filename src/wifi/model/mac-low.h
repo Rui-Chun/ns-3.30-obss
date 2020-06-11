@@ -990,14 +990,14 @@ private:
   bool m_ofdmaSupported = false;
   uint32_t m_maxRu = 4;
 
-  std::list<Ptr<WifiPsdu>> m_currentPacketList;
-  std::list<MacLowTransmissionParameters> m_txParamsList;
-  std::list<WifiTxVector> m_currentTxVectorList;
+  std::vector<Ptr<WifiPsdu>> m_currentPacketList;
+  std::vector<MacLowTransmissionParameters> m_txParamsList;
+  std::vector<WifiTxVector> m_currentTxVectorList;
   
   bool m_receivedMu = false;
   EventId m_notifyMuNavEvent;
-  std::list<bool> m_receivedCtsList;
-  std::list<bool> m_receivedAckList;
+  std::vector<bool> m_receivedCtsList;
+  std::vector<bool> m_receivedAckList;
   // std::map<Mac48Address, uint32_t> m_potentialRxList;
   // std::map<Mac48Address, WifiTxVector> m_currentRxList;
   // OFDMA CODE END

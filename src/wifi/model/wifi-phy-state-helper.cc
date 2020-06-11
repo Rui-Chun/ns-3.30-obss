@@ -610,7 +610,7 @@ WifiPhyStateHelper::NotifyMuRxEndError (Ptr<Packet> packet, double snr)
 void
 WifiPhyStateHelper::SwitchFromMuRxEnd (void)
 {
-  NS_ASSERT (m_endRx == Simulator::Now ());
+  NS_ASSERT (m_endRx >= Simulator::Now ());
   NotifyRxEndOk ();
   DoSwitchFromMuRx ();
 }

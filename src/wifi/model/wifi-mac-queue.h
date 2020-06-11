@@ -336,6 +336,7 @@ private:
 
 public:
   ConstIterator PeekBySize (uint32_t size1, uint32_t size2, ConstIterator pos = EMPTY) const;
+  bool PeekBySize (ConstIterator& pos1, uint32_t size1, uint32_t size2, ConstIterator pos = EMPTY) const;
   uint32_t GetNPacketsBySize (uint32_t size1, uint32_t size2);
 };
 

@@ -568,6 +568,36 @@ WifiMacQueue::PeekBySize (uint32_t size1, uint32_t size2, ConstIterator pos) con
   return end ();
 }
 
+bool
+WifiMacQueue::PeekBySize (ConstIterator& pos1, uint32_t size1, uint32_t size2, ConstIterator pos) const
+{
+  NS_LOG_FUNCTION (this << +size1 << +size2);
+
+  ConstIterator it = (pos != EMPTY ? pos : begin ());
+  while (it != end ())
+    {
+      // skip packets that stayed in the queue for too long. They will be
+      // actually removed from the queue by the next call to a non-const method
+      if (Simulator::Now () <= (*it)->GetTimeStamp () + m_maxDelay)
+        {
+          if (((*it)->GetSize () >= size1) && ((*it)->GetSize () <= size2))
+            {
+              pos1 = it;
+              return true;
+            }
+        }
+      else
+        {
+          // signal the presence of expired packets
+          m_expiredPacketsPresent = true;
+        }
+      it++;
+    }
+  NS_LOG_DEBUG ("The queue is empty");
+  pos1 = end ();
+  return false;
+}
+
 uint32_t
 WifiMacQueue::GetNPacketsBySize (uint32_t size1, uint32_t size2)
 {

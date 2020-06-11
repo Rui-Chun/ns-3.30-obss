@@ -105,6 +105,13 @@ public:
 
   //!< Subcarrier ranges for all RUs
   static const std::map<BwTonesPair, std::vector<Indices>> m_heRuSubcarrierRanges;
+
+
+  /// RU allocation
+  typedef std::pair<uint8_t, uint8_t> BwNumPair;
+  typedef std::tuple<int8_t, int8_t, int8_t, int8_t, int8_t, int8_t, int8_t, int8_t> RuAlloc;
+  static const std::map<BwNumPair, std::vector<std::pair<RuAlloc, std::vector<RuSpec>>>> m_heRuPreAllocs;
+  static const std::vector<uint16_t> m_heRuDataSubcarriers;
 };
 
 } //namespace ns3

@@ -1125,8 +1125,9 @@ Txop::NotifyAccessGrantedOfdma (void)
       NS_LOG_DEBUG ("try more OFDMA packets, " << +size1 << ", " << +size2);
 
       auto citem = m_queue->PeekBySize (size1, size2);
+      bool found = m_queue->PeekBySize (citem, size1, size2);
       while ((m_currentQueueItemList.size () < m_low->GetMaxRu ())
-             && ((*citem) != 0))
+             && found)
         {
           if ((*citem)->GetHeader ().GetAddr1 ().IsGroup ()
               || !(*citem)->GetHeader ().IsData ())
@@ -1138,7 +1139,7 @@ Txop::NotifyAccessGrantedOfdma (void)
           NS_ASSERT (item != 0);
           SetCurrentParameters (item);
           PushBackCurrentParameters ();
-          citem = m_queue->PeekBySize (size1, size2, temp);
+          found = m_queue->PeekBySize (citem, size1, size2, temp);
         }
     }
 
