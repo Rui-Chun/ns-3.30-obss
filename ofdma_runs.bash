@@ -5,3 +5,6 @@ do
     sleep 10
     bash ofdma_run.bash &
 done
+
+wait
+echo "FINISH!"
