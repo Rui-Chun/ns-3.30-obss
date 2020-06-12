@@ -1,0 +1,74 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.648s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	18	14.2
+61	871.68	756
+62	539.6	939.52
+63	798.32	814.32
+64	963.12	810.24
+65	873.28	555.84
+66	727.12	801.92
+67	712.56	765.2
+68	786	887.84
+69	735.44	774.96
+70	786.48	599.04
+71	685.6	685.84
+72	766.88	876.56
+73	775.76	710
+74	662.32	684.48
+75	764.72	708.08
+76	806.24	841.44
+77	965.76	898.8
+78	850	498.08
+79	801.92	717.92
+80	705.28	808.8
+81	864.64	651.2
+82	942.8	786.48
+83	619.28	874.64
+84	688.24	444.72
+85	896.32	917.12
+86	746.56	634.64
+87	643.04	726.32
+88	884.64	721.6
+89	707.92	748
+90	842.56	715.52
+91	840.88	772.8
+92	816.88	737.44
+93	777.44	676.56
+94	774.64	1052.64
+95	705.68	683.52
+96	718.48	960.4
+97	852.72	639.28
+98	826.8	635.92
+99	844	802.4
+100	646.16	779.36
+101	637.76	648.4
+102	755.28	515.44
+103	913.44	636.64
+104	821.84	513.76
+105	790.16	621.68
+106	802.72	633.68
+107	731.44	821.76
+108	785.04	872.56
+109	804.64	1022.8
+110	875.6	897.36
+111	576.4	743.92
+112	619.52	848.4
+113	836.56	722.16
+114	954.4	899.12
+115	855.84	781.28
+116	665.68	678.8
+117	347.04	731.2
+118	823.12	1069.68
+119	788.8	747.84
+120	898.56	852.32
+(1,0)	(2,21121)	(3,0)	(4,14047)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	775.027	755.904
+delay	1.12308	1.11704
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs5', '--datarate=15e5', '--packetSize=1e2', '--tcp=0', '--RngRun=26'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

@@ -1,0 +1,74 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.666s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	16.6	14.8
+61	1658	1628.8
+62	1326	1294.4
+63	1529.2	1899.6
+64	1188.8	1608.8
+65	1997.2	1410
+66	1405.6	1751.6
+67	998.4	1759.6
+68	1847.2	1703.6
+69	1662.8	1307.2
+70	1578.8	1389.6
+71	1447.2	1421.2
+72	1074.4	1732.8
+73	1554.8	1729.6
+74	1206.4	994.8
+75	1405.6	2173.2
+76	1342	1521.6
+77	1583.6	1640.8
+78	1462	1790.8
+79	1374	1186
+80	1886	1827.2
+81	1273.6	1340.8
+82	1716	1476.4
+83	1426	1471.2
+84	1282.8	1626
+85	1853.2	1508
+86	1700	1315.6
+87	1659.6	1383.6
+88	1447.2	1496
+89	2018.4	1396
+90	938.4	1412.8
+91	1724.4	1712
+92	1297.6	2122
+93	1520.8	1499.2
+94	1630.8	1363.2
+95	1354.8	1600.4
+96	1280.8	1519.6
+97	1530.4	1632.8
+98	1792	1816
+99	1779.6	1823.2
+100	1654	1749.6
+101	1189.6	947.2
+102	1298.8	1454.8
+103	1571.2	1610
+104	1442.8	1442.4
+105	1455.2	1426.4
+106	1564.8	1429.2
+107	1526.8	1369.2
+108	1654.8	1808.4
+109	1027.6	1488
+110	1468.8	1560.4
+111	1348.4	1375.6
+112	1296.4	1612
+113	1404.4	1428.8
+114	923.6	1392.4
+115	1508.8	1496
+116	1266.8	1791.6
+117	1386.8	1640
+118	1510.8	1471.6
+119	1504.8	1976
+120	1526.4	1070.8
+(1,0)	(2,1050)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	1471.43	1547.11
+delay	0.161282	0.187188
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs4', '--datarate=30e5', '--packetSize=5e2', '--tcp=0', '--RngRun=33'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

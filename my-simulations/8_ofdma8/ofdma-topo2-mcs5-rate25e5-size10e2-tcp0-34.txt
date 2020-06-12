@@ -1,0 +1,74 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.659s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	19	16.2
+61	1406.4	1122.4
+62	1083.2	1578.4
+63	1368	1076.8
+64	1648	1365.6
+65	1150.4	1316
+66	1132.8	882.4
+67	1327.2	958.4
+68	1324	1233.6
+69	1237.6	1193.6
+70	1283.2	1471.2
+71	1209.6	1239.2
+72	1660	1726.4
+73	923.2	1165.6
+74	1357.6	711.2
+75	1216.8	1514.4
+76	1236.8	1216.8
+77	1171.2	1638.4
+78	1452	1288.8
+79	1362.4	1604.8
+80	1574.4	1211.2
+81	1396	1301.6
+82	1537.6	1413.6
+83	1303.2	1404.8
+84	1176	1216.8
+85	1286.4	1696.8
+86	1392.8	970.4
+87	1071.2	1205.6
+88	972	1839.2
+89	1073.6	990.4
+90	1341.6	1214.4
+91	1360.8	1541.6
+92	1434.4	1247.2
+93	1408	1028
+94	1098.4	1342.4
+95	1269.6	1053.6
+96	1138.4	993.6
+97	1008.8	1095.2
+98	1443.2	1057.6
+99	1769.6	752
+100	1249.6	1257.6
+101	1386.4	1436.8
+102	1401.6	1390.4
+103	1233.6	1575.2
+104	1608.8	1129.6
+105	1444	1627.2
+106	1459.2	1406.4
+107	1316	1389.6
+108	953.6	1292.8
+109	1304	1342.4
+110	804.8	1170.4
+111	1348.8	912.8
+112	1151.2	1351.2
+113	1535.2	1176
+114	1024.8	900.8
+115	1244	1320.8
+116	990.4	1045.6
+117	994.4	1201.6
+118	986.4	1515.2
+119	1459.2	1555.2
+120	1241.6	1651.2
+(1,0)	(2,102)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	1279.07	1275.48
+delay	0.226906	0.127459
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs5', '--datarate=25e5', '--packetSize=10e2', '--tcp=0', '--RngRun=34'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

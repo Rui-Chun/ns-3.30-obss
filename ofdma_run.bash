@@ -2,11 +2,11 @@
 
 ./waf
 
-for k in {1..25..1}
+for k in {26..50..1}
 do
 for mcs in {3..5..1}
 do
-for note in "1" "2"
+for note in "1" "2" "4"
 do
     locationfile="locationtxt/locationFile${note}.txt"
     routingfile="locationtxt/routingFile${note}.txt"

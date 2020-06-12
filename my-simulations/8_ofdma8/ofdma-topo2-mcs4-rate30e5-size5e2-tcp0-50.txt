@@ -1,0 +1,74 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.663s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	14.8	15.2
+61	1295.6	1135.6
+62	1551.6	1507.2
+63	1309.2	1232.4
+64	1432	1462.8
+65	1334	1720.8
+66	1027.2	1242.4
+67	1463.2	1848.4
+68	1493.2	1870
+69	1166.8	2132.4
+70	1481.2	1776
+71	1353.6	1040.8
+72	1304	1638.8
+73	1261.6	1526.4
+74	1300	1262.8
+75	1612.8	1205.2
+76	2093.6	1614.4
+77	1504.8	1231.2
+78	1608	1644.4
+79	1346.4	1267.2
+80	1214.4	1370
+81	1247.6	2008.8
+82	1759.2	1407.6
+83	1474.8	973.2
+84	1674	1396.4
+85	1933.2	1990
+86	1202.4	1012.4
+87	1532.8	1020.4
+88	1598.8	1432.4
+89	995.2	1547.6
+90	1303.2	1978
+91	1377.2	1768.4
+92	1091.2	1573.2
+93	1067.2	2134.4
+94	1686	1299.2
+95	1678.8	1367.2
+96	1580	1478.8
+97	1122.8	1532.4
+98	1567.6	1460.8
+99	1575.2	1642.4
+100	1823.2	1293.2
+101	1830.8	1489.6
+102	1578.8	1402.8
+103	1878	1477.6
+104	1672.4	1545.2
+105	1745.2	1598.8
+106	1305.6	1274.8
+107	1252	1232.4
+108	1073.2	1284.8
+109	1308.8	1446
+110	1686.8	1288
+111	1473.2	1466.4
+112	1894.4	1520.8
+113	1848.8	962
+114	1095.2	1486.4
+115	1142	1287.6
+116	1110.4	1185.2
+117	1591.2	1453.2
+118	1338	1624.8
+119	1991.6	1520.4
+120	1184	1619.2
+(1,0)	(2,771)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	1457.4	1470.2
+delay	0.157595	0.21916
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs4', '--datarate=30e5', '--packetSize=5e2', '--tcp=0', '--RngRun=50'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

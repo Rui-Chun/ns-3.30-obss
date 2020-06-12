@@ -1,0 +1,74 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.680s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	19	16.2
+61	1410.4	1125.2
+62	1086	1576.4
+63	1362	1078.8
+64	1654	1362.8
+65	1148.4	1322
+66	1132.8	878.4
+67	1328.4	961.2
+68	1324.8	1233.6
+69	1234.8	1193.6
+70	1285.2	1472.4
+71	1209.6	1234
+72	1656	1730.4
+73	927.2	1164.8
+74	1355.6	707.2
+75	1215.6	1519.2
+76	1238.8	1218.8
+77	1169.2	1632.4
+78	1450	1290
+79	1361.6	1607.6
+80	1575.2	1213.2
+81	1397.2	1301.6
+82	1536.4	1410.8
+83	1304.4	1405.6
+84	1174.8	1214
+85	1290.4	1701.6
+86	1390.8	965.6
+87	1070.4	1210.4
+88	974.8	1834.4
+89	1072.8	991.2
+90	1342.4	1213.6
+91	1358	1545.6
+92	1439.2	1247.2
+93	1406	1026
+94	1095.6	1343.2
+95	1273.6	1049.6
+96	1138.4	993.6
+97	1009.6	1096.4
+98	1442.4	1059.6
+99	1763.6	748
+100	1249.6	1260.4
+101	1393.2	1436
+102	1401.6	1392.4
+103	1232.8	1571.2
+104	1603.6	1133.6
+105	1445.2	1627.2
+106	1461.2	1409.2
+107	1316.8	1382.8
+108	949.6	1292.8
+109	1303.2	1346.4
+110	808.8	1171.2
+111	1348.8	908
+112	1151.2	1357.2
+113	1533.2	1172.8
+114	1023.6	898
+115	1245.2	1323.6
+116	993.2	1047.6
+117	989.6	1198.8
+118	993.2	1518
+119	1458.4	1557.2
+120	1242.4	1645.2
+(1,0)	(2,473)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	1279.18	1275.49
+delay	0.166476	0.13205
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs5', '--datarate=25e5', '--packetSize=5e2', '--tcp=0', '--RngRun=34'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
