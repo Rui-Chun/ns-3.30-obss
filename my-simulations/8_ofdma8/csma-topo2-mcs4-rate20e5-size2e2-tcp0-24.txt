@@ -1,0 +1,71 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.708s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	16.2	16.4
+61	852.8	1057.76
+62	1145.44	1171.36
+63	1384.8	900.64
+64	985.6	1030.88
+65	558.88	1161.44
+66	848.16	1207.2
+67	914.24	1309.6
+68	1166.88	976.16
+69	1006.56	1009.44
+70	1129.28	788.48
+71	926.88	816.16
+72	812.16	1112.64
+73	815.2	1089.92
+74	727.84	920.64
+75	1291.36	1249.76
+76	960	1247.84
+77	1265.76	1068.48
+78	770.72	950.08
+79	874.56	1023.52
+80	1151.84	754.56
+81	973.44	1078.08
+82	1020.48	1158.08
+83	888.32	893.28
+84	843.04	908.96
+85	1042.24	735.04
+86	1020.16	1015.04
+87	1114.88	932.96
+88	1199.84	1104.64
+89	1056.8	1270.88
+90	823.2	1070.4
+91	850.24	1108.32
+92	932.96	1079.68
+93	929.6	1023.52
+94	971.84	1327.36
+95	1157.76	979.04
+96	977.92	972.96
+97	945.28	1127.84
+98	846.24	1000.32
+99	1125.92	746.08
+100	737.12	1169.44
+101	753.12	904.48
+102	939.36	793.44
+103	1179.2	804.48
+104	961.28	741.12
+105	952.64	882.08
+106	1380.96	1074.24
+107	1007.04	1165.92
+108	1126.88	818.56
+109	1220.96	1053.76
+110	983.68	829.44
+111	858.08	1143.84
+112	1028.96	987.68
+113	763.52	1193.76
+114	853.92	1267.04
+115	886.08	941.44
+116	1161.76	1128
+117	749.92	898.88
+118	1212.32	982.24
+119	851.04	829.76
+120	1155.68	1344.32
+avg	984.544	1022.22
+delay	12.7153	11.7003
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs4', '--datarate=20e5', '--packetSize=2e2', '--tcp=0', '--RngRun=24'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

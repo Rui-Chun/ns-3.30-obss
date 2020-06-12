@@ -1,0 +1,73 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.586s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1
+60	15.4
+61	609.92
+62	725.6
+63	544
+64	790.4
+65	689.6
+66	750.08
+67	755.36
+68	553.6
+69	702.72
+70	458.72
+71	740.32
+72	942.4
+73	892.64
+74	852.96
+75	841.28
+76	769.28
+77	895.04
+78	644
+79	787.52
+80	857.28
+81	690.56
+82	785.12
+83	640
+84	791.36
+85	590.56
+86	811.2
+87	789.92
+88	569.76
+89	783.04
+90	663.36
+91	903.36
+92	681.6
+93	950.4
+94	641.6
+95	681.44
+96	726.88
+97	999.84
+98	828.48
+99	567.36
+100	776.16
+101	377.6
+102	828.16
+103	675.04
+104	897.76
+105	658.08
+106	811.2
+107	712.16
+108	560.32
+109	817.6
+110	898.88
+111	700
+112	905.76
+113	573.6
+114	771.2
+115	560.16
+116	672.8
+117	1014.56
+118	773.6
+119	876.48
+120	604.48
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	739.403
+delay	0.145836
+loss	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile1.txt', '--routingFile=locationtxt/routingFile1.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs3', '--datarate=15e5', '--packetSize=2e2', '--tcp=0', '--RngRun=11'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

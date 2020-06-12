@@ -6,7 +6,7 @@ for k in {1..25..1}
 do
 for mcs in {3..5..1}
 do
-for note in "4"
+for note in "1" "2"
 do
     locationfile="locationtxt/locationFile${note}.txt"
     routingfile="locationtxt/routingFile${note}.txt"

@@ -1,0 +1,74 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.698s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	14	13.2
+61	433.44	515.68
+62	436.8	443.52
+63	444.16	386.72
+64	553.92	445.12
+65	502.24	483.04
+66	377.44	468.48
+67	546.56	513.12
+68	537.44	508.64
+69	434.08	522.88
+70	561.12	484
+71	362.24	535.68
+72	480.96	365.76
+73	553.76	532.32
+74	437.76	595.68
+75	514.4	506.88
+76	378.72	553.44
+77	458.88	462.56
+78	522.56	528.64
+79	492	581.44
+80	520.8	347.36
+81	463.2	491.2
+82	586.56	333.12
+83	407.68	545.44
+84	489.6	522.56
+85	478.08	525.28
+86	518.88	519.68
+87	532	455.84
+88	361.6	572.32
+89	562.56	533.28
+90	502.24	531.2
+91	551.68	515.36
+92	450.24	394.72
+93	528.16	387.68
+94	420.8	514.4
+95	362.72	458.4
+96	552.64	674.56
+97	670.72	476
+98	493.92	569.92
+99	467.04	598.88
+100	486.4	511.52
+101	641.92	440.96
+102	598.72	407.04
+103	580.96	419.2
+104	512.96	507.68
+105	489.28	466.4
+106	560	339.2
+107	432.32	527.68
+108	525.92	504.96
+109	597.44	656.96
+110	441.12	577.6
+111	405.76	559.52
+112	557.76	615.68
+113	542.56	352.48
+114	674.72	309.76
+115	544.48	466.4
+116	562.88	524.48
+117	461.28	623.84
+118	539.68	584.32
+119	425.6	575.52
+120	477.12	397.6
+(1,0)	(2,348)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	500.141	496.16
+delay	0.108492	0.130121
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs5', '--datarate=10e5', '--packetSize=2e2', '--tcp=0', '--RngRun=9'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
