@@ -1,0 +1,17 @@
+Waf: Entering directory `/home/jw27/ns-3.30-obss/build'
+Waf: Leaving directory `/home/jw27/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.426s)
++0.000000000s -1 WifiHelper:Install(): node=0x7fffc56e8310, mob=0x7fffc56e7ac0
++0.000000000s -1 WifiHelper:Install(): node=0x7fffc56e8480, mob=0x7fffc56e7b80
++0.000000000s -1 WifiHelper:Install(): node=0x7fffc56e83f0, mob=0x7fffc56e2d00
++0.000000000s -1 WifiHelper:Install(): node=0x7fffc571bcc0, mob=0x7fffc56b9610
++0.000000000s -1 WifiHelper:Install(): node=0x7fffc56e85f0, mob=0x7fffc56b8100
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4
+10	2.6	2.6	2.6	2.8
+11	1996.8	1997.6	1994.4	1996
+avg	1996.8	1997.6	1994.4	1996
+delay	1.4316	1.4284	1.4328	1.4284
+loss	0	0	0	0
+Command ['/home/jw27/ns-3.30-obss/build/scratch/simple-ofdma-adhoc4', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=10', '--totalTime=11', '--packetSize=1e2', '--dataMode=HeMcs4', '--datarate=20e5', '--ratio=0.375', '--RngRun=1', '--locationFile=locationtxt/locationFile4.txt', '--routingFile=locationtxt/routingFile4.txt'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

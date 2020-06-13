@@ -1,0 +1,71 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.735s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	16.8	14.8
+61	715.84	660.8
+62	1058.56	817.76
+63	841.28	1078.88
+64	854.88	1148.64
+65	768.16	914.88
+66	1084.32	1087.68
+67	843.52	1102.4
+68	887.68	1107.04
+69	875.04	869.28
+70	1007.84	956.64
+71	951.2	761.6
+72	1255.2	954.4
+73	909.12	1130.56
+74	982.88	922.88
+75	953.76	837.12
+76	1067.68	968.96
+77	965.28	873.44
+78	1112.32	1088.96
+79	1100.16	635.68
+80	1181.12	929.92
+81	1180.8	1067.52
+82	854.24	626.56
+83	1143.36	1069.76
+84	961.6	1118.72
+85	936.96	987.2
+86	1071.04	919.2
+87	845.28	683.84
+88	647.04	902.88
+89	885.6	1085.76
+90	1236	954.88
+91	1099.04	1093.28
+92	1071.52	1044.96
+93	1071.68	934.24
+94	1000.64	1219.04
+95	991.52	857.12
+96	1105.12	1036.96
+97	809.12	1105.76
+98	1242.72	728.16
+99	1036.32	886.08
+100	936	1090.4
+101	1155.36	1160.32
+102	1148.8	718.88
+103	956.32	754.4
+104	946.08	930.72
+105	1079.2	1174.56
+106	844.64	1042.88
+107	898.56	934.08
+108	893.6	813.12
+109	1054.4	985.92
+110	1310.56	1047.36
+111	686.4	936.32
+112	932.16	1108
+113	890.88	1132.48
+114	999.52	988
+115	906.24	1159.84
+116	953.28	1036.64
+117	759.84	1296.16
+118	1131.36	580.96
+119	1274.24	992.96
+120	1238.4	864.96
+avg	993.355	965.307
+delay	7.83024	7.85439
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs5', '--datarate=20e5', '--packetSize=2e2', '--tcp=0', '--RngRun=48'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

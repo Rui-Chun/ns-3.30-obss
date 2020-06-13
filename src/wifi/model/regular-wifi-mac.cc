@@ -1382,7 +1382,7 @@ RegularWifiMac::DisableAggregation (void)
 void
 RegularWifiMac::SetQosDisabled (bool disable)
 {
-  m_qosDisabled = true;
+  m_qosDisabled = disable;
 }
 
 bool

@@ -1,0 +1,71 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.636s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2
+60	13.4	13.8
+61	1197.76	1241.76
+62	983.52	1184.64
+63	824.64	865.6
+64	1052.16	955.84
+65	1090.08	1128.32
+66	1276.16	859.2
+67	820.8	1057.12
+68	744.48	712.64
+69	880	796.64
+70	888.32	984.48
+71	1023.68	928.96
+72	779.36	1118.24
+73	964.64	1034.08
+74	863.68	1007.04
+75	1011.2	991.36
+76	1291.04	988.64
+77	922.88	909.76
+78	811.36	1040.8
+79	1302.56	885.92
+80	1358.88	911.36
+81	1040.48	881.12
+82	850.88	1188.96
+83	1033.28	1108.48
+84	1121.12	1070.4
+85	767.52	1133.92
+86	934.08	1013.92
+87	1228.32	1195.68
+88	1229.76	1248.96
+89	758.56	848
+90	1103.84	961.44
+91	772.64	1130.08
+92	1087.84	1095.04
+93	964	1084
+94	996.64	608
+95	857.6	1159.04
+96	644.48	1019.04
+97	1005.6	1282.08
+98	1052.48	1243.04
+99	796.64	1135.2
+100	938.72	1170.08
+101	1240.32	1012.48
+102	1192	957.28
+103	825.76	1104.16
+104	751.68	955.36
+105	1092.16	1049.28
+106	1125.28	865.44
+107	826.24	1128.16
+108	998.88	1177.6
+109	878.4	824.8
+110	730.24	1120
+111	1074.24	1140.64
+112	1040.8	1028.96
+113	801.44	1164.8
+114	848.64	983.52
+115	1230.24	895.52
+116	952.96	1064.64
+117	915.36	807.68
+118	1177.76	1104.64
+119	1114.08	1346.88
+120	885.6	829.44
+avg	982.896	1029
+delay	9.25381	9.32179
+loss	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc5', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=120', '--ratio=0.375', '--locationFile=locationtxt/locationFile2.txt', '--routingFile=locationtxt/routingFile2.txt', '--appFile=locationtxt/appFile.txt', '--randomTime=true', '--dataMode=HeMcs5', '--datarate=20e5', '--packetSize=2e2', '--tcp=0', '--RngRun=32'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

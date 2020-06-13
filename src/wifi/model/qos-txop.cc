@@ -2149,9 +2149,11 @@ QosTxop::NotifyAccessGrantedOfdma (void)
                   repeat = true;
                   break;
                 }
+                it++;
             }
           if (repeat)
             {
+              found = m_queue->PeekBySize (citem, size1, size2, ++citem);
               continue;
             }
 

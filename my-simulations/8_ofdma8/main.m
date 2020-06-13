@@ -2,10 +2,10 @@ fclose('all');
 
 tcpR = {'0', '1'};
 topoR = {'4'};
-mcsR = {'4'};
+mcsR = {'3', '4', '5'};
 sizeR = {'1e2', '2e2', '5e2', '10e2'};
-rateR = {'10e5', '15e5', '20e5', '25e5', '30e5'};
-kR = 1:2;
+rateR = {'5e5', '10e5', '15e5', '20e5', '25e5', '30e5'};
+kR = 1:50;
 
 for tcpI = 1:length(tcpR)
     tcp = tcpR{tcpI};
@@ -39,6 +39,10 @@ for tcpI = 1:length(tcpR)
                             '-rate', rate, '-size', size, '-tcp', tcp, ...
                             '-', num2str(k), '.txt'];
                         fileId = fopen(fileName);
+                        if fileId == -1
+                            disp(fileName);
+                            continue;
+                        end
                         A = textscan(fileId, '%s %f %f %f %f', ...
                             'HeaderLines', 72, 'Delimiter', '\t');
                         A = cell2mat(A(2:5));

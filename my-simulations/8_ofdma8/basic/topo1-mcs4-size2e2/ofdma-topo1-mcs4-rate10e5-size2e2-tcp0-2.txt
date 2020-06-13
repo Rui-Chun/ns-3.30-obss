@@ -1,0 +1,29 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+Traceback (most recent call last):
+  File "/home/ubuntu/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 119, in waf_entry_point
+    run_commands()
+  File "/home/ubuntu/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 182, in run_commands
+    ctx=run_command(cmd_name)
+  File "/home/ubuntu/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 173, in run_command
+    ctx.execute()
+  File "/home/ubuntu/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Scripting.py", line 375, in execute
+    return execute_method(self)
+  File "/home/ubuntu/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 93, in execute
+    self.execute_build()
+  File "/home/ubuntu/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 112, in execute_build
+    self.post_build()
+  File "/home/ubuntu/ns-3.30-obss/.waf3-2.0.18-ff4ae9f5cc05353d3dc3aeff8854ae69/waflib/Build.py", line 272, in post_build
+    m(self)
+  File "waf-tools/clang_compilation_database.py", line 47, in write_compilation_database
+    root = json.load(database_file)
+  File "/usr/lib/python3.6/json/__init__.py", line 299, in load
+    parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.6/json/__init__.py", line 354, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.6/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.6/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Unterminated string starting at: line 4369 column 16 (char 474787)
