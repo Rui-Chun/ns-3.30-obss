@@ -459,7 +459,9 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
 void
 QosTxop::NotifyAccessGranted (void)
 {
-  if (m_low->GetOfdmaSupported () && !m_low->IsCfPeriod ())
+  if ((Simulator::Now () >= Seconds (10))
+      && m_low->GetOfdmaSupported ()
+      && !m_low->IsCfPeriod ())
     {
       NotifyAccessGrantedOfdma ();
       return;
