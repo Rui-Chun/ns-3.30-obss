@@ -538,8 +538,8 @@ public:
   virtual void GotMuAck (uint32_t id);
   virtual void MissedMuAck (uint32_t id);
   virtual void DoneMuAck (void);
-  virtual void GotMuBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
-  virtual void MissedMuBlockAck (uint8_t nMpdus);
+  virtual void GotMuBlockAck (uint32_t id, const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
+  virtual void MissedMuBlockAck (uint32_t id, uint8_t nMpdus);
   virtual void DoneMuBlockAck (void);
 
 protected:

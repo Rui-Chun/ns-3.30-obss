@@ -885,7 +885,6 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
   else if (hdr.IsAck ()
            && hdr.GetAddr1 () == m_self
            && txVector.IsRu ()
-
            && m_normalAckTimeoutEvent.IsRunning ())
     {
       NS_LOG_DEBUG ("received MUACK from=" << hdr.GetAddr2 ());
@@ -895,12 +894,20 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       auto it = m_currentPacketList.begin ();
       auto it2 = m_currentTxVectorList.begin ();
       auto it3 = m_receivedAckList.begin ();
-      for (; it != m_currentPacketList.end(); id++, it++, it2++, it3++)
+      auto it4 = m_txParamsList.begin ();
+      for (; it != m_currentPacketList.end(); id++, it++, it2++, it3++, it4++)
         {
           if (HeRu::IsSame (it2->GetRu (), txVector.GetRu ()))
             {
-              m_currentTxop->GotMuAck (id);
-              (*it3) = true;
+              if (it4->MustWaitNormalAck ())
+                {
+                  m_currentTxop->GotMuAck (id);
+                  (*it3) = true;
+                }
+              else
+                {
+                  NS_LOG_DEBUG ("Got unexpected mu normal ack.");
+                }
               break;
             }
         }
@@ -962,6 +969,41 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       else if (m_currentTxop->IsQosTxop ())
         {
           m_currentTxop->TerminateTxop ();
+        }
+    }
+  else if (hdr.IsBlockAck ()
+           && hdr.GetAddr1 () == m_self
+           && txVector.IsRu ()
+           && m_normalAckTimeoutEvent.IsRunning ())
+    {
+      NS_LOG_DEBUG ("received MU BLOCK ACK from=" << hdr.GetAddr2 ());
+
+      SnrTag tag;
+      packet->RemovePacketTag (tag);
+      CtrlBAckResponseHeader blockAck;
+      packet->RemoveHeader (blockAck);
+
+      m_receivedMu = false;
+      uint32_t id = 0;
+      auto it = m_currentPacketList.begin ();
+      auto it2 = m_currentTxVectorList.begin ();
+      auto it3 = m_receivedAckList.begin ();
+      auto it4 = m_txParamsList.begin ();
+      for (; it != m_currentPacketList.end(); id++, it++, it2++, it3++, it4++)
+        {
+          if (HeRu::IsSame (it2->GetRu (), txVector.GetRu ()))
+            {
+              if (it4->MustWaitBlockAck ())
+                {
+                  m_currentTxop->GotMuBlockAck (id, &blockAck, hdr.GetAddr2 (), rxSnr, txVector.GetMode (), tag.Get ());
+                  (*it3) = true;
+                }
+              else
+                {
+                  NS_LOG_DEBUG ("Got unexpected mu block ack.");
+                }
+              break;
+            }
         }
     }
   else if (hdr.IsBlockAck ()
@@ -1186,11 +1228,11 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
                     {
                       m_receivedMu = true;
                       Simulator::Schedule (GetSifs (),
-                                                            &MacLow::SendDlMuAck, this,
-                                                            hdr.GetAddr2 (),
-                                                            hdr.GetDuration (),
-                                                            txVector,
-                                                            rxSnr);
+                                           &MacLow::SendDlMuAck, this,
+                                           hdr.GetAddr2 (),
+                                           hdr.GetDuration (),
+                                           txVector,
+                                           rxSnr);
                     }
                   else
                     {
@@ -3048,8 +3090,9 @@ MacLow::MuAckTimeout (void)
 
   uint32_t id = 0;
   auto it = m_receivedAckList.begin ();
+  auto it1 = m_currentPacketList.begin ();
   auto it2 = m_txParamsList.begin ();
-  for (; it != m_receivedAckList.end (); id++, it++, it2++)
+  for (; it != m_receivedAckList.end (); id++, it++, it1++, it2++)
     {
       if (*it == false)
         {
@@ -3059,7 +3102,7 @@ MacLow::MuAckTimeout (void)
             }
           else if ((*it2).MustWaitBlockAck ())
             {
-              txop->MissedMuBlockAck (id);
+              txop->MissedMuBlockAck (id, (*it1)->GetNMpdus ());
             }
         }
     }

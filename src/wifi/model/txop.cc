@@ -1072,13 +1072,13 @@ Txop::DoneMuAck (void)
 }
 
 void
-Txop::GotMuBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
+Txop::GotMuBlockAck (uint32_t id, const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
 {
   NS_LOG_WARN ("GotMuBlockAck should not be called for non QoS!");
 }
 
 void
-Txop::MissedMuBlockAck (uint8_t nMpdus)
+Txop::MissedMuBlockAck (uint32_t id, uint8_t nMpdus)
 {
   NS_LOG_WARN ("MissedMuBlockAck should not be called for non QoS!");
 }

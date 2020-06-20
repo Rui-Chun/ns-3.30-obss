@@ -1975,7 +1975,6 @@ QosTxop::GotMuBlockAck (uint32_t id, const CtrlBAckResponseHeader *blockAck, Mac
   m_currentHdr = (*it)->GetHeader ();
   m_currentParams = *it2;
   m_currentPacketTimestamp = *it4;
-  NS_ASSERT (m_currentParams.MustWaitBlockAck ());
   m_baManager->NotifyGotBlockAck (blockAck, recipient, rxSnr, txMode, dataSnr);
   if (!m_txOkCallback.IsNull ())
     {
@@ -1996,7 +1995,6 @@ QosTxop::MissedMuBlockAck (uint32_t id, uint8_t nMpdus)
   auto it3 = m_handledList.begin ();
   auto it4 = m_currentPacketTimestampList.begin ();
   for (uint32_t i = 0; i < id; i++, it++, it2++, it3++, it4++);
-  NS_ASSERT (!(*it2).MustWaitNormalAck ());
 
   m_currentPacket = (*it)->GetPacket ();
   m_currentHdr = (*it)->GetHeader ();
