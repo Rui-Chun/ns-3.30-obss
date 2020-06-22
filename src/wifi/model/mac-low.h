@@ -962,7 +962,7 @@ private:
 
   // OFDMA CODE BEGIN
 public:
-  void SetOfdmaTested (bool enable);
+  void SetOfdmaTested (bool test);
   bool GetOfdmaTested (void) const;
   void SetOfdmaSupported (bool support);
   bool GetOfdmaSupported () const;
