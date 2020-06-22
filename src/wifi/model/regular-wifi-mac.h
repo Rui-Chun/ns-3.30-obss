@@ -637,11 +637,14 @@ private:
 public:
   void SetQosDisabled (bool disable);
   bool GetQosDisabled (void) const;
+  void SetOfdmaTested (bool enable);
+  bool GetOfdmaTested (void) const;
   void SetOfdmaSupported (bool enable);
   bool GetOfdmaSupported (void) const;
 
 private:
   bool m_qosDisabled;
+  bool m_ofdmaTested;
   bool m_ofdmaSupported;
   uint32_t m_maxRu;
 };

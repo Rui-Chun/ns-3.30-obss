@@ -2000,7 +2000,6 @@ QosTxop::MissedMuBlockAck (uint32_t id, uint8_t nMpdus)
   m_currentHdr = (*it)->GetHeader ();
   m_currentParams = *it2;
   m_currentPacketTimestamp = *it4;
-  NS_ASSERT (m_currentParams.MustWaitBlockAck ());
   uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
   if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
     {
@@ -2105,6 +2104,12 @@ QosTxop::NotifyAccessGrantedOfdma (void)
       if (m_currentPacket == 0)
         {
           NS_LOG_DEBUG ("list/packet empty");
+          if (m_baManager->HasBar (m_currentBar))
+            {
+              SendBlockAckRequest (m_currentBar);
+              return;
+            }
+
           if (m_queue->IsEmpty ())
             {
               NS_LOG_DEBUG ("list/packet/queue empty");

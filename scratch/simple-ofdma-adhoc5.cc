@@ -75,6 +75,7 @@ int main (int argc, char **argv)
   CommandLine cmd;
 
   bool ofdmaEnabled = false;
+  bool qosDisabled = false;
   uint32_t apNum = 1;
   uint32_t clNum = 2;
   double startTime = 10.0;
@@ -94,6 +95,7 @@ int main (int argc, char **argv)
   std::string appFile = "appFile.txt";
 
   cmd.AddValue ("ofdmaEnabled", "", ofdmaEnabled);
+  cmd.AddValue ("qosDisabled", "", qosDisabled);
   cmd.AddValue ("apNum", "", apNum);
   cmd.AddValue ("clNum", "", clNum);
   cmd.AddValue ("startTime", "Application start time, s.", startTime);
@@ -202,7 +204,7 @@ int main (int argc, char **argv)
 
   WifiMacHelper mac;
   mac.SetType ("ns3::AdhocWifiMac",
-              //  "QosDisabled", BooleanValue (true),
+               "QosDisabled", BooleanValue (qosDisabled),
                "OfdmaSupported", BooleanValue (ofdmaEnabled));
   apDevices = wifi.Install (phy, mac, apNodes);
   clDevices = wifi.Install (phy, mac, clNodes);

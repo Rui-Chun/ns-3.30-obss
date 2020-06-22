@@ -1120,20 +1120,41 @@ Txop::NotifyAccessGrantedOfdma (void)
       && m_currentHdr.IsData ())
     {
       uint32_t size = m_currentQueueItemList.front ()->GetSize ();
-      uint32_t size1 = 0.9 * size;
-      uint32_t size2 = 1.1 * size;
+      uint32_t size1 = 0 * size + 1;
+      uint32_t size2 = 0 * size + 65535;
       NS_LOG_DEBUG ("try more OFDMA packets, " << +size1 << ", " << +size2);
 
+      uint8_t count = 1;
       auto citem = m_queue->PeekBySize (size1, size2);
       bool found = m_queue->PeekBySize (citem, size1, size2);
-      while ((m_currentQueueItemList.size () < m_low->GetMaxRu ())
+      while ((count < m_low->GetMaxRu ())
+             && (m_currentQueueItemList.size () < m_low->GetMaxRu ())
              && found)
         {
+          count++;
           if ((*citem)->GetHeader ().GetAddr1 ().IsGroup ()
               || !(*citem)->GetHeader ().IsData ())
             {
-              break;
+              continue;
             }
+          
+          bool repeat = false;
+          auto it = m_currentQueueItemList.begin ();
+          while (it != m_currentQueueItemList.end ())
+            {
+              if ((*citem)->GetHeader ().GetAddr1 () == (*it)->GetHeader ().GetAddr1 ())
+                {
+                  repeat = true;
+                  break;
+                }
+                it++;
+            }
+          if (repeat)
+            {
+              found = m_queue->PeekBySize (citem, size1, size2, ++citem);
+              continue;
+            }
+
           auto temp = ++citem;
           auto item = m_queue->Dequeue (--citem);
           NS_ASSERT (item != 0);

@@ -1376,10 +1376,11 @@ MacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 WifiMode
 MacLow::GetControlAnswerMode (WifiMode reqMode) const
 {
-  if (m_ofdmaSupported)
+  if (m_ofdmaTested)
     {
       return m_phy->GetHeMcs0 ();
     }
+
   /**
    * The standard has relatively unambiguous rules for selecting a
    * control response rate (the below is quoted from IEEE 802.11-2012,
@@ -2616,6 +2617,44 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
 }
 
 void
+MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
+                              Time duration, WifiTxVector blockAckReqTxVector, double rxSnr)
+{
+  // This function is specifically used by OFDMA BLOCK ACK, with assumption that immediate=true
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (immediate);
+  WifiMode blockAckReqTxMode = blockAckReqTxVector.GetMode ();
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (*blockAck);
+
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_BACKRESP);
+  hdr.SetAddr1 (originator);
+  hdr.SetAddr2 (GetAddress ());
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  hdr.SetNoRetry ();
+  hdr.SetNoMoreFragments ();
+
+  WifiTxVector blockAckRespTxVector = GetBlockAckTxVector (originator, blockAckReqTxMode);
+
+  m_txParams.DisableAck ();
+  duration -= GetSifs ();
+  duration -= GetBlockAckDuration (blockAckRespTxVector, blockAck->GetType ());
+  m_txParams.DisableNextData ();
+
+  NS_ASSERT (duration.IsPositive ());
+  hdr.SetDuration (duration);
+  //here should be present a control about immediate or delayed block ack
+  //for now we assume immediate
+  SnrTag tag;
+  tag.Set (rxSnr);
+  packet->AddPacketTag (tag);
+  blockAckRespTxVector.SetRu (blockAckReqTxVector.GetRu ());
+  ForwardDown (Create<const WifiPsdu> (packet, hdr), blockAckRespTxVector);
+}
+
+void
 MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time duration, WifiTxVector blockAckReqTxVector, double rxSnr)
 {
   NS_LOG_FUNCTION (this);
@@ -2778,6 +2817,16 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
                       //If the MPDU is sent as a VHT/HE single MPDU (EOF=1 in A-MPDU subframe header), then the responder sends an ACK.
                       NS_LOG_DEBUG ("Receive S-MPDU");
                       ampduSubframe = false;
+                    }
+                  else if (txVector.IsRu ())
+                    {
+                      m_receivedMu = true;
+                      m_sendAckEvent = Simulator::Schedule (GetSifs (),
+                                                            &MacLow::SendDlMuBlockAck, this,
+                                                            firsthdr.GetQosTid (),
+                                                            firsthdr.GetAddr2 (),
+                                                            firsthdr.GetDuration (),
+                                                            txVector, rxSnr);
                     }
                   else if (!m_sendAckEvent.IsRunning ())
                     {
@@ -3144,6 +3193,46 @@ MacLow::SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVect
 
   //ACK should always use non-HT PPDU (HT PPDU cases not supported yet)
   ForwardDown (Create<const WifiPsdu> (packet, ack), ackTxVector);
+}
+
+void
+MacLow::SendDlMuBlockAck (uint8_t tid, Mac48Address originator, Time duration, WifiTxVector blockAckReqTxVector, double rxSnr)
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_phy->IsStateTx () && !m_phy->IsStateRx ()
+      && !m_phy->IsStateMuTx () && !m_phy->IsStateMuRx ())
+    {
+      NS_LOG_FUNCTION (this << +tid << originator << duration.As (Time::S) << blockAckReqTxVector << rxSnr);
+      CtrlBAckResponseHeader blockAck;
+      uint16_t seqNumber = 0;
+      BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
+      NS_ASSERT (i != m_bAckCaches.end ());
+      seqNumber = (*i).second.GetWinStart ();
+
+      bool immediate = true;
+      AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+      blockAck.SetStartingSequence (seqNumber);
+      blockAck.SetTidInfo (tid);
+      // immediate = (*it).second.first.IsImmediateBlockAck ();
+      if ((*it).second.first.GetBufferSize () > 64)
+        {
+          blockAck.SetType (EXTENDED_COMPRESSED_BLOCK_ACK);
+        }
+      else
+        {
+          blockAck.SetType (COMPRESSED_BLOCK_ACK);
+        }
+      NS_LOG_DEBUG ("Got Implicit block Ack Req with seq " << seqNumber);
+      (*i).second.FillBlockAckBitmap (&blockAck);
+
+      WifiTxVector blockAckTxVector = GetBlockAckTxVector (originator, blockAckReqTxVector.GetMode ());
+      blockAckTxVector.SetRu (blockAckReqTxVector.GetRu ());
+      SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckTxVector, rxSnr);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Skip block ack response!");
+    }
 }
 
 // void
@@ -3659,11 +3748,25 @@ MacLow::StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueIte
   auto it5 = duraIndex.begin ();
   for (uint16_t j = 0; it5 != duraIndex.end (); j++, it5++)
     {
+      NS_LOG_DEBUG ("Assigned RU (" << preAlloc->second[maxId].second[j].ruType << ","
+                                    << preAlloc->second[maxId].second[j].index << ")");
       m_currentTxVectorList[it5->second].SetRu (preAlloc->second[maxId].second[j]);
     }
   
   m_ruSentNum[m_currentPacketList.size ()]++;
   SendDlMuRts ();
+}
+
+void
+MacLow::SetOfdmaTested (bool test)
+{
+  m_ofdmaTested = test;
+}
+
+bool
+MacLow::GetOfdmaTested () const
+{
+  return m_ofdmaTested;
 }
 
 void

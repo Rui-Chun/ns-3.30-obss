@@ -1235,6 +1235,12 @@ RegularWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&RegularWifiMac::SetQosDisabled,
                                         &RegularWifiMac::GetQosDisabled),
                    MakeBooleanChecker ())
+    .AddAttribute ("OfdmaTested",
+                   "This Boolean attribute is set to test 802.11ax ofdma support at this STA.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RegularWifiMac::SetOfdmaTested,
+                                        &RegularWifiMac::GetOfdmaTested),
+                   MakeBooleanChecker ())
     .AddAttribute ("OfdmaSupported",
                    "This Boolean attribute is set to enable 802.11ax ofdma support at this STA.",
                    BooleanValue (false),
@@ -1265,6 +1271,10 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
             m_low->SetOfdmaSupported (m_ofdmaSupported);
             m_low->SetMaxRu (m_maxRu);
           }
+        if (m_ofdmaTested)
+          {
+            m_low->SetOfdmaTested (m_ofdmaTested);
+          }
       }
     case WIFI_PHY_STANDARD_80211ac:
     case WIFI_PHY_STANDARD_80211n_5GHZ:
@@ -1285,6 +1295,10 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
           {
             m_low->SetOfdmaSupported (m_ofdmaSupported);
             m_low->SetMaxRu (m_maxRu);
+          }
+        if (m_ofdmaTested)
+          {
+            m_low->SetOfdmaTested (m_ofdmaTested);
           }
       }
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
@@ -1317,6 +1331,12 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
   if (m_qosDisabled)
     {
       SetQosSupported (false);
+    }
+
+  if (m_ofdmaTested)
+    {
+      SetCtsTimeout (MicroSeconds (16 + 76 + 9 + 10.0/3 * 2));
+      SetAckTimeout (MicroSeconds (16 + 76 + 9 + 10.0/3 * 2));
     }
 
   ConfigureContentionWindow (cwmin, cwmax);
@@ -1389,6 +1409,18 @@ bool
 RegularWifiMac::GetQosDisabled (void) const
 {
   return m_qosDisabled;
+}
+
+void
+RegularWifiMac::SetOfdmaTested (bool test)
+{
+  m_ofdmaTested = test;
+}
+
+bool
+RegularWifiMac::GetOfdmaTested (void) const
+{
+  return m_ofdmaTested;
 }
 
 void

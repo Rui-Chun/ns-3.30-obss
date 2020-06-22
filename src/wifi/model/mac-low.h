@@ -843,6 +843,8 @@ private:
    */
   void SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
                              Time duration, WifiMode blockAckReqTxMode, double rxSnr);
+  void SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
+                             Time duration, WifiTxVector blockAckReqTxVector, double rxSnr);
   /**
    * Every time that a block ack request or a packet with ack policy equals to <i>block ack</i>
    * are received, if a relative block ack agreement exists and the value of inactivity timeout
@@ -960,6 +962,8 @@ private:
 
   // OFDMA CODE BEGIN
 public:
+  void SetOfdmaTested (bool enable);
+  bool GetOfdmaTested (void) const;
   void SetOfdmaSupported (bool support);
   bool GetOfdmaSupported () const;
   void SetMaxRu (uint32_t ru);
@@ -977,6 +981,8 @@ private:
   void SendDlMuData (Time dataDuration, Time ackDuration);
   void MuAckTimeout (void);
   void SendDlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
+  void SendDlMuBlockAck (uint8_t tid, Mac48Address originator, Time duration,
+                         WifiTxVector blockAckReqTxVector, double rxSnr);
   void MuPacketsClear (void);
   // OFDMA UL
   // void SendUlMuBsrp () {};
@@ -987,6 +993,7 @@ private:
   // void SendUlMuData (Mac48Address source, Time duration, WifiTxVector tfTxVector, double tfSnr);
   // void SendUlMuAck (Mac48Address source, Time duration, WifiTxVector dataTxVector, double dataSnr);
 
+  bool m_ofdmaTested = false;
   bool m_ofdmaSupported = false;
   uint32_t m_maxRu = 4;
 
