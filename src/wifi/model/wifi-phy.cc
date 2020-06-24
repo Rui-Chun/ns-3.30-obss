@@ -3121,7 +3121,6 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       if (IsModeSupported (txMode) || IsMcsSupported (txMode))
         {
           Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePlcpPreambleAndHeaderDuration (txVector);
-          // payloadDuration += txVector.GetOfdmaDelay ();
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
           UpdateEventItem (event);
           NS_LOG_DEBUG ("Receiving payload");

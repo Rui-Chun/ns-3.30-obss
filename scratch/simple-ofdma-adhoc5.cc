@@ -205,6 +205,7 @@ int main (int argc, char **argv)
   WifiMacHelper mac;
   mac.SetType ("ns3::AdhocWifiMac",
                "QosDisabled", BooleanValue (qosDisabled),
+               "OfdmaTested", BooleanValue (true),
                "OfdmaSupported", BooleanValue (ofdmaEnabled));
   apDevices = wifi.Install (phy, mac, apNodes);
   clDevices = wifi.Install (phy, mac, clNodes);

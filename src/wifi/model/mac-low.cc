@@ -790,9 +790,13 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
                                                 txVector,
                                                 rxSnr);
         }
+      else if (hdr.GetAddr1 () != m_self)
+        {
+          NS_LOG_DEBUG ("received MURTS from=" << hdr.GetAddr2 () << ", cannot schedule MUCTS for wrong dest");
+        }
       else
         {
-          NS_LOG_DEBUG ("received MURTS from=" << hdr.GetAddr2 () << ", cannot schedule MUCTS");
+          NS_LOG_DEBUG ("received MURTS from=" << hdr.GetAddr2 () << ", cannot schedule MUCTS for nav");
         }
     }
   else if (hdr.IsRts ())
@@ -3748,8 +3752,12 @@ MacLow::StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueIte
   auto it5 = duraIndex.begin ();
   for (uint16_t j = 0; it5 != duraIndex.end (); j++, it5++)
     {
+      Time dura = m_phy->CalculateTxDuration (m_currentPacketList[it5->second]->GetSize (),
+                                              m_currentTxVectorList[it5->second],
+                                              m_phy->GetFrequency ());
       NS_LOG_DEBUG ("Assigned RU (" << preAlloc->second[maxId].second[j].ruType << ","
-                                    << preAlloc->second[maxId].second[j].index << ")");
+                                    << preAlloc->second[maxId].second[j].index << ")"
+                    << ", duration = " << dura);
       m_currentTxVectorList[it5->second].SetRu (preAlloc->second[maxId].second[j]);
     }
   
