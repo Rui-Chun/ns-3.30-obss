@@ -25,14 +25,14 @@ do
     if [ ! -f ${outfile} ]; then
     touch ${outfile}
     echo ${outfile}
-    ./waf --run "simple-ofdma-adhoc6 --ofdmaEnabled=true --startTime=60 --totalTime=120 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} --appFile=${appfile} --tcp=${tcp} --randomTime=true --qosDisabled=true" &> ${outfile}
+    ./waf --run "simple-ofdma-adhoc6 --ofdmaEnabled=true --startTime=60 --totalTime=90 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} --appFile=${appfile} --tcp=${tcp} --randomTime=true --qosDisabled=true" &> ${outfile}
     fi
 
     outfile="${folder}/csma-topo${note}-mcs${mcs}-rate${rate}-size${packetsize}-tcp${tcp}-${k}.txt"
     if [ ! -f ${outfile} ]; then
     touch ${outfile}
     echo ${outfile}
-    ./waf --run "simple-ofdma-adhoc6 --ofdmaEnabled=false --rtscts=1 --startTime=60 --totalTime=120 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} --appFile=${appfile} --tcp=${tcp} --randomTime=true --qosDisabled=true" &> ${outfile}
+    ./waf --run "simple-ofdma-adhoc6 --ofdmaEnabled=false --rtscts=1 --startTime=60 --totalTime=90 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} --appFile=${appfile} --tcp=${tcp} --randomTime=true --qosDisabled=true" &> ${outfile}
     fi
 done
 done
