@@ -771,7 +771,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
     {
       m_notifyMuNavEvent = Simulator::Schedule (Seconds (0),
                                                 &MacLow::NotifyMuNav, this,
-                                                hdr.GetDuration () + txVector.GetOfdmaDelay ());
+                                                hdr.GetDuration ());
+                                                // hdr.GetDuration () + txVector.GetOfdmaDelay ());
     }
   if (hdr.IsRts ()
       && txVector.IsRu ())
@@ -2822,7 +2823,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
                       NS_LOG_DEBUG ("Receive S-MPDU");
                       ampduSubframe = false;
                     }
-                  else if (txVector.IsRu ())
+                  else if (!m_sendAckEvent.IsRunning () && txVector.IsRu ())
                     {
                       m_receivedMu = true;
                       m_sendAckEvent = Simulator::Schedule (GetSifs (),
@@ -3116,17 +3117,15 @@ MacLow::SendDlMuData (Time dataDuration, Time ackDuration)
   auto it3 = m_receivedCtsList.begin ();
   for (; it != m_currentPacketList.end (); it++, it2++, it3++)
     {
-      auto currentPacket = *it;
-      auto currentTxVector = *it2;
       if ((*it3))
         {
-          Time duration = m_phy->CalculateTxDuration (currentPacket->GetSize (),
-                                                      currentTxVector, m_phy->GetFrequency ());
+          Time duration = m_phy->CalculateTxDuration ((*it)->GetSize (),
+                                                      *it2, m_phy->GetFrequency ());
           duration = dataDuration - duration;
           NS_ASSERT (duration.IsPositive ());
-          currentTxVector.SetOfdmaDelay (duration);
-          currentPacket->SetDuration (GetSifs () + ackDuration);
-          ForwardDown (currentPacket, currentTxVector);
+          it2->SetOfdmaDelay (duration);
+          (*it)->SetDuration (GetSifs () + ackDuration);
+          ForwardDown (*it, *it2);
         }
     }
 }

@@ -8,7 +8,7 @@ for mcs in {3..5..1}
 do
 for note in "1" "2" "4"
 do
-for packetsize in "1e2" "2e2" "5e2" "10e2"
+for packetsize in "4e3"
 do
     locationfile="locationtxt/locationFile${note}.txt"
     routingfile="locationtxt/routingFile${note}.txt"

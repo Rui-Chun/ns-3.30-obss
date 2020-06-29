@@ -36,6 +36,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
 #include "onoff-application.h"
 #include "ns3/udp-socket-factory.h"
@@ -82,6 +83,14 @@ OnOffApplication::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&OnOffApplication::m_maxBytes),
                    MakeUintegerChecker<uint64_t> ())
+    .AddAttribute ("RandomizedSize", "Random packet size or not.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&OnOffApplication::m_pktSizeRandomized),
+                   MakeBooleanChecker ())
+    .AddAttribute ("RandomSize", "",
+                   StringValue ("ns3::ConstantRandomVariable[Constant=1e3]"),
+                   MakePointerAccessor (&OnOffApplication::m_pktRandomSize),
+                   MakePointerChecker <RandomVariableStream>())
     .AddAttribute ("Protocol", "The type of protocol to use. This should be "
                    "a subclass of ns3::SocketFactory",
                    TypeIdValue (UdpSocketFactory::GetTypeId ()),
@@ -134,7 +143,8 @@ OnOffApplication::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   m_onTime->SetStream (stream);
   m_offTime->SetStream (stream + 1);
-  return 2;
+  m_pktRandomSize->SetStream (stream + 2);
+  return 3;
 }
 
 void
@@ -282,10 +292,21 @@ void OnOffApplication::SendPacket ()
   NS_LOG_FUNCTION (this);
 
   NS_ASSERT (m_sendEvent.IsExpired ());
-  Ptr<Packet> packet = Create<Packet> (m_pktSize);
+
+  uint32_t pktSize = 0;
+  if (!m_pktSizeRandomized)
+    {
+      pktSize = m_pktSize;
+    }
+  else
+    {
+      pktSize = (uint32_t) m_pktRandomSize->GetValue ();
+    }
+  
+  Ptr<Packet> packet = Create<Packet> (pktSize);
   m_txTrace (packet);
   m_socket->Send (packet);
-  m_totBytes += m_pktSize;
+  m_totBytes += pktSize;
   Address localAddress;
   m_socket->GetSockName (localAddress);
   if (InetSocketAddress::IsMatchingType (m_peer))

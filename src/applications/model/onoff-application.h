@@ -193,6 +193,10 @@ private:
    * \param socket the not connected socket
    */
   void ConnectionFailed (Ptr<Socket> socket);
+
+private:
+  bool m_pktSizeRandomized;
+  Ptr<RandomVariableStream> m_pktRandomSize;
 };
 
 } // namespace ns3

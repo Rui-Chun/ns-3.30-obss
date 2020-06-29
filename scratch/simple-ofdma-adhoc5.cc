@@ -84,6 +84,7 @@ int main (int argc, char **argv)
   std::string dataMode = "HeMcs0";
   double datarate = 1e6;
   double packetSize = 1e3;
+  double packetSizeVar = 0.5;
   uint32_t tcp = 0;
   uint32_t rtscts = 0;
   double ratio = 1.0;
@@ -104,6 +105,7 @@ int main (int argc, char **argv)
   cmd.AddValue ("dataMode", "Mode for data frames.", dataMode);
   cmd.AddValue ("datarate", "Datarate, bps.", datarate);
   cmd.AddValue ("packetSize", "Packet size, bytes.", packetSize);
+  cmd.AddValue ("packetSizeVar", "", packetSizeVar);
   cmd.AddValue ("tcp", "tcp protocl, 0 = udp, 1 = tcp", tcp);
   cmd.AddValue ("rtscts", "rtscts for csma, 0 = disable, 1 = enable", rtscts);
   cmd.AddValue ("routing", "Routing algo, none/aodv/olsr", routing);
@@ -327,6 +329,13 @@ int main (int argc, char **argv)
 
       OnOffHelper client (appName.c_str (), Address ());
       AddressValue remoteAddress (InetSocketAddress (clInterfaces.GetAddress (sinkId), port));
+      client.SetAttribute ("Remote", remoteAddress);
+      client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+      client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
+      client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
+      client.SetAttribute ("PacketSize", UintegerValue (25));
+      trApplications.Add (client.Install (apNodes.Get (srcId)));
+
       if (randomTime)
         {
           client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=0.1|Bound=0.3]"));
@@ -337,19 +346,16 @@ int main (int argc, char **argv)
           client.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.1]"));
           client.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.1]"));
         }
-      client.SetAttribute ("Remote", remoteAddress);
       for (uint32_t j = 0; j < appInfo.size (); j++)
         {
           client.SetAttribute ("DataRate", DataRateValue (DataRate ((uint64_t) (datarate * appInfo[j][0] * locations[sinkId+apNum][3] + 1))));
           client.SetAttribute ("PacketSize", UintegerValue (packetSize * appInfo[j][1]));
           apApplications.Add (client.Install (apNodes.Get (srcId)));
         }
-
-      client.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-      client.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=1|Bound=2]"));
-      client.SetAttribute ("DataRate", DataRateValue (DataRate (1e3)));
-      client.SetAttribute ("PacketSize", UintegerValue (25));
-      trApplications.Add (client.Install (apNodes.Get (srcId)));
+      client.SetAttribute ("RandomizedSize", BooleanValue (true));
+      client.SetAttribute ("RandomSize", StringValue ("ns3::UniformRandomVariable[Min="
+                                                      + std::to_string (packetSize * (1-packetSizeVar)) + "|Max="
+                                                      + std::to_string (packetSize * (1+packetSizeVar)) + "]"));
     }
   
   apApplications.Start (Seconds (startTime));
