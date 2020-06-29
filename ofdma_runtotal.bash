@@ -17,7 +17,7 @@ do
     if [ ! -d ${folder} ]; then
     mkdir -p ${folder}
     fi
-for rate in "40e6"
+for rate in "40e6" "30e6" "20e6" "10e6" "35e6" "25e6" "15e6" "5e6"
 do
 for tcp in 0
 do
