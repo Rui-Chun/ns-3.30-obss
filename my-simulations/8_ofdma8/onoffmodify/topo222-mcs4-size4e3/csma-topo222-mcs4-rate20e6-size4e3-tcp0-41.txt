@@ -29,3 +29,13 @@ Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12	cl-13	cl-
 82	0	0	0	0	0	0	668.8	438.4	860.8	713.6	899.2	419.2	412.8	601.6
 83	0	0	0	0	0	0	995.2	636.8	672	598.4	614.4	732.8	684.8	419.2
 84	0	0	0	0	0	0	716.8	736	825.6	598.4	630.4	556.8	691.2	518.4
+85	0	0	0	0	0	0	736	576	777.6	739.2	694.4	697.6	521.6	531.2
+86	0	0	0	0	0	0	902.4	544	784	688	486.4	524.8	614.4	611.2
+87	0	0	0	0	0	0	841.6	726.4	563.2	614.4	812.8	515.2	540.8	476.8
+88	0	0	0	0	0	0	691.2	416	668.8	777.6	793.6	646.4	332.8	688
+89	0	0	0	0	0	0	592	614.4	771.2	742.4	729.6	633.6	652.8	691.2
+90	0	0	0	0	0	0	518.4	806.4	566.4	774.4	659.2	710.4	675.2	745.6
+avg	0	0	0	0	0	0	642.027	629.44	670.08	652.587	671.467	644.053	676.267	610.453
+delay	0.336957	0.25	0.716049	0.72973	0.802469	0.885246	492.201	483.954	495.308	493.98	507.243	496.257	504.547	501.371
+loss	0	0	0	0	0	0	0.492982	0.517949	0.226837	0.483245	0.478261	0.257634	0.261194	0.557196
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs4', '--datarate=20e6', '--ratio=0.375', '--RngRun=41', '--locationFile=locationtxt/locationFile222.txt', '--routingFile=locationtxt/routingFile222.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

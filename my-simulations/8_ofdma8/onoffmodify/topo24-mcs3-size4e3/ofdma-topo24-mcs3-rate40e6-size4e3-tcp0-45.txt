@@ -1,0 +1,30 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.789s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10
+60	16.2	13.2	16.4	16	15.6	15.4	14	15	17.4	12.6
+61	0	0	416	774.4	1353.6	1024	880	387.2	873.6	918.4
+62	0	0	412.8	716.8	611.2	851.2	1171.2	771.2	982.4	880
+63	0	0	608	755.2	742.4	678.4	672	777.6	713.6	425.6
+64	0	0	588.8	723.2	624	851.2	883.2	720	816	422.4
+65	0	0	636.8	736	681.6	697.6	595.2	716.8	694.4	352
+66	0	0	649.6	467.2	918.4	774.4	604.8	745.6	931.2	588.8
+67	0	0	470.4	755.2	556.8	889.6	867.2	675.2	636.8	515.2
+68	0	0	489.6	697.6	752	764.8	691.2	902.4	627.2	355.2
+69	0	0	320	748.8	713.6	441.6	835.2	732.8	768	390.4
+70	0	0	646.4	649.6	675.2	720	563.2	576	617.6	694.4
+71	0	0	608	643.2	793.6	604.8	716.8	870.4	627.2	140.8
+72	0	0	473.6	387.2	659.2	857.6	707.2	505.6	512	534.4
+73	0	0	457.6	515.2	588.8	614.4	755.2	870.4	681.6	528
+74	0	0	633.6	502.4	745.6	588.8	659.2	713.6	588.8	604.8
+75	0	0	531.2	601.6	758.4	726.4	742.4	675.2	544	483.2
+76	0	0	432	467.2	790.4	604.8	739.2	755.2	812.8	460.8
+77	0	0	531.2	694.4	624	592	691.2	758.4	617.6	419.2
+78	0	0	531.2	729.6	787.2	336	656	713.6	787.2	448
+79	0	0	592	572.8	736	732.8	828.8	576	729.6	537.6
+80	0	0	432	598.4	918.4	758.4	825.6	515.2	620.8	281.6
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=40e6', '--ratio=0.375', '--RngRun=45', '--locationFile=locationtxt/locationFile24.txt', '--routingFile=locationtxt/routingFile24.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

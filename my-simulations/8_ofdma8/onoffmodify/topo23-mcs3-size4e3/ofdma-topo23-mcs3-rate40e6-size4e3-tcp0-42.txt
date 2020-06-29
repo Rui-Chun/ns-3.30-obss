@@ -9,3 +9,18 @@ Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8
 62	0	0	864	915.2	924.8	1132.8	672	1033.6
 63	0	0	944	908.8	889.6	800	761.6	966.4
 64	0	0	665.6	880	835.2	777.6	1043.2	1145.6
+65	0	0	864	1049.6	796.8	912	944	665.6
+66	0	0	969.6	979.2	752	723.2	688	956.8
+67	0	0	979.2	780.8	716.8	870.4	668.8	1001.6
+68	0	0	720	665.6	972.8	790.4	1014.4	940.8
+69	0	0	700.8	1033.6	633.6	1036.8	857.6	953.6
+70	0	0	739.2	896	937.6	582.4	928	880
+71	0	0	844.8	864	854.4	1075.2	774.4	803.2
+72	0	0	697.6	630.4	860.8	892.8	1068.8	976
+73	0	0	1216	784	940.8	883.2	806.4	576
+74	0	0	1024	812.8	598.4	768	1046.4	876.8
+75	0	0	918.4	774.4	812.8	956.8	864	684.8
+76	0	0	819.2	1164.8	688	921.6	960	582.4
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=40e6', '--ratio=0.375', '--RngRun=42', '--locationFile=locationtxt/locationFile23.txt', '--routingFile=locationtxt/routingFile23.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

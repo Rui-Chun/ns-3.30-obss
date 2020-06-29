@@ -31,3 +31,11 @@ Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8
 84	0	0	1206.4	1161.6	1328	1148.8	1264	1388.8
 85	0	0	1305.6	1244.8	1289.6	1212.8	1136	1411.2
 86	0	0	1465.6	1465.6	1158.4	1084.8	1126.4	1113.6
+87	0	0	1184	1155.2	1324.8	1302.4	1312	1049.6
+88	0	0	1267.2	1292.8	1408	1145.6	1209.6	1302.4
+89	0	0	1056	947.2	1612.8	1209.6	1017.6	1459.2
+90	0	0	1155.2	1267.2	1283.2	1123.2	1107.2	1164.8
+avg	0	0	1274.67	1216.75	1239.04	1226.67	1286.19	1293.87
+delay	0.241935	0.353659	513.052	600.825	568.279	512.83	567.373	570.946
+loss	0	0	0.150676	0.491228	0.746464	0.144774	0.760583	0.723183
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs5', '--datarate=40e6', '--ratio=0.375', '--RngRun=41', '--locationFile=locationtxt/locationFile23.txt', '--routingFile=locationtxt/routingFile23.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

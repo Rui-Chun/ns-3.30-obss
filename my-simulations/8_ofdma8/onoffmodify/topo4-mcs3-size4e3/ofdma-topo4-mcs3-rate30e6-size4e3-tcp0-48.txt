@@ -1,0 +1,46 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.785s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4
+60	16	11.2	14.4	15.4
+61	5065.6	2886.4	2876.8	2844.8
+62	3625.6	3907.2	3318.4	3030.4
+63	3142.4	3964.8	3731.2	3270.4
+64	3084.8	3334.4	3491.2	3622.4
+65	2880	3321.6	4252.8	2848
+66	3462.4	3702.4	3414.4	3366.4
+67	3468.8	2950.4	4000	3100.8
+68	3731.2	3612.8	4467.2	2339.2
+69	3212.8	2848	4025.6	4089.6
+70	3731.2	3318.4	2297.6	3881.6
+71	3136	3414.4	3552	3091.2
+72	3196.8	4051.2	2544	3542.4
+73	3555.2	3632	2643.2	3571.2
+74	3024	3206.4	3289.6	3699.2
+75	3168	3478.4	4256	2582.4
+76	3452.8	3510.4	4121.6	3193.6
+77	3686.4	3273.6	2985.6	4268.8
+78	4320	3171.2	3798.4	2816
+79	2752	3856	3148.8	4240
+80	4204.8	3753.6	3600	2611.2
+81	3961.6	3920	3401.6	2889.6
+82	4422.4	3987.2	2777.6	3068.8
+83	4086.4	3123.2	3657.6	3148.8
+84	3123.2	3129.6	3206.4	3424
+85	3072	2809.6	3091.2	2860.8
+86	3513.6	4659.2	2489.6	3011.2
+87	5145.6	2201.6	2988.8	4169.6
+88	3702.4	2768	3814.4	3561.6
+89	3548.8	2220.8	3388.8	4572.8
+90	3212.8	3779.2	3638.4	2697.6
+(1,0)	(2,5350)	(3,5619)	(4,615)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	3589.65	3393.07	3408.96	3313.81
+delay	439.608	444.792	446.82	449.484
+loss	0.0384986	0.0392734	0.105778	0.0916109
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=30e6', '--ratio=0.375', '--RngRun=48', '--locationFile=locationtxt/locationFile4.txt', '--routingFile=locationtxt/routingFile4.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
