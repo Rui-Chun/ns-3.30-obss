@@ -1,0 +1,35 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.801s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12	cl-13	cl-14
+60	12.2	13.6	13.4	14.2	12.4	13.2	14.6	12.4	16.2	14.2	12.4	14.2	12.2	16.2
+61	0	0	0	0	0	0	521.6	467.2	601.6	499.2	560	732.8	531.2	547.2
+62	0	0	0	0	0	0	403.2	313.6	704	441.6	240	563.2	332.8	620.8
+63	0	0	0	0	0	0	604.8	457.6	316.8	473.6	416	601.6	326.4	579.2
+64	0	0	0	0	0	0	332.8	585.6	425.6	553.6	416	374.4	406.4	380.8
+65	0	0	0	0	0	0	448	422.4	422.4	432	278.4	457.6	508.8	409.6
+66	0	0	0	0	0	0	384	608	473.6	464	444.8	700.8	579.2	214.4
+67	0	0	0	0	0	0	499.2	428.8	396.8	294.4	425.6	636.8	646.4	643.2
+68	0	0	0	0	0	0	454.4	492.8	608	364.8	576	368	646.4	556.8
+69	0	0	0	0	0	0	368	438.4	540.8	438.4	512	454.4	521.6	505.6
+70	0	0	0	0	0	0	496	281.6	483.2	534.4	412.8	380.8	448	358.4
+71	0	0	0	0	0	0	406.4	390.4	556.8	966.4	576	512	457.6	428.8
+72	0	0	0	0	0	0	505.6	358.4	323.2	560	412.8	470.4	768	435.2
+73	0	0	0	0	0	0	508.8	553.6	563.2	521.6	419.2	393.6	438.4	393.6
+74	0	0	0	0	0	0	419.2	304	294.4	364.8	547.2	595.2	537.6	684.8
+75	0	0	0	0	0	0	412.8	473.6	483.2	646.4	355.2	288	400	374.4
+76	0	0	0	0	0	0	444.8	752	438.4	204.8	656	678.4	483.2	217.6
+77	0	0	0	0	0	0	598.4	348.8	492.8	694.4	435.2	393.6	576	377.6
+78	0	0	0	0	0	0	563.2	393.6	249.6	300.8	604.8	451.2	534.4	604.8
+79	0	0	0	0	0	0	675.2	531.2	352	483.2	515.2	556.8	304	496
+80	0	0	0	0	0	0	540.8	540.8	627.2	428.8	374.4	371.2	390.4	243.2
+81	0	0	0	0	0	0	336	505.6	547.2	374.4	505.6	454.4	572.8	425.6
+82	0	0	0	0	0	0	464	323.2	556.8	403.2	579.2	448	412.8	560
+83	0	0	0	0	0	0	572.8	486.4	403.2	460.8	601.6	448	297.6	361.6
+84	0	0	0	0	0	0	403.2	339.2	256	332.8	435.2	451.2	793.6	822.4
+85	0	0	0	0	0	0	579.2	608	652.8	553.6	358.4	377.6	304	294.4
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=20e6', '--ratio=0.375', '--RngRun=25', '--locationFile=locationtxt/locationFile222.txt', '--routingFile=locationtxt/routingFile222.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

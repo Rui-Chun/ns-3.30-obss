@@ -1,0 +1,29 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.776s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8
+60	14.2	15	16	12.8	15.2	16.6	13.6	15
+61	0	0	1408	1347.2	1267.2	1155.2	1270.4	1276.8
+62	0	0	1411.2	1161.6	972.8	1363.2	1270.4	1190.4
+63	0	0	505.6	912	1388.8	1558.4	1001.6	812.8
+64	0	0	1024	1235.2	995.2	854.4	707.2	1075.2
+65	0	0	838.4	1305.6	998.4	697.6	1376	697.6
+66	0	0	1225.6	1020.8	819.2	1552	1577.6	931.2
+67	0	0	841.6	988.8	764.8	1139.2	1331.2	918.4
+68	0	0	918.4	1033.6	1059.2	800	1174.4	1180.8
+69	0	0	1132.8	1411.2	1097.6	870.4	1280	758.4
+70	0	0	771.2	1286.4	992	1216	851.2	851.2
+71	0	0	1193.6	1241.6	640	1145.6	1523.2	972.8
+72	0	0	1116.8	1017.6	1027.2	931.2	1232	1254.4
+73	0	0	1065.6	835.2	1388.8	1081.6	1216	870.4
+74	0	0	1148.8	1193.6	755.2	774.4	1116.8	1094.4
+75	0	0	755.2	1072	1040	1478.4	697.6	1260.8
+76	0	0	921.6	1027.2	1235.2	809.6	873.6	1241.6
+77	0	0	819.2	1056	1152	1011.2	1286.4	1184
+78	0	0	1011.2	1260.8	816	1132.8	992	678.4
+79	0	0	1299.2	883.2	905.6	736	956.8	969.6
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=25e6', '--ratio=0.375', '--RngRun=15', '--locationFile=locationtxt/locationFile23.txt', '--routingFile=locationtxt/routingFile23.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

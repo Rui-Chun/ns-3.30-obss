@@ -1,0 +1,41 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.809s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6
+60	14.8	15	14.2	13.4	14	13.6
+61	0	0	2406.4	1318.4	2454.4	1203.2
+62	0	0	1584	1088	1286.4	1027.2
+63	0	0	1190.4	1084.8	1238.4	1299.2
+64	0	0	1411.2	1334.4	1484.8	1180.8
+65	0	0	1084.8	1030.4	1232	1184
+66	0	0	934.4	1296	1033.6	1235.2
+67	0	0	1417.6	1347.2	1228.8	1206.4
+68	0	0	1139.2	1344	1427.2	1401.6
+69	0	0	1110.4	1132.8	1299.2	1379.2
+70	0	0	966.4	1340.8	1353.6	1289.6
+71	0	0	1123.2	1344	1232	1174.4
+72	0	0	1401.6	1216	912	1312
+73	0	0	1129.6	1299.2	1392	1113.6
+74	0	0	1273.6	1126.4	1174.4	1251.2
+75	0	0	1392	1350.4	1091.2	1184
+76	0	0	1305.6	1187.2	1024	1472
+77	0	0	1238.4	1059.2	1190.4	1315.2
+78	0	0	1248	1190.4	1020.8	1260.8
+79	0	0	1280	1366.4	1161.6	1372.8
+80	0	0	1312	1030.4	1209.6	1260.8
+81	0	0	1324.8	873.6	1318.4	1113.6
+82	0	0	1264	1392	1312	1081.6
+83	0	0	1113.6	1270.4	1228.8	1260.8
+84	0	0	1308.8	1062.4	1411.2	1088
+85	0	0	1094.4	966.4	1203.2	1177.6
+86	0	0	1078.4	1008	1244.8	1545.6
+87	0	0	1388.8	1203.2	1145.6	1254.4
+88	0	0	969.6	1212.8	1222.4	1545.6
+89	0	0	1228.8	1126.4	1347.2	1289.6
+90	0	0	1139.2	1126.4	1305.6	1360
+avg	0	0	1261.97	1190.93	1272.85	1261.33
+delay	0.27027	0.253333	609.557	522.089	523.121	632.902
+loss	0	0	0.631762	0.28643	0.2902	0.625542
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=40e6', '--ratio=0.375', '--RngRun=37', '--locationFile=locationtxt/locationFile22.txt', '--routingFile=locationtxt/routingFile22.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

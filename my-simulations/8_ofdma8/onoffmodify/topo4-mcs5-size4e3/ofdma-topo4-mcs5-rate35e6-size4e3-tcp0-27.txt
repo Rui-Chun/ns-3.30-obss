@@ -1,0 +1,46 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (1.081s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4
+60	15.8	15.6	12.2	14.2
+61	4614.4	3251.2	4390.4	5200
+62	5107.2	5139.2	5046.4	3913.6
+63	3465.6	4400	5241.6	5433.6
+64	4220.8	3830.4	4070.4	4979.2
+65	4374.4	4841.6	3795.2	4694.4
+66	5446.4	3846.4	4681.6	4035.2
+67	3705.6	4841.6	4124.8	4550.4
+68	2896	5020.8	3481.6	3622.4
+69	4147.2	4931.2	3712	4294.4
+70	4531.2	4960	4505.6	3062.4
+71	4928	5609.6	4025.6	4057.6
+72	3286.4	5120	5145.6	4896
+73	3616	5840	3948.8	5100.8
+74	4652.8	4729.6	4227.2	4208
+75	4640	4435.2	5139.2	3465.6
+76	4246.4	4848	3894.4	4700.8
+77	3849.6	4668.8	5116.8	4134.4
+78	4403.2	5532.8	4848	4825.6
+79	3494.4	4646.4	3548.8	5084.8
+80	4108.8	6025.6	4912	4502.4
+81	2883.2	5177.6	3094.4	4572.8
+82	4224	4259.2	6051.2	4204.8
+83	4409.6	3420.8	4742.4	5276.8
+84	3398.4	3376	4483.2	2752
+85	4979.2	2816	4627.2	5024
+86	4060.8	4768	5075.2	2982.4
+87	4892.8	4761.6	4352	4457.6
+88	3900.8	3740.8	4163.2	6025.6
+89	4720	4460.8	4073.6	5110.4
+90	4422.4	4771.2	4684.8	5059.2
+(1,0)	(2,4885)	(3,2777)	(4,250)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	4187.52	4602.35	4440.11	4474.24
+delay	3.82293	3.87424	4.91288	4.5837
+loss	0	0	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs5', '--datarate=35e6', '--ratio=0.375', '--RngRun=27', '--locationFile=locationtxt/locationFile4.txt', '--routingFile=locationtxt/routingFile4.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

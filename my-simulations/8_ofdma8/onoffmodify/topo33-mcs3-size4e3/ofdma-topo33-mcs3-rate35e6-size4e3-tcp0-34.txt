@@ -1,0 +1,26 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.741s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12
+60	15.4	17.2	12.8	15.8	14.6	17.6	14	14	18.8	17	13.4	16.6
+61	0	0	0	723.2	515.2	809.6	1241.6	755.2	937.6	688	656	556.8
+62	0	0	0	537.6	518.4	556.8	297.6	377.6	336	633.6	732.8	640
+63	0	0	0	608	313.6	323.2	665.6	608	742.4	304	390.4	396.8
+64	0	0	0	444.8	304	131.2	640	659.2	624	672	659.2	470.4
+65	0	0	0	659.2	707.2	502.4	489.6	521.6	358.4	457.6	374.4	524.8
+66	0	0	0	358.4	547.2	489.6	649.6	572.8	393.6	304	544	329.6
+67	0	0	0	400	451.2	371.2	396.8	576	566.4	320	531.2	380.8
+68	0	0	0	480	355.2	304	409.6	476.8	588.8	534.4	720	518.4
+69	0	0	0	476.8	521.6	329.6	403.2	371.2	512	502.4	614.4	656
+70	0	0	0	400	489.6	400	496	403.2	470.4	515.2	489.6	489.6
+71	0	0	0	313.6	300.8	131.2	617.6	691.2	588.8	492.8	428.8	780.8
+72	0	0	0	556.8	841.6	480	320	390.4	371.2	448	470.4	374.4
+73	0	0	0	454.4	425.6	236.8	630.4	393.6	518.4	550.4	665.6	508.8
+74	0	0	0	518.4	396.8	268.8	569.6	374.4	448	483.2	659.2	681.6
+75	0	0	0	905.6	537.6	384	345.6	668.8	572.8	169.6	326.4	336
+76	0	0	0	515.2	345.6	268.8	649.6	579.2	544	464	649.6	656
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=35e6', '--ratio=0.375', '--RngRun=34', '--locationFile=locationtxt/locationFile33.txt', '--routingFile=locationtxt/routingFile33.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

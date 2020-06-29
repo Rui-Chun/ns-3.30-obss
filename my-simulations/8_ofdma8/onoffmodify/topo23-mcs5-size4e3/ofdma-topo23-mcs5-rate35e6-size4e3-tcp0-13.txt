@@ -1,0 +1,19 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.739s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8
+60	13.4	20.2	15	17.2	14.6	11	16	13.8
+61	0	0	1203.2	2729.6	1833.6	2182.4	1747.2	1913.6
+62	0	0	2480	2092.8	2470.4	2112	2220.8	1408
+63	0	0	1241.6	2092.8	1708.8	2342.4	2006.4	2019.2
+64	0	0	2137.6	1916.8	1724.8	2096	1724.8	1548.8
+65	0	0	1475.2	1638.4	1686.4	1676.8	1481.6	1436.8
+66	0	0	2035.2	1625.6	1795.2	1635.2	1929.6	1692.8
+67	0	0	1488	2121.6	1616	1891.2	1580.8	1507.2
+68	0	0	1702.4	1225.6	1936	1760	1603.2	2048
+69	0	0	1676.8	1756.8	1360	1868.8	1667.2	1708.8
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs5', '--datarate=35e6', '--ratio=0.375', '--RngRun=13', '--locationFile=locationtxt/locationFile23.txt', '--routingFile=locationtxt/routingFile23.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

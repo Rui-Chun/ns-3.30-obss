@@ -1,0 +1,46 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.772s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4
+60	12.2	13.6	17.2	13.2
+61	2902.4	1510.4	2086.4	2598.4
+62	2928	2531.2	2236.8	2028.8
+63	2643.2	1641.6	2915.2	2252.8
+64	2044.8	2166.4	3027.2	3180.8
+65	2982.4	2883.2	2694.4	2460.8
+66	2585.6	2710.4	2480	2595.2
+67	2268.8	2483.2	3203.2	2080
+68	2544	2073.6	1590.4	2422.4
+69	3273.6	2556.8	2160	3113.6
+70	2198.4	2211.2	2252.8	2774.4
+71	2099.2	2163.2	2716.8	2972.8
+72	2220.8	2601.6	2774.4	3017.6
+73	2006.4	2470.4	2947.2	2416
+74	2377.6	2822.4	2492.8	3068.8
+75	1641.6	2908.8	3097.6	2771.2
+76	2339.2	2713.6	2569.6	2976
+77	1980.8	2508.8	3043.2	3155.2
+78	2457.6	2051.2	2966.4	2422.4
+79	2246.4	2419.2	2739.2	2873.6
+80	2665.6	2736	2252.8	2128
+81	2464	2550.4	2841.6	2851.2
+82	2905.6	2662.4	2934.4	2560
+83	2931.2	2323.2	2688	2224
+84	2710.4	2681.6	2928	2595.2
+85	2556.8	2566.4	2624	2294.4
+86	2400	2412.8	2233.6	1974.4
+87	2668.8	2339.2	2819.2	2454.4
+88	2016	2140.8	2208	2208
+89	2300.8	2838.4	2803.2	2553.6
+90	2598.4	2198.4	2444.8	2576
+(1,0)	(2,1884)	(3,245)	(4,7)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	2465.28	2429.23	2625.71	2586.67
+delay	1.64518	0.620321	1.55526	1.59933
+loss	0	0	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs4', '--datarate=20e6', '--ratio=0.375', '--RngRun=18', '--locationFile=locationtxt/locationFile4.txt', '--routingFile=locationtxt/routingFile4.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

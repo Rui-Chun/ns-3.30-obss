@@ -1,0 +1,41 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.850s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6
+60	17	16.8	16.8	14.4	13.2	14
+61	0	0	1737.6	1363.2	2464	2012.8
+62	0	0	1686.4	1142.4	1500.8	1027.2
+63	0	0	1203.2	1408	1209.6	1206.4
+64	0	0	1385.6	1100.8	1760	1568
+65	0	0	1062.4	1286.4	1347.2	1484.8
+66	0	0	1532.8	1788.8	1628.8	1206.4
+67	0	0	1689.6	1363.2	934.4	1433.6
+68	0	0	1049.6	1433.6	1212.8	1315.2
+69	0	0	1452.8	1632	1504	1321.6
+70	0	0	1398.4	1280	1500.8	1100.8
+71	0	0	1209.6	1392	1308.8	1833.6
+72	0	0	1680	1385.6	1532.8	1072
+73	0	0	1840	1382.4	1033.6	1347.2
+74	0	0	1744	1209.6	1430.4	1340.8
+75	0	0	1612.8	1248	1580.8	1241.6
+76	0	0	1606.4	1395.2	1401.6	1427.2
+77	0	0	1718.4	1148.8	1104	1651.2
+78	0	0	1177.6	1270.4	1702.4	1059.2
+79	0	0	1161.6	1584	1456	1222.4
+80	0	0	1145.6	1312	1600	1552
+81	0	0	1113.6	1046.4	1558.4	1571.2
+82	0	0	1104	1593.6	1449.6	1686.4
+83	0	0	1395.2	1468.8	1462.4	1424
+84	0	0	1321.6	1430.4	1120	1123.2
+85	0	0	1216	1312	1347.2	1792
+86	0	0	1366.4	1753.6	1600	937.6
+87	0	0	1539.2	1488	934.4	1878.4
+88	0	0	1408	1145.6	1337.6	1123.2
+89	0	0	1273.6	1523.2	1251.2	1513.6
+90	0	0	1289.6	1376	1164.8	1356.8
+avg	0	0	1404.05	1375.47	1414.61	1394.35
+delay	0.270588	0.25	536.883	541.551	503.203	531.799
+loss	0	0	0.389955	0.693413	0.23641	0.416317
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=30e6', '--ratio=0.375', '--RngRun=15', '--locationFile=locationtxt/locationFile22.txt', '--routingFile=locationtxt/routingFile22.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

@@ -1,0 +1,41 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.788s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6
+60	10.6	16.6	13.4	15	16.2	14
+61	0	0	1174.4	1795.2	3091.2	2022.4
+62	0	0	2284.8	2736	2211.2	2332.8
+63	0	0	2342.4	2355.2	2585.6	2076.8
+64	0	0	2188.8	2236.8	2931.2	2086.4
+65	0	0	2800	2617.6	1632	1961.6
+66	0	0	2358.4	1696	2854.4	2003.2
+67	0	0	2224	2553.6	2416	2064
+68	0	0	2396.8	2156.8	2278.4	1990.4
+69	0	0	2003.2	2713.6	2956.8	1596.8
+70	0	0	2230.4	2435.2	2019.2	2848
+71	0	0	2380.8	2022.4	2723.2	2182.4
+72	0	0	2470.4	2204.8	2470.4	1942.4
+73	0	0	2812.8	1379.2	2003.2	2179.2
+74	0	0	2368	2284.8	2483.2	1961.6
+75	0	0	2508.8	2512	2003.2	2134.4
+76	0	0	2300.8	2361.6	2320	1926.4
+77	0	0	2646.4	2240	1827.2	2489.6
+78	0	0	2473.6	2512	2358.4	1923.2
+79	0	0	2646.4	2153.6	2134.4	2076.8
+80	0	0	2016	2230.4	2096	2726.4
+81	0	0	2819.2	2582.4	2076.8	2006.4
+82	0	0	2422.4	2387.2	2691.2	1763.2
+83	0	0	1484.8	2528	2659.2	2556.8
+84	0	0	2153.6	2560	2345.6	1641.6
+85	0	0	1974.4	2646.4	2211.2	1680
+86	0	0	2512	2531.2	2467.2	2224
+87	0	0	2531.2	2211.2	2108.8	2288
+88	0	0	1760	2156.8	3299.2	2124.8
+89	0	0	2182.4	2531.2	2931.2	1801.6
+90	0	0	2470.4	2163.2	2323.2	2080
+avg	0	0	2297.92	2316.48	2416.96	2089.71
+delay	0.245283	0.253012	436.225	426.103	435.67	427.976
+loss	0	0	0.0237596	0.0252174	0.0235294	0.0763293
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=false', '--rtscts=1', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs4', '--datarate=20e6', '--ratio=0.375', '--RngRun=30', '--locationFile=locationtxt/locationFile22.txt', '--routingFile=locationtxt/routingFile22.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

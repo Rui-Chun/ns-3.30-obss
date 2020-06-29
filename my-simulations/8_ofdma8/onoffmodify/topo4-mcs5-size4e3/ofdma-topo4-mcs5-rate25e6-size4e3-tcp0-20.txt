@@ -1,0 +1,46 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.779s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4
+60	16.8	15.8	12.4	12.2
+61	3264	2774.4	2668.8	3606.4
+62	3846.4	2550.4	3865.6	3625.6
+63	3260.8	3228.8	3635.2	3289.6
+64	2630.4	2323.2	2732.8	2844.8
+65	3600	1846.4	2217.6	2630.4
+66	3884.8	3276.8	3900.8	3356.8
+67	3715.2	2713.6	2585.6	3136
+68	3360	3222.4	2076.8	3120
+69	4025.6	3145.6	3612.8	4217.6
+70	3145.6	3756.8	2860.8	2761.6
+71	2748.8	1891.2	3366.4	2873.6
+72	3200	3388.8	3081.6	3052.8
+73	2870.4	3075.2	3424	3244.8
+74	2934.4	3056	2777.6	3596.8
+75	2563.2	2844.8	3577.6	2473.6
+76	2547.2	3216	3430.4	2428.8
+77	3894.4	3180.8	3091.2	4492.8
+78	3152	2262.4	2636.8	2323.2
+79	2700.8	3571.2	3315.2	2998.4
+80	4364.8	2284.8	3040	3868.8
+81	3712	2473.6	4390.4	3436.8
+82	2972.8	3990.4	4089.6	3670.4
+83	4092.8	3142.4	2649.6	2601.6
+84	4438.4	3200	2368	2198.4
+85	3120	3820.8	3315.2	3699.2
+86	2684.8	3427.2	2576	2848
+87	2483.2	3324.8	3366.4	2534.4
+88	3254.4	4057.6	3110.4	3008
+89	3379.2	2275.2	3792	2841.6
+90	3040	3344	2748.8	3328
+(1,0)	(2,2540)	(3,366)	(4,11)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	3296.21	3022.19	3143.47	3136.96
+delay	0.682724	1.41044	0.717014	1.38466
+loss	0	0	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs5', '--datarate=25e6', '--ratio=0.375', '--RngRun=20', '--locationFile=locationtxt/locationFile4.txt', '--routingFile=locationtxt/routingFile4.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

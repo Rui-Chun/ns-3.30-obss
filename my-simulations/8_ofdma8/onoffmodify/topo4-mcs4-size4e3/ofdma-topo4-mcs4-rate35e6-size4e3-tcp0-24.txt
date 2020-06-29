@@ -1,0 +1,46 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.786s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4
+60	16.4	13	14.2	11.2
+61	2953.6	4873.6	6393.6	3737.6
+62	5616	3446.4	4908.8	4835.2
+63	4192	3561.6	3593.6	4396.8
+64	5491.2	4112	5436.8	3756.8
+65	5065.6	4099.2	3971.2	5321.6
+66	4364.8	5145.6	4032	4217.6
+67	4649.6	5120	5152	3299.2
+68	4457.6	3171.2	4822.4	6457.6
+69	3779.2	4499.2	4732.8	4601.6
+70	3907.2	4096	4838.4	5321.6
+71	5113.6	4598.4	4236.8	4784
+72	4188.8	4486.4	3875.2	4700.8
+73	4393.6	3875.2	4412.8	3756.8
+74	3977.6	3827.2	4918.4	5334.4
+75	4646.4	5123.2	2953.6	6083.2
+76	3990.4	3670.4	4032	5792
+77	2851.2	3465.6	4998.4	4755.2
+78	4016	3984	5097.6	4272
+79	5081.6	4380.8	3955.2	4675.2
+80	4460.8	3657.6	4060.8	3452.8
+81	3788.8	4131.2	3676.8	2809.6
+82	4361.6	4902.4	4633.6	4480
+83	4275.2	5036.8	4176	4675.2
+84	4288	4457.6	4355.2	4691.2
+85	4252.8	4124.8	4876.8	4492.8
+86	5414.4	3417.6	4697.6	5404.8
+87	4944	4931.2	3804.8	4668.8
+88	4480	4713.6	5052.8	3670.4
+89	4048	5875.2	3916.8	4198.4
+90	4873.6	4409.6	5219.2	3894.4
+(1,0)	(2,6440)	(3,5659)	(4,506)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+(1,0)	(2,0)	(3,0)	(4,0)	
+avg	4397.44	4306.45	4494.4	4551.25
+delay	28.5788	26.5803	30.2024	27.9745
+loss	0	0	0	0
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs4', '--datarate=35e6', '--ratio=0.375', '--RngRun=24', '--locationFile=locationtxt/locationFile4.txt', '--routingFile=locationtxt/routingFile4.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

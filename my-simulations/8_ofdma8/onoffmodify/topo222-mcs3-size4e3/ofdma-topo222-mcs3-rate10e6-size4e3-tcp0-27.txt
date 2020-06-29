@@ -1,0 +1,25 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.819s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12	cl-13	cl-14
+60	13.4	11.8	13.4	16.4	12.8	16.4	13.8	13.8	14.2	14.4	14.4	16.6	16	15.8
+61	0	0	0	0	0	0	464	323.2	547.2	592	662.4	611.2	547.2	636.8
+62	0	0	0	0	0	0	572.8	748.8	665.6	633.6	416	723.2	572.8	531.2
+63	0	0	0	0	0	0	726.4	576	553.6	972.8	688	294.4	576	550.4
+64	0	0	0	0	0	0	675.2	588.8	624	563.2	640	547.2	668.8	544
+65	0	0	0	0	0	0	611.2	432	537.6	691.2	579.2	752	780.8	483.2
+66	0	0	0	0	0	0	515.2	476.8	691.2	588.8	540.8	713.6	608	601.6
+67	0	0	0	0	0	0	755.2	560	691.2	694.4	611.2	508.8	448	697.6
+68	0	0	0	0	0	0	652.8	588.8	745.6	736	579.2	656	582.4	515.2
+69	0	0	0	0	0	0	710.4	518.4	662.4	544	668.8	694.4	534.4	569.6
+70	0	0	0	0	0	0	598.4	640	595.2	598.4	540.8	790.4	528	643.2
+71	0	0	0	0	0	0	553.6	547.2	697.6	492.8	652.8	656	579.2	697.6
+72	0	0	0	0	0	0	704	502.4	496	531.2	528	748.8	636.8	630.4
+73	0	0	0	0	0	0	771.2	659.2	585.6	633.6	720	592	720	502.4
+74	0	0	0	0	0	0	608	604.8	688	614.4	521.6	688	643.2	691.2
+75	0	0	0	0	0	0	553.6	723.2	716.8	630.4	572.8	598.4	464	627.2
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=10e6', '--ratio=0.375', '--RngRun=27', '--locationFile=locationtxt/locationFile222.txt', '--routingFile=locationtxt/routingFile222.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
