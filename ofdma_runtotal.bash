@@ -2,7 +2,7 @@
 
 ./waf
 
-for k in {1..1..1}
+for k in {1..50..1}
 do
 for mcs in {3..6..1}
 do

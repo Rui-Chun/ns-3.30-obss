@@ -1,0 +1,23 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.835s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12
+60	17	13	15.6	12.2	14.6	12.8	15.4	16.2	14	14	15.6	12.2
+61	1062.4	1004.8	0	0	1001.6	1094.4	1276.8	1043.2	1308.8	1177.6	1584	1142.4
+62	1145.6	1558.4	0	0	1254.4	1296	1382.4	1328	1296	979.2	1395.2	953.6
+63	1289.6	1177.6	0	0	1136	1369.6	1200	1398.4	1267.2	1017.6	1187.2	947.2
+64	1158.4	1187.2	0	0	963.2	1296	1398.4	1504	1174.4	972.8	1120	1193.6
+65	905.6	1593.6	0	0	1555.2	1251.2	1171.2	1168	1196.8	1420.8	1395.2	1024
+66	1392	1318.4	0	0	1078.4	1116.8	1136	1091.2	1427.2	1059.2	1360	1417.6
+67	1251.2	1097.6	0	0	1494.4	1280	1507.2	1414.4	1174.4	1030.4	851.2	1244.8
+68	960	1196.8	0	0	1433.6	1206.4	1420.8	944	944	1574.4	1040	1148.8
+69	1292.8	1200	0	0	1228.8	870.4	1014.4	1536	934.4	1110.4	1382.4	1363.2
+70	1158.4	1148.8	0	0	1315.2	1187.2	998.4	1164.8	1036.8	1196.8	1440	1468.8
+71	851.2	1232	0	0	713.6	1721.6	1046.4	1152	1232	1411.2	1145.6	1315.2
+72	1184	1100.8	0	0	963.2	1158.4	1542.4	1673.6	1468.8	985.6	1241.6	956.8
+73	1052.8	1145.6	0	0	1328	1516.8	1363.2	1059.2	1075.2	1056	1552	1107.2
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs5', '--datarate=25e6', '--ratio=0.375', '--RngRun=35', '--locationFile=locationtxt/locationFile42b1.txt', '--routingFile=locationtxt/routingFile42.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

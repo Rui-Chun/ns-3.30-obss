@@ -1,0 +1,24 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.803s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12
+60	13.2	11	13.8	15.8	17	14.2	12	15.6	15.2	15.4	13.8	13
+61	963.2	0	0	0	1116.8	1030.4	988.8	1692.8	1331.2	1260.8	1584	1097.6
+62	886.4	0	0	0	1328	1680	1267.2	1097.6	1289.6	1062.4	1321.6	1305.6
+63	1552	0	0	0	1209.6	992	1632	1014.4	1264	1318.4	1558.4	1344
+64	1145.6	0	0	0	1196.8	656	1347.2	1180.8	1430.4	1468.8	1382.4	1337.6
+65	1264	0	0	0	828.8	1484.8	1001.6	870.4	1164.8	1539.2	1443.2	1446.4
+66	912	0	0	0	1107.2	1024	899.2	1446.4	1008	1334.4	1398.4	1289.6
+67	812.8	0	0	0	1091.2	1203.2	1363.2	960	1401.6	1382.4	915.2	1446.4
+68	1033.6	0	0	0	1171.2	899.2	1107.2	969.6	1302.4	1088	1315.2	1184
+69	1020.8	0	0	0	1276.8	1072	1369.6	947.2	979.2	1254.4	1120	1472
+70	1478.4	0	0	0	1052.8	1200	1443.2	1388.8	1052.8	1552	1276.8	902.4
+71	1155.2	0	0	0	1033.6	796.8	1075.2	1318.4	1491.2	1257.6	1168	1139.2
+72	1683.2	0	0	0	854.4	1475.2	1216	1104	1225.6	1200	1510.4	1619.2
+73	1552	0	0	0	1264	915.2	976	1504	1033.6	1043.2	1436.8	1193.6
+74	1334.4	0	0	0	1209.6	1049.6	1315.2	736	1305.6	1081.6	1264	1376
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs6', '--datarate=30e6', '--ratio=0.375', '--RngRun=36', '--locationFile=locationtxt/locationFile42a.txt', '--routingFile=locationtxt/routingFile42.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

@@ -1,0 +1,29 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.769s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12
+60	13	14.6	17.4	14	14.2	12.6	15	15	14.4	13.4	11.4	15
+61	515.2	1094.4	1196.8	1081.6	764.8	934.4	672	598.4	793.6	662.4	720	972.8
+62	1020.8	752	620.8	908.8	521.6	883.2	979.2	742.4	1136	1030.4	832	851.2
+63	716.8	1113.6	784	617.6	896	796.8	1139.2	979.2	819.2	572.8	1024	886.4
+64	934.4	873.6	921.6	796.8	899.2	636.8	700.8	825.6	950.4	867.2	1017.6	739.2
+65	899.2	934.4	806.4	755.2	1004.8	732.8	633.6	627.2	854.4	761.6	838.4	806.4
+66	688	723.2	998.4	624	748.8	579.2	886.4	601.6	998.4	867.2	761.6	988.8
+67	1033.6	908.8	1113.6	956.8	739.2	1027.2	726.4	828.8	774.4	822.4	988.8	636.8
+68	876.8	1011.2	627.2	947.2	873.6	835.2	659.2	841.6	1008	784	902.4	684.8
+69	614.4	771.2	636.8	704	563.2	800	947.2	880	729.6	592	572.8	550.4
+70	841.6	732.8	675.2	806.4	528	825.6	604.8	614.4	870.4	643.2	1305.6	1008
+71	547.2	953.6	835.2	825.6	947.2	982.4	934.4	1027.2	777.6	857.6	752	588.8
+72	966.4	595.2	966.4	812.8	502.4	825.6	745.6	985.6	860.8	732.8	899.2	825.6
+73	697.6	844.8	940.8	726.4	947.2	870.4	838.4	483.2	947.2	905.6	524.8	620.8
+74	880	544	835.2	672	969.6	793.6	915.2	499.2	524.8	777.6	774.4	524.8
+75	697.6	806.4	867.2	675.2	614.4	848	998.4	611.2	899.2	896	896	304
+76	912	755.2	739.2	1040	732.8	688	729.6	883.2	688	659.2	556.8	1065.6
+77	873.6	803.2	953.6	976	483.2	473.6	1052.8	745.6	764.8	828.8	694.4	774.4
+78	604.8	601.6	640	617.6	902.4	1334.4	1020.8	691.2	457.6	636.8	720	563.2
+79	790.4	841.6	505.6	620.8	694.4	601.6	796.8	803.2	780.8	1001.6	716.8	566.4
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs4', '--datarate=25e6', '--ratio=0.375', '--RngRun=13', '--locationFile=locationtxt/locationFile42d.txt', '--routingFile=locationtxt/routingFile42.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

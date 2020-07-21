@@ -1,0 +1,24 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.860s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12
+60	15.6	12.8	14.8	13	14	14	14.2	16.4	14.6	18.4	12.6	15.6
+61	1062.4	1068.8	0	0	592	1203.2	892.8	688	1068.8	854.4	864	723.2
+62	883.2	928	0	0	566.4	985.6	947.2	870.4	844.8	832	1142.4	1052.8
+63	720	937.6	0	0	828.8	883.2	889.6	883.2	867.2	944	924.8	1209.6
+64	806.4	950.4	0	0	908.8	969.6	1219.2	1043.2	691.2	1161.6	851.2	883.2
+65	812.8	969.6	0	0	780.8	1187.2	928	1228.8	678.4	707.2	976	1008
+66	860.8	905.6	0	0	729.6	800	732.8	1232	928	1164.8	1350.4	934.4
+67	844.8	883.2	0	0	976	1014.4	876.8	889.6	1305.6	1123.2	630.4	921.6
+68	931.2	1136	0	0	1507.2	883.2	854.4	1155.2	1001.6	944	1132.8	857.6
+69	1142.4	822.4	0	0	1020.8	905.6	790.4	950.4	688	796.8	1008	915.2
+70	1235.2	883.2	0	0	1027.2	441.6	1168	828.8	816	835.2	966.4	1139.2
+71	806.4	812.8	0	0	1174.4	1155.2	668.8	876.8	1033.6	1190.4	819.2	1094.4
+72	547.2	860.8	0	0	784	764.8	953.6	1004.8	998.4	915.2	1004.8	1027.2
+73	886.4	755.2	0	0	1014.4	851.2	1043.2	1088	809.6	969.6	825.6	1164.8
+74	1078.4	905.6	0	0	1043.2	883.2	1043.2	896	739.2	1139.2	729.6	860.8
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs4', '--datarate=20e6', '--ratio=0.375', '--RngRun=18', '--locationFile=locationtxt/locationFile42b1.txt', '--routingFile=locationtxt/routingFile42.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

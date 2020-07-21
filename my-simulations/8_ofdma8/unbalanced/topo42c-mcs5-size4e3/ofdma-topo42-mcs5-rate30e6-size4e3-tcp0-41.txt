@@ -1,0 +1,23 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.813s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12
+60	11.6	14	13.2	15.8	15.2	12.8	17.6	12.4	16.6	15	15.8	16.2
+61	1049.6	643.2	1180.8	0	1478.4	1299.2	892.8	1065.6	838.4	1033.6	780.8	1219.2
+62	1481.6	1225.6	1017.6	0	1347.2	860.8	1331.2	1344	1235.2	1094.4	1344	947.2
+63	1372.8	1596.8	1184	0	944	1110.4	1276.8	934.4	1280	1152	1398.4	1001.6
+64	1312	1065.6	1046.4	0	857.6	1139.2	1267.2	1062.4	860.8	931.2	1459.2	886.4
+65	1014.4	1036.8	1148.8	0	969.6	1184	924.8	1174.4	1392	1395.2	995.2	892.8
+66	828.8	1340.8	851.2	0	1379.2	803.2	713.6	1235.2	1337.6	790.4	1040	1043.2
+67	889.6	713.6	611.2	0	1148.8	630.4	844.8	1100.8	844.8	864	1065.6	1116.8
+68	1046.4	982.4	1132.8	0	902.4	886.4	960	774.4	896	822.4	940.8	1238.4
+69	899.2	1238.4	835.2	0	985.6	716.8	1244.8	1052.8	873.6	614.4	953.6	1110.4
+70	944	1401.6	1072	0	1241.6	1024	857.6	1094.4	1059.2	1158.4	1024	1030.4
+71	1283.2	1235.2	1382.4	0	1040	1094.4	752	1024	1456	1168	1142.4	1104
+72	1276.8	854.4	697.6	0	995.2	780.8	931.2	1203.2	1040	886.4	1216	1081.6
+73	1062.4	713.6	896	0	1123.2	915.2	892.8	1001.6	1292.8	796.8	1110.4	1174.4
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs5', '--datarate=30e6', '--ratio=0.375', '--RngRun=41', '--locationFile=locationtxt/locationFile42c.txt', '--routingFile=locationtxt/routingFile42.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

@@ -1,0 +1,29 @@
+Waf: Entering directory `/home/ubuntu/ns-3.30-obss/build'
+Waf: Leaving directory `/home/ubuntu/ns-3.30-obss/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (0.767s)
+--------------------------Rate[Kbps]--------------------------
+Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8	cl-9	cl-10	cl-11	cl-12
+60	13.2	17	15.2	11.8	16.6	15.2	14.4	17.2	15.2	14.4	17.6	14
+61	1136	0	1100.8	0	937.6	1094.4	560	0	1260.8	1008	1049.6	0
+62	723.2	0	892.8	0	969.6	803.2	924.8	0	1088	1094.4	819.2	0
+63	1017.6	0	972.8	0	563.2	841.6	1088	0	796.8	688	841.6	0
+64	889.6	0	864	0	748.8	1142.4	889.6	0	1116.8	816	816	0
+65	876.8	0	864	0	521.6	857.6	963.2	0	944	563.2	841.6	0
+66	752	0	873.6	0	748.8	864	780.8	0	560	806.4	918.4	0
+67	694.4	0	1056	0	739.2	912	848	0	598.4	780.8	835.2	0
+68	512	0	636.8	0	611.2	748.8	736	0	774.4	870.4	1542.4	0
+69	592	0	678.4	0	921.6	492.8	678.4	0	697.6	828.8	1123.2	0
+70	1027.2	0	496	0	684.8	630.4	985.6	0	457.6	726.4	889.6	0
+71	918.4	0	614.4	0	732.8	1024	860.8	0	928	1036.8	774.4	0
+72	1027.2	0	704	0	496	652.8	720	0	1030.4	806.4	1158.4	0
+73	902.4	0	985.6	0	1030.4	1033.6	739.2	0	1139.2	1014.4	531.2	0
+74	896	0	835.2	0	1260.8	1222.4	1059.2	0	777.6	873.6	688	0
+75	956.8	0	688	0	451.2	569.6	908.8	0	726.4	905.6	812.8	0
+76	736	0	1100.8	0	656	873.6	819.2	0	742.4	723.2	937.6	0
+77	777.6	0	483.2	0	1420.8	1667.2	729.6	0	720	553.6	825.6	0
+78	1097.6	0	841.6	0	617.6	822.4	876.8	0	985.6	934.4	483.2	0
+79	758.4	0	844.8	0	1110.4	1075.2	867.2	0	1030.4	860.8	1395.2	0
+msg="Invalid WifiPhy state.", file=../src/wifi/model/wifi-phy-state-helper.cc, line=410
+terminate called without an active exception
+Command ['/home/ubuntu/ns-3.30-obss/build/scratch/simple-ofdma-adhoc6', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=90', '--packetSize=4e3', '--dataMode=HeMcs3', '--datarate=20e6', '--ratio=0.375', '--RngRun=7', '--locationFile=locationtxt/locationFile42e1.txt', '--routingFile=locationtxt/routingFile42.txt', '--appFile=locationtxt/appFile.txt', '--tcp=0', '--randomTime=true', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
