@@ -962,6 +962,7 @@ private:
 
   // OFDMA CODE BEGIN
 public:
+  void ReceiveOkMu (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
   void SetOfdmaTested (bool test);
   bool GetOfdmaTested (void) const;
   void SetOfdmaSupported (bool support);
@@ -1004,6 +1005,7 @@ private:
   EventId m_sendMuCtsEvent;
   EventId m_sendMuDataEvent;
   EventId m_sendMuAckEvent;
+  EventId m_muCtsTimeoutEvent;
   EventId m_muAckTimeoutEvent;
   
   bool m_receivedMu = false;
