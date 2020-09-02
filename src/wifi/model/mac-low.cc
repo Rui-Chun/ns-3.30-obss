@@ -774,6 +774,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
                                                 hdr.GetDuration ());
                                                 // hdr.GetDuration () + txVector.GetOfdmaDelay ());
     }
+
   if (hdr.IsRts ()
       && txVector.IsRu ())
     {
@@ -784,7 +785,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
           m_stationManager->ReportRxOk (hdr.GetAddr2 (), &hdr,
                                         rxSnr, txVector.GetMode ());
           m_receivedMu = true;
-          m_sendCtsEvent = Simulator::Schedule (GetSifs (),
+          m_sendMuCtsEvent = Simulator::Schedule (GetSifs (),
                                                 &MacLow::SendDlMuCts, this,
                                                 hdr.GetAddr2 (),
                                                 hdr.GetDuration (),
@@ -1151,7 +1152,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               if (txVector.IsRu ())
                 {
                   m_receivedMu = true;
-                  m_sendAckEvent = Simulator::Schedule (GetSifs (),
+                  m_sendMuAckEvent = Simulator::Schedule (GetSifs (),
                                                         &MacLow::SendDlMuAck, this,
                                                         hdr.GetAddr2 (),
                                                         hdr.GetDuration (),
@@ -1228,19 +1229,19 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               else
                 {
                   NS_LOG_DEBUG ("rx unicast/sendAck from=" << hdr.GetAddr2 ());
-                  NS_ASSERT (m_sendAckEvent.IsExpired ());
                   if (txVector.IsRu ())
                     {
                       m_receivedMu = true;
-                      Simulator::Schedule (GetSifs (),
-                                           &MacLow::SendDlMuAck, this,
-                                           hdr.GetAddr2 (),
-                                           hdr.GetDuration (),
-                                           txVector,
-                                           rxSnr);
+                      m_sendMuAckEvent = Simulator::Schedule (GetSifs (),
+                                                              &MacLow::SendDlMuAck, this,
+                                                              hdr.GetAddr2 (),
+                                                              hdr.GetDuration (),
+                                                              txVector,
+                                                              rxSnr);
                     }
                   else
                     {
+                      NS_ASSERT (m_sendAckEvent.IsExpired ());
                       m_sendAckEvent = Simulator::Schedule (GetSifs (),
                                                             &MacLow::SendAckAfterData, this,
                                                             hdr.GetAddr2 (),
@@ -2823,15 +2824,15 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
                       NS_LOG_DEBUG ("Receive S-MPDU");
                       ampduSubframe = false;
                     }
-                  else if (!m_sendAckEvent.IsRunning () && txVector.IsRu ())
+                  else if (!m_sendMuAckEvent.IsRunning () && txVector.IsRu ())
                     {
                       m_receivedMu = true;
-                      m_sendAckEvent = Simulator::Schedule (GetSifs (),
-                                                            &MacLow::SendDlMuBlockAck, this,
-                                                            firsthdr.GetQosTid (),
-                                                            firsthdr.GetAddr2 (),
-                                                            firsthdr.GetDuration (),
-                                                            txVector, rxSnr);
+                      m_sendMuAckEvent = Simulator::Schedule (GetSifs (),
+                                                              &MacLow::SendDlMuBlockAck, this,
+                                                              firsthdr.GetQosTid (),
+                                                              firsthdr.GetAddr2 (),
+                                                              firsthdr.GetDuration (),
+                                                              txVector, rxSnr);
                     }
                   else if (!m_sendAckEvent.IsRunning ())
                     {
@@ -3013,7 +3014,7 @@ SendDlMuRts (void)
   Time ctsTimer = rtsDuration + GetSifs () + ctsDuration + GetSifs ();
   NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
   NotifyCtsTimeoutStartNow (ctsTimer);
-  m_ctsTimeoutEvent = Simulator::Schedule (ctsTimer, &MacLow::MuCtsTimeout, this);
+  m_muCtsTimeoutEvent = Simulator::Schedule (ctsTimer, &MacLow::MuCtsTimeout, this);
 
   auto it3 = rtsList.begin ();
   auto it4 = rtsTxVectorList.begin ();
@@ -3027,7 +3028,7 @@ SendDlMuRts (void)
       ForwardDown (Create<const WifiPsdu> (Create<Packet> (), *it3), *it4);
     }
 
-  m_sendDataEvent = Simulator::Schedule (2*GetSifs () + rtsDuration + ctsDuration, &MacLow::SendDlMuData, this, dataDuration, ackDuration);
+  m_sendMuDataEvent = Simulator::Schedule (2*GetSifs () + rtsDuration + ctsDuration, &MacLow::SendDlMuData, this, dataDuration, ackDuration);
 }
 
 void
@@ -3108,9 +3109,9 @@ MacLow::SendDlMuData (Time dataDuration, Time ackDuration)
 {
   NS_LOG_FUNCTION (this);
   Time ackDelay = dataDuration + GetSifs () + ackDuration + GetSifs ();
-  NS_ASSERT (m_normalAckTimeoutEvent.IsExpired ());
+  NS_ASSERT (m_muAckTimeoutEvent.IsExpired ());
   NotifyAckTimeoutStartNow (ackDelay);
-  m_normalAckTimeoutEvent = Simulator::Schedule (ackDelay, &MacLow::MuAckTimeout, this);
+  m_muAckTimeoutEvent = Simulator::Schedule (ackDelay, &MacLow::MuAckTimeout, this);
 
   auto it = m_currentPacketList.begin ();
   auto it2 = m_currentTxVectorList.begin ();

@@ -1000,6 +1000,11 @@ private:
   std::vector<Ptr<WifiPsdu>> m_currentPacketList;
   std::vector<MacLowTransmissionParameters> m_txParamsList;
   std::vector<WifiTxVector> m_currentTxVectorList;
+
+  EventId m_sendMuCtsEvent;
+  EventId m_sendMuDataEvent;
+  EventId m_sendMuAckEvent;
+  EventId m_muAckTimeoutEvent;
   
   bool m_receivedMu = false;
   EventId m_notifyMuNavEvent;
