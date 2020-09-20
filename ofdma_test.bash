@@ -20,9 +20,9 @@ else
 fi
 
 # NQOS OFDMA
-./waf --run "${codefile} --ofdmaEnabled=true --startTime=10 --totalTime=13 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} ${appcommand} --tcp=${tcp} --qosDisabled=true"
+# ./waf --run "${codefile} --ofdmaEnabled=true --startTime=10 --totalTime=13 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} ${appcommand} --tcp=${tcp} --qosDisabled=true"
 
-# NS_LOG="MacLow=level_function|time|node|func" ./waf --run "${codefile} --ofdmaEnabled=true --startTime=10 --totalTime=13 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} ${appcommand} --tcp=${tcp} --qosDisabled=true" &> debug-ofdma.txt
+NS_LOG="MacLow=level_function|time|node|func" ./waf --run "${codefile} --ofdmaEnabled=true --startTime=10 --totalTime=13 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} ${appcommand} --tcp=${tcp} --qosDisabled=true" &> debug-ofdma.txt
 
 # QOS OFDMA
 # ./waf --run "${codefile} --ofdmaEnabled=true --startTime=10 --totalTime=20 --packetSize=${packetsize} --dataMode=HeMcs$mcs --datarate=$rate --ratio=0.375 --RngRun=$k --locationFile=${locationfile} --routingFile=${routingfile} ${appcommand} --tcp=${tcp} --qosDisabled=false"
