@@ -758,6 +758,11 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       return;
     }
 
+  if (m_inRu)
+    {
+      return;
+    }
+
   NS_LOG_FUNCTION (this << packet << rxSnr << txVector.GetMode () << txVector.GetPreambleType ());
   /* A packet is received from the PHY.
    * When we have handled this packet,
@@ -1940,6 +1945,7 @@ void
 MacLow::NotifyMuNav (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
+  m_navDuration = Seconds (0);
   if (!m_receivedMu)
     {
       DoNavStartNow (duration);
@@ -3270,6 +3276,7 @@ SendDlMuRts (void)
     }
 
   m_sendDataEvent = Simulator::Schedule (2*GetSifs () + rtsDuration + ctsDuration, &MacLow::SendDlMuData, this, dataDuration, ackDuration);
+  m_inRu = true;
 }
 
 void
@@ -3307,6 +3314,12 @@ MacLow::MuCtsTimeout (void)
       MuPacketsClear ();
       m_sendDataEvent.Cancel ();
       m_currentTxop->MissedAllMuCts ();
+      m_currentTxop = 0;
+    }
+  else
+    {
+      NotifyCtsTimeoutResetNow ();
+      m_inRu = false;
     }
 }
 
@@ -3403,6 +3416,7 @@ MacLow::MuAckTimeout (void)
   txop->DoneMuAck ();
 
   MuPacketsClear ();
+  m_inRu = false;
 }
 
 void
@@ -4006,6 +4020,8 @@ MacLow::StartTransmissionOfdma (std::list<Ptr<WifiMacQueueItem>> currentQueueIte
   
   m_ruSentNum[m_currentPacketList.size ()]++;
   SendDlMuRts ();
+  
+  NS_ASSERT (m_phy->IsStateMuTx () || m_phy->IsStateOff ());
 }
 
 void

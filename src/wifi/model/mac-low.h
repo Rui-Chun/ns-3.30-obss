@@ -1002,6 +1002,8 @@ private:
   std::vector<MacLowTransmissionParameters> m_txParamsList;
   std::vector<WifiTxVector> m_currentTxVectorList;
   
+  bool m_inRu = false;
+
   bool m_receivedMu = false;
   EventId m_notifyMuNavEvent;
   Time m_navDuration;
