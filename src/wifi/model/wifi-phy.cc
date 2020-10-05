@@ -2996,6 +2996,11 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
         {
           NS_LOG_DEBUG ("Drop ofdma packet because in non-ofdma mode");
           NotifyRxDrop (packet, NOT_ALLOWED);
+          if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+            {
+              MaybeCcaBusyDuration ();
+              return;
+            }
           return;
         }
       NS_ASSERT (m_currentEvent != 0);
@@ -3024,13 +3029,6 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       // stage switched at StartReceiveHeader, which already passed 1 us
       // so this is a frame from different ofdma series
       // dispose later packets
-      if (!txVector.IsRu ())
-        {
-          NS_LOG_DEBUG ("Drop non-ofdma packet because in ofdma mode");
-          NotifyRxDrop (packet, NOT_ALLOWED);
-          return;
-        }
-        
       NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
                     rxPowerW << "W)");
       NotifyRxDrop (packet, NOT_ALLOWED);

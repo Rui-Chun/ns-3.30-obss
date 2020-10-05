@@ -47,3 +47,5 @@ out-anim.xml
 out-flow.xml
 minstrel-ht-stats-*
 log*.out
+
+debug-*.txt

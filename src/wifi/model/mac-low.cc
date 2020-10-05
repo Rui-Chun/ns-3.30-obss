@@ -1179,21 +1179,24 @@ MacLow::ReceiveOkMu (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bo
 
   bool isPrevNavZero = IsNavZero ();
   NS_LOG_DEBUG ("duration/id=" << hdr.GetDuration () << ", rawDuration=" << hdr.GetRawDuration ());
-  if (m_notifyMuNavEvent.IsExpired ())
+  if (hdr.GetAddr1 () != m_self)
     {
-      m_navDuration = hdr.GetDuration ();
-      m_notifyMuNavEvent = Simulator::Schedule (Seconds (0),
-                                                &MacLow::NotifyMuNav, this,
-                                                hdr.GetDuration ());
-                                                // hdr.GetDuration () + txVector.GetOfdmaDelay ());
-    }
-  else if (m_navDuration < hdr.GetDuration ())
-    {
-      m_notifyMuNavEvent.Cancel ();
-      m_navDuration = hdr.GetDuration ();
-      m_notifyMuNavEvent = Simulator::Schedule (Seconds (0),
-                                                &MacLow::NotifyMuNav, this,
-                                                hdr.GetDuration ());
+      if (m_notifyMuNavEvent.IsExpired ())
+        {
+          m_navDuration = hdr.GetDuration ();
+          m_notifyMuNavEvent = Simulator::Schedule (Seconds (0),
+                                                    &MacLow::NotifyMuNav, this,
+                                                    hdr.GetDuration ());
+                                                    // hdr.GetDuration () + txVector.GetOfdmaDelay ());
+        }
+      else if (m_navDuration < hdr.GetDuration ())
+        {
+          m_notifyMuNavEvent.Cancel ();
+          m_navDuration = hdr.GetDuration ();
+          m_notifyMuNavEvent = Simulator::Schedule (Seconds (0),
+                                                    &MacLow::NotifyMuNav, this,
+                                                    hdr.GetDuration ());
+        }
     }
 
   if (hdr.IsRts ())
