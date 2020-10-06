@@ -1955,6 +1955,7 @@ private:
   void PopRuItem (HeRu::RuSpec ru);
 
   std::list<EventListItem> m_currentEventList;
+  Time m_ofdmaTimeOff = MicroSeconds (1);
 };
 
 /**

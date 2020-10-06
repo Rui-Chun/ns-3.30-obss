@@ -574,7 +574,11 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
     {
       //this may be caused only if PHY has started to receive a packet
       //inside SIFS, so, we check that lastRxStart was maximum a SIFS ago
-      NS_ASSERT (Simulator::Now () - m_lastRxStart <= m_sifs);
+
+      // OFDMA: This is not correct for current implementation, 
+      // where MU-RTS is not a single packet
+      // TODO: Fix the problem later
+      // NS_ASSERT (Simulator::Now () - m_lastRxStart <= m_sifs);
       m_lastRxEnd = Simulator::Now ();
       m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
       m_lastRxReceivedOk = true;

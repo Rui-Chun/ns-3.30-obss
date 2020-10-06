@@ -2724,6 +2724,7 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
           if (!isRu || m_currentEventList.empty ())
             {
+              ClearEventList ();
               m_interference.NotifyRxEnd ();
             }
           MaybeCcaBusyDuration ();
@@ -2751,6 +2752,7 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
       NotifyRxDrop (event->GetPacket (), PREAMBLE_DETECT_FAILURE);
       if (!isRu || m_currentEventList.empty ())
         {
+          ClearEventList ();
           m_interference.NotifyRxEnd ();
         }
     }
@@ -2971,6 +2973,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
     }
 
   Time endRx = Simulator::Now () + rxDuration;
+  bool isRu = txVector.IsRu ();
   switch (m_state->GetState ())
     {
     case WifiPhyState::SWITCHING:
@@ -2992,7 +2995,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
         }
       break;
     case WifiPhyState::RX:
-      if (txVector.IsRu ())
+      if (isRu)
         {
           NS_LOG_DEBUG ("Drop ofdma packet because in non-ofdma mode");
           NotifyRxDrop (packet, NOT_ALLOWED);
@@ -3053,7 +3056,29 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       break;
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
-      StartRx (event, rxPowerW, rxDuration);
+      if (isRu && !m_currentEventList.empty ())
+        {
+          NS_LOG_DEBUG ("current OFDMA RX starts at " << m_currentEventList.begin ()->currentEvent->GetStartTime ());
+          if (Simulator::Now () - m_currentEventList.begin ()->currentEvent->GetStartTime () > m_ofdmaTimeOff)
+            {
+              NS_LOG_DEBUG ("Drop packet because OFDMA symbol misaligned");
+              NotifyRxDrop (packet, NOT_ALLOWED);
+              if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+                {
+                  //that packet will be noise _after_ the reception of the currently-received packet.
+                  MaybeCcaBusyDuration ();
+                  return;
+                }
+            }
+          else
+            {
+              StartRx (event, rxPowerW, rxDuration);
+            }
+        }
+      else
+        {
+          StartRx (event, rxPowerW, rxDuration);
+        }
       break;
     case WifiPhyState::SLEEP:
       NS_LOG_DEBUG ("Drop packet because in sleep mode");
@@ -3142,6 +3167,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
           if (!isRu || m_currentEventList.empty ())
             {
+              ClearEventList ();
               m_interference.NotifyRxEnd ();
             }
         }
@@ -3153,6 +3179,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       NotifyRxDrop (event->GetPacket (), SIG_A_FAILURE);
       if (!isRu || m_currentEventList.empty ())
         {
+          ClearEventList ();
           m_interference.NotifyRxEnd ();
         }
     }
@@ -3256,6 +3283,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
 
   m_interference.NotifyRxEnd ();
   m_currentEvent = 0;
+  ClearEventList ();
 }
 
 std::pair<bool, SignalNoiseDbm>
@@ -4348,25 +4376,16 @@ WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
     {
       m_endRxEvent.Cancel ();
     }
-  
-  if (isRu)
-    {
-      PopEventItem (m_currentEvent);
-      NotifyRxDrop (m_currentEvent->GetPacket (), reason);
-      if (m_currentEventList.empty ())
-        {
-          m_interference.NotifyRxEnd ();
-          bool is_failure = (reason != OBSS_PD_CCA_RESET);
-          m_state->SwitchFromRxAbort (is_failure);
-        }
-      m_currentEvent = 0;
-      return;
-    }
 
+  PopEventItem (m_currentEvent);
   NotifyRxDrop (m_currentEvent->GetPacket (), reason);
-  m_interference.NotifyRxEnd ();
-  bool is_failure = (reason != OBSS_PD_CCA_RESET);
-  m_state->SwitchFromRxAbort (is_failure);
+  if (!isRu || m_currentEventList.empty ())
+    {
+      ClearEventList ();
+      m_interference.NotifyRxEnd ();
+      bool is_failure = (reason != OBSS_PD_CCA_RESET);
+      m_state->SwitchFromRxAbort (is_failure);
+    }
   m_currentEvent = 0;
 }
 

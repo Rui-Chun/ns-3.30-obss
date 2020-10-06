@@ -1,9 +1,575 @@
-Waf: Entering directory `/home/jw27/ns-3.30-obss/build'
-Waf: Leaving directory `/home/jw27/ns-3.30-obss/build'
-Build commands will be stored in build/compile_commands.json
-'build' finished successfully (0.483s)
---------------------------Rate[Kbps]--------------------------
-Time[s]	cl-1	cl-2	cl-3	cl-4	cl-5	cl-6	cl-7	cl-8
-60	14	14.4	16.4	15.6	14.4	13.4	14.4	14
-assert failed. cond="Simulator::Now () - m_lastRxStart <= m_sifs", file=../src/wifi/model/channel-access-manager.cc, line=577
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:StartTransmissionOfdma(0x564b74e7dc00, 0x564b74e7e670)
++60.110969037s 2 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969037s 2 WifiPhy:GetPayloadDuration(0, 0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(88, HeMcs4)
++60.110969037s 2 WifiPhy:GetPayloadDuration(0, 0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969037s 2 WifiPhy:GetPayloadDuration(0, 0)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:StartTransmissionOfdma(): Assigned RU (2,1), duration = +172000.0ns
++60.110969037s 2 WifiPhy:GetPayloadDuration(88, HeMcs4)
++60.110969037s 2 WifiPhy:GetPayloadDuration(0, 0)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:StartTransmissionOfdma(): Assigned RU (2,2), duration = +76000.0ns
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:SendDlMuRts(0x564b74e7dc00)
++60.110969037s 2 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 1)
++60.110969037s 2 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 1)
++60.110969037s 2 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 1)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:SendDlMuRts(): must wait MU ACK
++60.110969037s 2 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 1)
++60.110969037s 2 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 2)
++60.110969037s 2 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 2)
++60.110969037s 2 WifiPhy:GetPayloadDuration(88, HeMcs4)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 2)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:SendDlMuRts(): must wait MU ACK
++60.110969037s 2 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 2)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:SendDlMuRts(+108000.0ns, +92000.0ns, +316000.0ns, +92000.0ns)
++60.110969037s 2 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 1)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:ForwardDown(0x564b74e7dc00, 0x564b74f3ac10, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:ForwardDown(): send CTL_RTS, to=00:00:00:00:00:08, size=20, mode=HeMcs0, preamble=6, duration=+548000.0ns, seq=0xec80
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:ForwardDown(): Sending non aggregate MPDU
++60.110969037s 2 WifiPhy:SendPacket(0x564b74e81bc0, 0x564b74f754f0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 1)
++60.110969037s 2 WifiPhy:SendPacket(): Transmitting without power restriction
++60.110969037s 2 WifiPhy:GetTxPowerForTransmission(0x564b74e81bc0, 0)
++60.110969037s 2 WifiPhy:GetTxPowerForTransmission(0x564b74e81bc0, 0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 2)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:ForwardDown(0x564b74e7dc00, 0x564b74f3ac10, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:ForwardDown(): send CTL_RTS, to=00:00:00:00:00:01, size=20, mode=HeMcs0, preamble=6, duration=+548000.0ns, seq=0xec80
++60.110969037s 2 [mac=00:00:00:00:00:03] MacLow:ForwardDown(): Sending non aggregate MPDU
++60.110969037s 2 WifiPhy:SendPacket(0x564b74e81bc0, 0x564b74f780d0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969037s 2 WifiPhy:GetPayloadDuration(2, 2)
++60.110969037s 2 WifiPhy:SendPacket(): Transmitting without power restriction
++60.110969037s 2 WifiPhy:GetTxPowerForTransmission(0x564b74e81bc0, 0)
++60.110969037s 2 WifiPhy:GetTxPowerForTransmission(0x564b74e81bc0, 0)
++60.110969037s 7 WifiPhy:StartReceivePreamble(0x564b74eb2000, 0x564b74f56990, 8.59587e-07, +108000.0ns)
++60.110969037s 7 WifiPhy:StartRx(0x564b74eb2000, 0x564b74f56990, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f09480, 8.59587e-07, +108000.0ns)
++60.110969037s 7 WifiPhy:StartRx(): sync to signal (power=8.59587e-07W)
++60.110969037s 7 WifiPhy:StartRx(): Receiving first-arriving packet
++60.110969037s 7 WifiPhy:StartReceivePreamble(0x564b74eb2000, 0x564b74f54d50, 8.59587e-07, +108000.0ns)
++60.110969037s 7 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969037.0ns
++60.110969037s 7 WifiPhy:StartRx(0x564b74eb2000, 0x564b74f54d50, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f754f0, 8.59587e-07, +108000.0ns)
++60.110969037s 7 WifiPhy:StartRx(): sync to signal (power=8.59587e-07W)
++60.110969037s 7 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969087s 0 WifiPhy:StartReceivePreamble(0x564b74dc4940, 0x564b74f3f140, 2.54693e-10, +108000.0ns)
++60.110969087s 0 WifiPhy:StartRx(0x564b74dc4940, 0x564b74f3f140, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f64280, 2.54693e-10, +108000.0ns)
++60.110969087s 0 WifiPhy:StartRx(): sync to signal (power=2.54693e-10W)
++60.110969087s 0 WifiPhy:StartRx(): Receiving first-arriving packet
++60.110969087s 6 WifiPhy:StartReceivePreamble(0x564b74ea83e0, 0x564b74f77b90, 2.54709e-10, +108000.0ns)
++60.110969087s 6 WifiPhy:StartRx(0x564b74ea83e0, 0x564b74f77b90, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f2fe00, 2.54709e-10, +108000.0ns)
++60.110969087s 6 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969087s 6 WifiPhy:StartRx(): Receiving first-arriving packet
++60.110969087s 8 WifiPhy:StartReceivePreamble(0x564b74ebbc20, 0x564b74f77f80, 2.54709e-10, +108000.0ns)
++60.110969087s 8 WifiPhy:StartRx(0x564b74ebbc20, 0x564b74f77f80, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77f10, 2.54709e-10, +108000.0ns)
++60.110969087s 8 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969087s 8 WifiPhy:StartRx(): Receiving first-arriving packet
++60.110969087s 0 WifiPhy:StartReceivePreamble(0x564b74dc4940, 0x564b74f64e30, 2.54693e-10, +108000.0ns)
++60.110969087s 0 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969087s 0 WifiPhy:StartRx(0x564b74dc4940, 0x564b74f64e30, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f659b0, 2.54693e-10, +108000.0ns)
++60.110969087s 0 WifiPhy:StartRx(): sync to signal (power=2.54693e-10W)
++60.110969087s 0 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969087s 6 WifiPhy:StartReceivePreamble(0x564b74ea83e0, 0x564b74f77810, 2.54709e-10, +108000.0ns)
++60.110969087s 6 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969087s 6 WifiPhy:StartRx(0x564b74ea83e0, 0x564b74f77810, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f63f60, 2.54709e-10, +108000.0ns)
++60.110969087s 6 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969087s 6 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969087s 8 WifiPhy:StartReceivePreamble(0x564b74ebbc20, 0x564b74f4eda0, 2.54709e-10, +108000.0ns)
++60.110969087s 8 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969087s 8 WifiPhy:StartRx(0x564b74ebbc20, 0x564b74f4eda0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f6ca20, 2.54709e-10, +108000.0ns)
++60.110969087s 8 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969087s 8 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969123s 3 WifiPhy:StartReceivePreamble(0x564b74e8b3f0, 0x564b74f73a60, 4.90167e-11, +108000.0ns)
++60.110969123s 3 WifiPhy:StartRx(0x564b74e8b3f0, 0x564b74f73a60, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f640b0, 4.90167e-11, +108000.0ns)
++60.110969123s 3 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969123s 3 WifiPhy:StartRx(): Receiving first-arriving packet
++60.110969123s 5 WifiPhy:StartReceivePreamble(0x564b74e9e7a0, 0x564b74f53060, 4.90167e-11, +108000.0ns)
++60.110969123s 5 WifiPhy:StartRx(0x564b74e9e7a0, 0x564b74f53060, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f66750, 4.90167e-11, +108000.0ns)
++60.110969123s 5 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969123s 5 WifiPhy:StartRx(): Receiving first-arriving packet
++60.110969123s 3 WifiPhy:StartReceivePreamble(0x564b74e8b3f0, 0x564b74f63b70, 4.90167e-11, +108000.0ns)
++60.110969123s 3 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969123s 3 WifiPhy:StartRx(0x564b74e8b3f0, 0x564b74f63b70, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f64c30, 4.90167e-11, +108000.0ns)
++60.110969123s 3 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969123s 3 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969123s 5 WifiPhy:StartReceivePreamble(0x564b74e9e7a0, 0x564b74f77960, 4.90167e-11, +108000.0ns)
++60.110969123s 5 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969123s 5 WifiPhy:StartRx(0x564b74e9e7a0, 0x564b74f77960, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f56420, 4.90167e-11, +108000.0ns)
++60.110969123s 5 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969123s 5 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:StartTransmissionOfdma(0x564b74dca010, 0x564b74dcaa80)
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(88, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:StartTransmissionOfdma(): Assigned RU (2,1), duration = +172000.0ns
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:StartTransmissionOfdma(): Assigned RU (1,3), duration = +172000.0ns
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:StartTransmissionOfdma(): Assigned RU (1,4), duration = +172000.0ns
++60.110969137s 1 WifiPhy:GetPayloadDuration(88, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:StartTransmissionOfdma(): Assigned RU (0,5), duration = +76000.0ns
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:SendDlMuRts(0x564b74dca010)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(2, 1)
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(2, 1)
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(2, 1)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:SendDlMuRts(): must wait MU ACK
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(2, 1)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 5)
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 5)
++60.110969137s 1 WifiPhy:GetPayloadDuration(88, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 5)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:SendDlMuRts(): must wait MU ACK
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 5)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 3)
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 3)
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 3)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:SendDlMuRts(): must wait MU ACK
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 3)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(624, HeMcs4)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 4)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:SendDlMuRts(): must wait MU ACK
++60.110969137s 1 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 4)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:SendDlMuRts(+300000.0ns, +236000.0ns, +604000.0ns, +236000.0ns)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(2, 1)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(0x564b74dca010, 0x564b74f66520, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): send CTL_RTS, to=00:00:00:00:00:06, size=20, mode=HeMcs0, preamble=6, duration=+1124000.0ns, seq=0x2d80
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): Sending non aggregate MPDU
++60.110969137s 1 WifiPhy:SendPacket(0x564b74dcdef0, 0x564b74f60f60, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(2, 1)
++60.110969137s 1 WifiPhy:SendPacket(): Transmitting without power restriction
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 5)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(0x564b74dca010, 0x564b74f66520, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): send CTL_RTS, to=00:00:00:00:00:01, size=20, mode=HeMcs0, preamble=6, duration=+1124000.0ns, seq=0x2d80
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): Sending non aggregate MPDU
++60.110969137s 1 WifiPhy:SendPacket(0x564b74dcdef0, 0x564b74f3f3b0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(0, 5)
++60.110969137s 1 WifiPhy:SendPacket(): Transmitting without power restriction
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 3)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(0x564b74dca010, 0x564b74f66520, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): send CTL_RTS, to=00:00:00:00:00:05, size=20, mode=HeMcs0, preamble=6, duration=+1124000.0ns, seq=0x2d80
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): Sending non aggregate MPDU
++60.110969137s 1 WifiPhy:SendPacket(0x564b74dcdef0, 0x564b74f60f60, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 3)
++60.110969137s 1 WifiPhy:SendPacket(): Transmitting without power restriction
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 4)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(0x564b74dca010, 0x564b74f66520, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): send CTL_RTS, to=00:00:00:00:00:04, size=20, mode=HeMcs0, preamble=6, duration=+1124000.0ns, seq=0x2d80
++60.110969137s 1 [mac=00:00:00:00:00:02] MacLow:ForwardDown(): Sending non aggregate MPDU
++60.110969137s 1 WifiPhy:SendPacket(0x564b74dcdef0, 0x564b74f3f3b0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(20, HeMcs0)
++60.110969137s 1 WifiPhy:GetPayloadDuration(1, 4)
++60.110969137s 1 WifiPhy:SendPacket(): Transmitting without power restriction
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:GetTxPowerForTransmission(0x564b74dcdef0, 0)
++60.110969137s 1 WifiPhy:StartReceivePreamble(0x564b74dcdef0, 0x564b74ef2110, 3.18366e-11, +108000.0ns)
++60.110969137s 1 WifiPhy:StartReceivePreamble(): Drop packet because already in Tx (power=3.18366e-11W)
++60.110969137s 4 WifiPhy:StartReceivePreamble(0x564b74e94d20, 0x564b74f78140, 3.18366e-11, +108000.0ns)
++60.110969137s 4 WifiPhy:StartRx(0x564b74e94d20, 0x564b74f78140, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f3f3b0, 3.18366e-11, +108000.0ns)
++60.110969137s 4 WifiPhy:StartRx(): sync to signal (power=3.18366e-11W)
++60.110969137s 4 WifiPhy:StartRx(): Receiving first-arriving packet
++60.110969137s 1 WifiPhy:StartReceivePreamble(0x564b74dcdef0, 0x564b74f77c00, 3.18366e-11, +108000.0ns)
++60.110969137s 1 WifiPhy:StartReceivePreamble(): Drop packet because already in Tx (power=3.18366e-11W)
++60.110969137s 4 WifiPhy:StartReceivePreamble(0x564b74e94d20, 0x564b74f631d0, 3.18366e-11, +108000.0ns)
++60.110969137s 4 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969137.0ns
++60.110969137s 4 WifiPhy:StartRx(0x564b74e94d20, 0x564b74f631d0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f78370, 3.18366e-11, +108000.0ns)
++60.110969137s 4 WifiPhy:StartRx(): sync to signal (power=3.18366e-11W)
++60.110969137s 4 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969137s 4 WifiPhy:StartReceivePreamble(0x564b74e94d20, 0x564b74f48350, 8.59587e-07, +108000.0ns)
++60.110969137s 4 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969137.0ns
++60.110969137s 4 WifiPhy:StartRx(0x564b74e94d20, 0x564b74f48350, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77730, 8.59587e-07, +300000.0ns)
++60.110969137s 4 WifiPhy:StartRx(): sync to signal (power=8.59587e-07W)
++60.110969137s 4 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969137s 4 WifiPhy:StartReceivePreamble(0x564b74e94d20, 0x564b74f64dc0, 8.59587e-07, +300000.0ns)
++60.110969137s 4 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969137.0ns
++60.110969137s 4 WifiPhy:StartRx(0x564b74e94d20, 0x564b74f64dc0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f456b0, 8.59587e-07, +300000.0ns)
++60.110969137s 4 WifiPhy:StartRx(): sync to signal (power=8.59587e-07W)
++60.110969137s 4 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969137s 4 WifiPhy:StartReceivePreamble(0x564b74e94d20, 0x564b74f773b0, 8.59587e-07, +172000.0ns)
++60.110969137s 4 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969137.0ns
++60.110969137s 4 WifiPhy:StartRx(0x564b74e94d20, 0x564b74f773b0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f63910, 8.59587e-07, +300000.0ns)
++60.110969137s 4 WifiPhy:StartRx(): sync to signal (power=8.59587e-07W)
++60.110969137s 4 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969137s 4 WifiPhy:StartReceivePreamble(0x564b74e94d20, 0x564b74f539d0, 8.59587e-07, +172000.0ns)
++60.110969137s 4 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969137.0ns
++60.110969137s 4 WifiPhy:StartRx(0x564b74e94d20, 0x564b74f539d0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f63240, 8.59587e-07, +300000.0ns)
++60.110969137s 4 WifiPhy:StartRx(): sync to signal (power=8.59587e-07W)
++60.110969137s 4 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 0 WifiPhy:StartReceivePreamble(0x564b74dc4940, 0x564b74f52f90, 2.54693e-10, +108000.0ns)
++60.110969187s 0 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969187s 0 WifiPhy:StartRx(0x564b74dc4940, 0x564b74f52f90, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f55360, 2.54693e-10, +300000.0ns)
++60.110969187s 0 WifiPhy:StartRx(): sync to signal (power=2.54693e-10W)
++60.110969187s 0 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 3 WifiPhy:StartReceivePreamble(0x564b74e8b3f0, 0x564b74f54720, 2.54709e-10, +108000.0ns)
++60.110969187s 3 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 3 WifiPhy:StartRx(0x564b74e8b3f0, 0x564b74f54720, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f5ba70, 2.54709e-10, +300000.0ns)
++60.110969187s 3 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 3 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 5 WifiPhy:StartReceivePreamble(0x564b74e9e7a0, 0x564b74f778f0, 2.54709e-10, +108000.0ns)
++60.110969187s 5 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 5 WifiPhy:StartRx(0x564b74e9e7a0, 0x564b74f778f0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f561c0, 2.54709e-10, +300000.0ns)
++60.110969187s 5 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 5 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 0 WifiPhy:StartReceivePreamble(0x564b74dc4940, 0x564b74f65b20, 2.54693e-10, +300000.0ns)
++60.110969187s 0 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969187s 0 WifiPhy:StartRx(0x564b74dc4940, 0x564b74f65b20, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77490, 2.54693e-10, +300000.0ns)
++60.110969187s 0 WifiPhy:StartRx(): sync to signal (power=2.54693e-10W)
++60.110969187s 0 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969187s 3 WifiPhy:StartReceivePreamble(0x564b74e8b3f0, 0x564b74f75400, 2.54709e-10, +300000.0ns)
++60.110969187s 3 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 3 WifiPhy:StartRx(0x564b74e8b3f0, 0x564b74f75400, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77ff0, 2.54709e-10, +300000.0ns)
++60.110969187s 3 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 3 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969187s 5 WifiPhy:StartReceivePreamble(0x564b74e9e7a0, 0x564b74f635c0, 2.54709e-10, +300000.0ns)
++60.110969187s 5 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 5 WifiPhy:StartRx(0x564b74e9e7a0, 0x564b74f635c0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f776c0, 2.54709e-10, +300000.0ns)
++60.110969187s 5 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 5 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969187s 0 WifiPhy:StartReceivePreamble(0x564b74dc4940, 0x564b74f65ab0, 2.54693e-10, +172000.0ns)
++60.110969187s 0 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969187s 0 WifiPhy:StartRx(0x564b74dc4940, 0x564b74f65ab0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77ce0, 2.54693e-10, +300000.0ns)
++60.110969187s 0 WifiPhy:StartRx(): sync to signal (power=2.54693e-10W)
++60.110969187s 0 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 3 WifiPhy:StartReceivePreamble(0x564b74e8b3f0, 0x564b74f64a50, 2.54709e-10, +172000.0ns)
++60.110969187s 3 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 3 WifiPhy:StartRx(0x564b74e8b3f0, 0x564b74f64a50, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f0e430, 2.54709e-10, +300000.0ns)
++60.110969187s 3 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 3 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 5 WifiPhy:StartReceivePreamble(0x564b74e9e7a0, 0x564b74f777a0, 2.54709e-10, +172000.0ns)
++60.110969187s 5 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 5 WifiPhy:StartRx(0x564b74e9e7a0, 0x564b74f777a0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f53c50, 2.54709e-10, +300000.0ns)
++60.110969187s 5 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 5 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 0 WifiPhy:StartReceivePreamble(0x564b74dc4940, 0x564b74f56bf0, 2.54693e-10, +172000.0ns)
++60.110969187s 0 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969187s 0 WifiPhy:StartRx(0x564b74dc4940, 0x564b74f56bf0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77880, 2.54693e-10, +300000.0ns)
++60.110969187s 0 WifiPhy:StartRx(): sync to signal (power=2.54693e-10W)
++60.110969187s 0 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 3 WifiPhy:StartReceivePreamble(0x564b74e8b3f0, 0x564b74f53860, 2.54709e-10, +172000.0ns)
++60.110969187s 3 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 3 WifiPhy:StartRx(0x564b74e8b3f0, 0x564b74f53860, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f64830, 2.54709e-10, +300000.0ns)
++60.110969187s 3 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 3 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969187s 5 WifiPhy:StartReceivePreamble(0x564b74e9e7a0, 0x564b74f4b920, 2.54709e-10, +172000.0ns)
++60.110969187s 5 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969123.0ns
++60.110969187s 5 WifiPhy:StartRx(0x564b74e9e7a0, 0x564b74f4b920, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f75130, 2.54709e-10, +300000.0ns)
++60.110969187s 5 WifiPhy:StartRx(): sync to signal (power=2.54709e-10W)
++60.110969187s 5 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969223s 6 WifiPhy:StartReceivePreamble(0x564b74ea83e0, 0x564b74f75040, 4.90167e-11, +108000.0ns)
++60.110969223s 6 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 6 WifiPhy:StartRx(0x564b74ea83e0, 0x564b74f75040, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77420, 4.90167e-11, +300000.0ns)
++60.110969223s 6 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 6 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969223s 8 WifiPhy:StartReceivePreamble(0x564b74ebbc20, 0x564b74f77c70, 4.90167e-11, +108000.0ns)
++60.110969223s 8 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 8 WifiPhy:StartRx(0x564b74ebbc20, 0x564b74f77c70, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f66620, 4.90167e-11, +300000.0ns)
++60.110969223s 8 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 8 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969223s 6 WifiPhy:StartReceivePreamble(0x564b74ea83e0, 0x564b74f77ea0, 4.90167e-11, +300000.0ns)
++60.110969223s 6 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 6 WifiPhy:StartRx(0x564b74ea83e0, 0x564b74f77ea0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77500, 4.90167e-11, +300000.0ns)
++60.110969223s 6 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 6 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969223s 8 WifiPhy:StartReceivePreamble(0x564b74ebbc20, 0x564b74f771f0, 4.90167e-11, +300000.0ns)
++60.110969223s 8 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 8 WifiPhy:StartRx(0x564b74ebbc20, 0x564b74f771f0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f775e0, 4.90167e-11, +300000.0ns)
++60.110969223s 8 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 8 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969223s 6 WifiPhy:StartReceivePreamble(0x564b74ea83e0, 0x564b74f61980, 4.90167e-11, +172000.0ns)
++60.110969223s 6 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 6 WifiPhy:StartRx(0x564b74ea83e0, 0x564b74f61980, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f3f9a0, 4.90167e-11, +300000.0ns)
++60.110969223s 6 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 6 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969223s 8 WifiPhy:StartReceivePreamble(0x564b74ebbc20, 0x564b74f634e0, 4.90167e-11, +172000.0ns)
++60.110969223s 8 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 8 WifiPhy:StartRx(0x564b74ebbc20, 0x564b74f634e0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f3db00, 4.90167e-11, +300000.0ns)
++60.110969223s 8 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 8 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969223s 6 WifiPhy:StartReceivePreamble(0x564b74ea83e0, 0x564b74f77570, 4.90167e-11, +172000.0ns)
++60.110969223s 6 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 6 WifiPhy:StartRx(0x564b74ea83e0, 0x564b74f77570, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f60fd0, 4.90167e-11, +300000.0ns)
++60.110969223s 6 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 6 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969223s 8 WifiPhy:StartReceivePreamble(0x564b74ebbc20, 0x564b74f77650, 4.90167e-11, +172000.0ns)
++60.110969223s 8 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969087.0ns
++60.110969223s 8 WifiPhy:StartRx(0x564b74ebbc20, 0x564b74f77650, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f74020, 4.90167e-11, +300000.0ns)
++60.110969223s 8 WifiPhy:StartRx(): sync to signal (power=4.90167e-11W)
++60.110969223s 8 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969237s 2 WifiPhy:StartReceivePreamble(0x564b74e81bc0, 0x564b74f77260, 3.18366e-11, +108000.0ns)
++60.110969237s 2 WifiPhy:StartReceivePreamble(): Drop packet because already in Tx (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartReceivePreamble(0x564b74eb2000, 0x564b74f62c00, 3.18366e-11, +108000.0ns)
++60.110969237s 7 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969037.0ns
++60.110969237s 7 WifiPhy:StartRx(0x564b74eb2000, 0x564b74f62c00, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f65700, 3.18366e-11, +300000.0ns)
++60.110969237s 7 WifiPhy:StartRx(): sync to signal (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969237s 2 WifiPhy:StartReceivePreamble(0x564b74e81bc0, 0x564b74f78220, 3.18366e-11, +300000.0ns)
++60.110969237s 2 WifiPhy:StartReceivePreamble(): Drop packet because already in Tx (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartReceivePreamble(0x564b74eb2000, 0x564b74f65e70, 3.18366e-11, +300000.0ns)
++60.110969237s 7 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969037.0ns
++60.110969237s 7 WifiPhy:StartRx(0x564b74eb2000, 0x564b74f65e70, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f4a040, 3.18366e-11, +300000.0ns)
++60.110969237s 7 WifiPhy:StartRx(): sync to signal (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartRx(): Receiving packets on other RUs
++60.110969237s 2 WifiPhy:StartReceivePreamble(0x564b74e81bc0, 0x564b74f772d0, 3.18366e-11, +172000.0ns)
++60.110969237s 2 WifiPhy:StartReceivePreamble(): Drop packet because already in Tx (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartReceivePreamble(0x564b74eb2000, 0x564b74f29680, 3.18366e-11, +172000.0ns)
++60.110969237s 7 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969037.0ns
++60.110969237s 7 WifiPhy:StartRx(0x564b74eb2000, 0x564b74f29680, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f788e0, 3.18366e-11, +300000.0ns)
++60.110969237s 7 WifiPhy:StartRx(): sync to signal (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110969237s 2 WifiPhy:StartReceivePreamble(0x564b74e81bc0, 0x564b74f66030, 3.18366e-11, +172000.0ns)
++60.110969237s 2 WifiPhy:StartReceivePreamble(): Drop packet because already in Tx (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartReceivePreamble(0x564b74eb2000, 0x564b74f63320, 3.18366e-11, +172000.0ns)
++60.110969237s 7 WifiPhy:StartReceivePreamble(): current OFDMA RX starts at +60110969037.0ns
++60.110969237s 7 WifiPhy:StartRx(0x564b74eb2000, 0x564b74f63320, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f789c0, 3.18366e-11, +300000.0ns)
++60.110969237s 7 WifiPhy:StartRx(): sync to signal (power=3.18366e-11W)
++60.110969237s 7 WifiPhy:StartRx(): Drop packet because RX is already decoding preamble
++60.110973037s 7 WifiPhy:StartReceiveHeader(0x564b74eb2000, 0x564b74f56990, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f09480, +104000.0ns)
++60.110973037s 7 WifiPhy:StartReceiveHeader(2, 1)
++60.110973037s 7 WifiPhy:StartReceiveHeader(): snr(dB)=44.2592, per=0
++60.110973037s 7 WifiPhy:StartReceiveHeader(0x564b74eb2000, 0x564b74f54d50, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f754f0, +104000.0ns)
++60.110973037s 7 WifiPhy:StartReceiveHeader(2, 2)
++60.110973037s 7 WifiPhy:StartReceiveHeader(): snr(dB)=44.2592, per=0
++60.110973087s 0 WifiPhy:StartReceiveHeader(0x564b74dc4940, 0x564b74f3f140, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f64280, +104000.0ns)
++60.110973087s 0 WifiPhy:StartReceiveHeader(2, 1)
++60.110973087s 0 WifiPhy:StartReceiveHeader(): snr(dB)=-0.0068364, per=0
++60.110973087s 0 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973087s 6 WifiPhy:StartReceiveHeader(0x564b74ea83e0, 0x564b74f77b90, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f2fe00, +104000.0ns)
++60.110973087s 6 WifiPhy:StartReceiveHeader(2, 1)
++60.110973087s 6 WifiPhy:StartReceiveHeader(): snr(dB)=7.1216, per=0
++60.110973087s 8 WifiPhy:StartReceiveHeader(0x564b74ebbc20, 0x564b74f77f80, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77f10, +104000.0ns)
++60.110973087s 8 WifiPhy:StartReceiveHeader(2, 1)
++60.110973087s 8 WifiPhy:StartReceiveHeader(): snr(dB)=7.1216, per=0
++60.110973087s 0 WifiPhy:StartReceiveHeader(0x564b74dc4940, 0x564b74f64e30, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f659b0, +104000.0ns)
++60.110973087s 0 WifiPhy:StartReceiveHeader(2, 2)
++60.110973087s 0 WifiPhy:StartReceiveHeader(): snr(dB)=-0.0068364, per=0
++60.110973087s 0 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973087s 6 WifiPhy:StartReceiveHeader(0x564b74ea83e0, 0x564b74f77810, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f63f60, +104000.0ns)
++60.110973087s 6 WifiPhy:StartReceiveHeader(2, 2)
++60.110973087s 6 WifiPhy:StartReceiveHeader(): snr(dB)=7.1216, per=0
++60.110973087s 8 WifiPhy:StartReceiveHeader(0x564b74ebbc20, 0x564b74f4eda0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f6ca20, +104000.0ns)
++60.110973087s 8 WifiPhy:StartReceiveHeader(2, 2)
++60.110973087s 8 WifiPhy:StartReceiveHeader(): snr(dB)=7.1216, per=0
++60.110973123s 3 WifiPhy:StartReceiveHeader(0x564b74e8b3f0, 0x564b74f73a60, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f640b0, +104000.0ns)
++60.110973123s 3 WifiPhy:StartReceiveHeader(2, 1)
++60.110973123s 3 WifiPhy:StartReceiveHeader(): snr(dB)=-7.16385, per=0
++60.110973123s 3 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973123s 5 WifiPhy:StartReceiveHeader(0x564b74e9e7a0, 0x564b74f53060, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f66750, +104000.0ns)
++60.110973123s 5 WifiPhy:StartReceiveHeader(2, 1)
++60.110973123s 5 WifiPhy:StartReceiveHeader(): snr(dB)=-7.16385, per=0
++60.110973123s 5 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973123s 3 WifiPhy:StartReceiveHeader(0x564b74e8b3f0, 0x564b74f63b70, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f64c30, +104000.0ns)
++60.110973123s 3 WifiPhy:StartReceiveHeader(2, 2)
++60.110973123s 3 WifiPhy:StartReceiveHeader(): snr(dB)=-7.16385, per=0
++60.110973123s 3 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973123s 5 WifiPhy:StartReceiveHeader(0x564b74e9e7a0, 0x564b74f77960, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f56420, +104000.0ns)
++60.110973123s 5 WifiPhy:StartReceiveHeader(2, 2)
++60.110973123s 5 WifiPhy:StartReceiveHeader(): snr(dB)=-7.16385, per=0
++60.110973123s 5 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973137s 4 WifiPhy:StartReceiveHeader(0x564b74e94d20, 0x564b74f78140, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f3f3b0, +104000.0ns)
++60.110973137s 4 WifiPhy:StartReceiveHeader(2, 1)
++60.110973137s 4 WifiPhy:StartReceiveHeader(): snr(dB)=-44.3136, per=0
++60.110973137s 4 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973137s 4 WifiPhy:StartReceiveHeader(0x564b74e94d20, 0x564b74f631d0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f78370, +104000.0ns)
++60.110973137s 4 WifiPhy:StartReceiveHeader(2, 2)
++60.110973137s 4 WifiPhy:StartReceiveHeader(): snr(dB)=-44.3136, per=0
++60.110973137s 4 WifiPhy:StartReceiveHeader(): Drop packet because PHY preamble detection failed
++60.110973137s 4 WifiPhy:StartReceiveHeader(0x564b74e94d20, 0x564b74f64dc0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f456b0, +296000.0ns)
++60.110973137s 4 WifiPhy:StartReceiveHeader(0, 5)
++60.110973137s 4 WifiPhy:StartReceiveHeader(): snr(dB)=63.3089, per=0
++60.110973187s 0 WifiPhy:StartReceiveHeader(0x564b74dc4940, 0x564b74f65b20, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77490, +296000.0ns)
++60.110973187s 0 WifiPhy:StartReceiveHeader(0, 5)
++60.110973187s 0 WifiPhy:StartReceiveHeader(): snr(dB)=28.0261, per=0
++60.110973187s 3 WifiPhy:StartReceiveHeader(0x564b74e8b3f0, 0x564b74f75400, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77ff0, +296000.0ns)
++60.110973187s 3 WifiPhy:StartReceiveHeader(0, 5)
++60.110973187s 3 WifiPhy:StartReceiveHeader(): snr(dB)=28.0264, per=0
++60.110973187s 5 WifiPhy:StartReceiveHeader(0x564b74e9e7a0, 0x564b74f635c0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f776c0, +296000.0ns)
++60.110973187s 5 WifiPhy:StartReceiveHeader(0, 5)
++60.110973187s 5 WifiPhy:StartReceiveHeader(): snr(dB)=28.0264, per=0
++60.110973223s 6 WifiPhy:StartReceiveHeader(0x564b74ea83e0, 0x564b74f77ea0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77500, +296000.0ns)
++60.110973223s 6 WifiPhy:StartReceiveHeader(0, 5)
++60.110973223s 6 WifiPhy:StartReceiveHeader(): snr(dB)=20.8694, per=0
++60.110973223s 8 WifiPhy:StartReceiveHeader(0x564b74ebbc20, 0x564b74f771f0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f775e0, +296000.0ns)
++60.110973223s 8 WifiPhy:StartReceiveHeader(0, 5)
++60.110973223s 8 WifiPhy:StartReceiveHeader(): snr(dB)=20.8694, per=0
++60.110973237s 7 WifiPhy:StartReceiveHeader(0x564b74eb2000, 0x564b74f65e70, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f4a040, +296000.0ns)
++60.110973237s 7 WifiPhy:StartReceiveHeader(0, 5)
++60.110973237s 7 WifiPhy:StartReceiveHeader(): snr(dB)=18.9952, per=0
++60.110993037s 7 WifiPhy:ContinueReceiveHeader(0x564b74eb2000, 0x564b74f56990, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f09480)
++60.110993037s 7 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993037s 7 WifiPhy:ContinueReceiveHeader(0x564b74eb2000, 0x564b74f54d50, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f754f0)
++60.110993037s 7 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993087s 6 WifiPhy:ContinueReceiveHeader(0x564b74ea83e0, 0x564b74f77b90, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f2fe00)
++60.110993087s 6 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993087s 8 WifiPhy:ContinueReceiveHeader(0x564b74ebbc20, 0x564b74f77f80, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77f10)
++60.110993087s 8 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993087s 6 WifiPhy:ContinueReceiveHeader(0x564b74ea83e0, 0x564b74f77810, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f63f60)
++60.110993087s 6 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993087s 8 WifiPhy:ContinueReceiveHeader(0x564b74ebbc20, 0x564b74f4eda0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f6ca20)
++60.110993087s 8 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993137s 4 WifiPhy:ContinueReceiveHeader(0x564b74e94d20, 0x564b74f64dc0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f456b0)
++60.110993137s 4 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993187s 0 WifiPhy:ContinueReceiveHeader(0x564b74dc4940, 0x564b74f65b20, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77490)
++60.110993187s 0 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993187s 3 WifiPhy:ContinueReceiveHeader(0x564b74e8b3f0, 0x564b74f75400, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77ff0)
++60.110993187s 3 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993187s 5 WifiPhy:ContinueReceiveHeader(0x564b74e9e7a0, 0x564b74f635c0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f776c0)
++60.110993187s 5 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993223s 6 WifiPhy:ContinueReceiveHeader(0x564b74ea83e0, 0x564b74f77ea0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77500)
++60.110993223s 6 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993223s 8 WifiPhy:ContinueReceiveHeader(0x564b74ebbc20, 0x564b74f771f0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f775e0)
++60.110993223s 8 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.110993237s 7 WifiPhy:ContinueReceiveHeader(0x564b74eb2000, 0x564b74f65e70, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f4a040)
++60.110993237s 7 WifiPhy:ContinueReceiveHeader(): Received legacy PHY header
++60.111013037s 7 WifiPhy:StartReceivePayload(0x564b74eb2000, 0x564b74f56990, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013037s 7 WifiPhy:StartReceivePayload(): snr(dB)=44.2592, per=0
++60.111013037s 7 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013037s 7 WifiPhy:StartReceivePayload(0x564b74eb2000, 0x564b74f54d50, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013037s 7 WifiPhy:StartReceivePayload(): snr(dB)=44.2592, per=0
++60.111013037s 7 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013087s 6 WifiPhy:StartReceivePayload(0x564b74ea83e0, 0x564b74f77b90, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013087s 6 WifiPhy:StartReceivePayload(): snr(dB)=7.1216, per=9.02538e-11
++60.111013087s 6 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013087s 8 WifiPhy:StartReceivePayload(0x564b74ebbc20, 0x564b74f77f80, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013087s 8 WifiPhy:StartReceivePayload(): snr(dB)=7.1216, per=9.02538e-11
++60.111013087s 8 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013087s 6 WifiPhy:StartReceivePayload(0x564b74ea83e0, 0x564b74f77810, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013087s 6 WifiPhy:StartReceivePayload(): snr(dB)=7.1216, per=9.02538e-11
++60.111013087s 6 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013087s 8 WifiPhy:StartReceivePayload(0x564b74ebbc20, 0x564b74f4eda0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013087s 8 WifiPhy:StartReceivePayload(): snr(dB)=7.1216, per=9.02538e-11
++60.111013087s 8 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013137s 4 WifiPhy:StartReceivePayload(0x564b74e94d20, 0x564b74f64dc0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013137s 4 WifiPhy:StartReceivePayload(): snr(dB)=63.3089, per=0
++60.111013137s 4 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013187s 0 WifiPhy:StartReceivePayload(0x564b74dc4940, 0x564b74f65b20, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013187s 0 WifiPhy:StartReceivePayload(): snr(dB)=28.0261, per=0
++60.111013187s 0 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013187s 3 WifiPhy:StartReceivePayload(0x564b74e8b3f0, 0x564b74f75400, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013187s 3 WifiPhy:StartReceivePayload(): snr(dB)=28.0264, per=0
++60.111013187s 3 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013187s 5 WifiPhy:StartReceivePayload(0x564b74e9e7a0, 0x564b74f635c0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013187s 5 WifiPhy:StartReceivePayload(): snr(dB)=28.0264, per=0
++60.111013187s 5 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013223s 6 WifiPhy:StartReceivePayload(0x564b74ea83e0, 0x564b74f77ea0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013223s 6 WifiPhy:StartReceivePayload(): snr(dB)=20.8694, per=0
++60.111013223s 6 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013223s 8 WifiPhy:StartReceivePayload(0x564b74ebbc20, 0x564b74f771f0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013223s 8 WifiPhy:StartReceivePayload(): snr(dB)=20.8694, per=0
++60.111013223s 8 WifiPhy:StartReceivePayload(): Receiving payload
++60.111013237s 7 WifiPhy:StartReceivePayload(0x564b74eb2000, 0x564b74f65e70, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111013237s 7 WifiPhy:StartReceivePayload(): snr(dB)=18.9952, per=0
++60.111013237s 7 WifiPhy:StartReceivePayload(): Receiving payload
++60.111077037s 7 WifiPhy:EndReceive(0x564b74eb2000, 0x564b74f56990, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f09480, +108000.0ns)
++60.111077037s 7 WifiPhy:GetReceptionStatus(0x564b74eb2000, 0x564b74f56990, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f09480, +0.0ns, +108000.0ns)
++60.111077037s 7 WifiPhy:GetReceptionStatus(): mode=3187500, snr(dB)=44.2592, per=0, size=20, relativeStart = 0ns, duration = 108000ns
++60.111077037s 7 WifiPhy:GetReceptionStatus(): Reception succeeded: 
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:DeaggregateAmpduAndReceive(0x564b74eadd30)
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:ReceiveOkMu(0x564b74eadd30, 0x564b74f62ce0, 26664, HeMcs0, 6)
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:ReceiveOkMu(): duration/id=+548000.0ns, rawDuration=548
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:ReceiveOkMu(): received MURTS from=00:00:00:00:00:03, schedule MUCTS
++60.111077037s 7 WifiPhy:EndReceive(0x564b74eb2000, 0x564b74f54d50, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f754f0, +108000.0ns)
++60.111077037s 7 WifiPhy:GetReceptionStatus(0x564b74eb2000, 0x564b74f54d50, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f754f0, +0.0ns, +108000.0ns)
++60.111077037s 7 WifiPhy:GetReceptionStatus(): mode=3187500, snr(dB)=44.2592, per=0, size=20, relativeStart = 0ns, duration = 108000ns
++60.111077037s 7 WifiPhy:GetReceptionStatus(): Reception succeeded: 
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:DeaggregateAmpduAndReceive(0x564b74eadd30)
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:ReceiveOkMu(0x564b74eadd30, 0x564b74f62ce0, 26664, HeMcs0, 6)
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:ReceiveOkMu(): duration/id=+548000.0ns, rawDuration=548
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:ReceiveOkMu(): received MURTS from=00:00:00:00:00:03, cannot schedule MUCTS for wrong dest
++60.111077037s 7 [mac=00:00:00:00:00:08] MacLow:NotifyMuNav(0x564b74eadd30, +548000.0ns)
++60.111077087s 6 WifiPhy:EndReceive(0x564b74ea83e0, 0x564b74f77b90, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f2fe00, +108000.0ns)
++60.111077087s 6 WifiPhy:GetReceptionStatus(0x564b74ea83e0, 0x564b74f77b90, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f2fe00, +0.0ns, +108000.0ns)
++60.111077087s 6 WifiPhy:GetReceptionStatus(): mode=3187500, snr(dB)=7.1216, per=4.82145e-10, size=20, relativeStart = 0ns, duration = 108000ns
++60.111077087s 6 WifiPhy:GetReceptionStatus(): Reception succeeded: 
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:DeaggregateAmpduAndReceive(0x564b74ea4110)
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:ReceiveOkMu(0x564b74ea4110, 0x564b74f62ce0, 5.15419, HeMcs0, 6)
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:ReceiveOkMu(): duration/id=+548000.0ns, rawDuration=548
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:ReceiveOkMu(): received MURTS from=00:00:00:00:00:03, cannot schedule MUCTS for wrong dest
++60.111077087s 8 WifiPhy:EndReceive(0x564b74ebbc20, 0x564b74f77f80, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77f10, +108000.0ns)
++60.111077087s 8 WifiPhy:GetReceptionStatus(0x564b74ebbc20, 0x564b74f77f80, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f77f10, +0.0ns, +108000.0ns)
++60.111077087s 8 WifiPhy:GetReceptionStatus(): mode=3187500, snr(dB)=7.1216, per=4.82145e-10, size=20, relativeStart = 0ns, duration = 108000ns
++60.111077087s 8 WifiPhy:GetReceptionStatus(): Reception succeeded: 
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:DeaggregateAmpduAndReceive(0x564b74eb7950)
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:ReceiveOkMu(0x564b74eb7950, 0x564b74f62ce0, 5.15419, HeMcs0, 6)
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:ReceiveOkMu(): duration/id=+548000.0ns, rawDuration=548
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:ReceiveOkMu(): received MURTS from=00:00:00:00:00:03, cannot schedule MUCTS for wrong dest
++60.111077087s 6 WifiPhy:EndReceive(0x564b74ea83e0, 0x564b74f77810, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f63f60, +108000.0ns)
++60.111077087s 6 WifiPhy:GetReceptionStatus(0x564b74ea83e0, 0x564b74f77810, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f63f60, +0.0ns, +108000.0ns)
++60.111077087s 6 WifiPhy:GetReceptionStatus(): mode=3187500, snr(dB)=7.1216, per=4.82145e-10, size=20, relativeStart = 0ns, duration = 108000ns
++60.111077087s 6 WifiPhy:GetReceptionStatus(): Reception succeeded: 
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:DeaggregateAmpduAndReceive(0x564b74ea4110)
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:ReceiveOkMu(0x564b74ea4110, 0x564b74f62ce0, 5.15419, HeMcs0, 6)
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:ReceiveOkMu(): duration/id=+548000.0ns, rawDuration=548
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:ReceiveOkMu(): received MURTS from=00:00:00:00:00:03, cannot schedule MUCTS for wrong dest
++60.111077087s 8 WifiPhy:EndReceive(0x564b74ebbc20, 0x564b74f4eda0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f6ca20, +108000.0ns)
++60.111077087s 8 WifiPhy:GetReceptionStatus(0x564b74ebbc20, 0x564b74f4eda0, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0, 0x564b74f6ca20, +0.0ns, +108000.0ns)
++60.111077087s 8 WifiPhy:GetReceptionStatus(): mode=3187500, snr(dB)=7.1216, per=4.82145e-10, size=20, relativeStart = 0ns, duration = 108000ns
++60.111077087s 8 WifiPhy:GetReceptionStatus(): Reception succeeded: 
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:DeaggregateAmpduAndReceive(0x564b74eb7950)
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:ReceiveOkMu(0x564b74eb7950, 0x564b74f62ce0, 5.15419, HeMcs0, 6)
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:ReceiveOkMu(): duration/id=+548000.0ns, rawDuration=548
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:ReceiveOkMu(): received MURTS from=00:00:00:00:00:03, cannot schedule MUCTS for wrong dest
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:NotifyMuNav(0x564b74ea4110, +548000.0ns)
++60.111077087s 6 [mac=00:00:00:00:00:07] MacLow:DoNavStartNow(): newNavEnd=+60111625087.0ns, oldNavEnd=+60110917087.0ns
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:NotifyMuNav(0x564b74eb7950, +548000.0ns)
++60.111077087s 8 [mac=00:00:00:00:00:09] MacLow:DoNavStartNow(): newNavEnd=+60111625087.0ns, oldNavEnd=+60110917087.0ns
++60.111093037s 7 [mac=00:00:00:00:00:08] MacLow:SendDlMuCts(0x564b74eadd30, 00:00:00:00:00:03, +548000.0ns, HeMcs0, 26664)
++60.111093037s 7 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.111093037s 7 WifiPhy:GetPayloadDuration(2, 1)
++60.111093037s 7 [mac=00:00:00:00:00:08] MacLow:ForwardDown(0x564b74eadd30, 0x564b74f64160, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111093037s 7 [mac=00:00:00:00:00:08] MacLow:ForwardDown(): send CTL_CTS, to=00:00:00:00:00:03, size=14, mode=HeMcs0, preamble=6, duration=+440000.0ns, seq=0x8c60
++60.111093037s 7 [mac=00:00:00:00:00:08] MacLow:ForwardDown(): Sending non aggregate MPDU
++60.111093037s 7 WifiPhy:SendPacket(0x564b74eb2000, 0x564b74f74490, mode: HeMcs0 txpwrlvl: 0 preamble: 6 channel width: 20 GI: 3200 NTx: 1 Nss: 1 Ness: 0 MPDU aggregation: 0 STBC: 0)
++60.111093037s 7 WifiPhy:GetPayloadDuration(14, HeMcs0)
++60.111093037s 7 WifiPhy:GetPayloadDuration(2, 1)
++60.111093037s 7 WifiPhy:SendPacket(): Transmitting without power restriction
++60.111093037s 7 WifiPhy:GetTxPowerForTransmission(0x564b74eb2000, 0)
++60110973237.0ns
+assert failed. cond="Simulator::Now () - m_lastRxStart <= m_sifs", file=../src/wifi/model/channel-access-manager.cc, line=581
 terminate called without an active exception
+Command ['/home/jw27/Documents/ns-3.30-obss/build/scratch/simple-ofdma-adhoc4', '--ofdmaEnabled=true', '--startTime=60', '--totalTime=120', '--packetSize=4e3', '--dataMode=HeMcs4', '--datarate=25e5', '--ratio=0.375', '--RngRun=11', '--locationFile=./locationtxt/locationFile23.txt', '--routingFile=./locationtxt/routingFile23.txt', '--tcp=1', '--qosDisabled=true'] terminated with signal SIGIOT. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").
