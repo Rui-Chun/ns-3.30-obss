@@ -1821,10 +1821,10 @@ QosTxop::MissedMuCts (uint32_t id, std::list<Ptr<WifiMacQueueItem>> mpduList)
     }
   else
     {
-      if (mpduList.size () > 1 ||
-          (mpduList.front ()->GetHeader ().IsQosData ()
-           && GetBaAgreementEstablished (mpduList.front ()->GetHeader ().GetAddr1 (),
-                                         mpduList.front ()->GetHeader ().GetQosTid ())))
+      // if (mpduList.size () > 1 ||
+      //     (mpduList.front ()->GetHeader ().IsQosData ()
+      //      && GetBaAgreementEstablished (mpduList.front ()->GetHeader ().GetAddr1 (),
+      //                                    mpduList.front ()->GetHeader ().GetQosTid ())))
         {
           for (auto it = mpduList.rbegin (); it != mpduList.rend (); it++)
             {
@@ -1841,6 +1841,13 @@ QosTxop::MissedAllMuCts (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("missed all MUCTS");
+
+  auto it1 = m_handledList.begin ();
+  while (it1 != m_handledList.end ())
+    {
+      NS_ASSERT (*it1);
+      it1++;
+    }
 
   auto it = m_currentQueueItemList.begin ();
   auto it2 = m_currentParamsList.begin ();
@@ -1895,8 +1902,8 @@ QosTxop::GotMuAck (uint32_t id)
     {
       m_txOkCallback (m_currentHdr);
     }
-  if (m_currentHdr.IsQosData ()
-      && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()))
+  // if (m_currentHdr.IsQosData ()
+  //     && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()))
     {
       m_baManager->NotifyGotAck (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr,
                                                                  m_currentPacketTimestamp));
@@ -1948,8 +1955,8 @@ QosTxop::MissedMuAck (uint32_t id)
       m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                           m_currentPacket->GetSize ());
       (*it)->GetHeader ().SetRetry ();
-      if (m_currentHdr.IsQosData ()
-          && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()))
+      // if (m_currentHdr.IsQosData ()
+      //     && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()))
         {
           m_baManager->NotifyMissedAck (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr,
                                                                   m_currentPacketTimestamp));
@@ -2005,7 +2012,7 @@ QosTxop::MissedMuBlockAck (uint32_t id, uint8_t nMpdus)
     {
       m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), tid, 0, nMpdus, 0, 0);
     }
-  if (m_useExplicitBarAfterMissedBlockAck)
+  if (m_useExplicitBarAfterMissedBlockAck && false)
     {
       if (NeedBarRetransmission ())
         {
@@ -2050,6 +2057,13 @@ QosTxop::DoneMuAck (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("done MUACK");
+
+  auto it1 = m_handledList.begin ();
+  while (it1 != m_handledList.end ())
+    {
+      NS_ASSERT (*it1);
+      it1++;
+    }
 
   auto it = m_currentQueueItemList.begin ();
   auto it2 = m_currentParamsList.begin ();

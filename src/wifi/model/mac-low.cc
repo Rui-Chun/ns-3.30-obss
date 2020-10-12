@@ -3300,7 +3300,7 @@ MacLow::MuCtsTimeout (void)
           Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
           if (qosTxop != 0)
             {
-              // TODO
+              qosTxop->MissedMuCts (id, std::list<Ptr<WifiMacQueueItem>> ((*it2)->begin (), (*it2)->end ()));
             }
           else
             {
